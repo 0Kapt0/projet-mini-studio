@@ -23,6 +23,7 @@
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Map.hpp" />
+    <ClInclude Include="include\Menu.hpp" />
     <ClInclude Include="include\Player.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClCompile Include="scr\Game.cpp" />
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\Map.cpp" />
+    <ClCompile Include="scr\Menu.cpp" />
     <ClCompile Include="scr\Player.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

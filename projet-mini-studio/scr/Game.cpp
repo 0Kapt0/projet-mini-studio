@@ -1,5 +1,6 @@
 #include "../include/Game.hpp"
 #include "../include/Map.hpp"
+#include "../include/Menu.hpp"
 #include <iostream>
 
 using namespace sf;
@@ -26,51 +27,45 @@ void Game::run() {
     window.setFramerateLimit(60);
     // Définir l'état initial du jeu
     GameState currentState = GameState::Menu;
-
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
-
+    Menu menu;
     while (window.isOpen()) {
         Event event;
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
-
             // Gérer les événements en fonction de l'état actuel du jeu
             switch (currentState) {
             case GameState::Menu:
-                // Gérer les événements pour le menu
-                if (event.type == Event::MouseButtonPressed) {
-                    // Transition vers le jeu ou l'éditeur, selon la logique
-                    currentState = GameState::Editor; // Exemple de transition vers l'éditeur
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Editor;
+                    }
+                   
                 }
                 break;
             case GameState::Playing:
-                // Gérer les événements pour le jeu en cours
                 if (event.type == Event::MouseButtonPressed) {
-                    // Logique de jeu ici
                 }
                 break;
             case GameState::Editor:
-                // Gérer les événements pour l'éditeur de carte
                 if (event.type == Event::MouseButtonPressed) {
                     int tileIndex = 1;
                     map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
                 }
                 break;
             case GameState::Pause:
-                // Gérer les événements pour la pause
                 break;
             case GameState::GameOver:
-                // Gérer les événements pour la fin du jeu
                 break;
             }
         }
-
         // Gérer le rendu en fonction de l'état
         window.clear();
 
         switch (currentState) {
         case GameState::Menu:
+            menu.draw(window);
             break;
         case GameState::Playing:
             break;
@@ -85,10 +80,8 @@ void Game::run() {
 
         window.display();
     }
-
     // Sauvegarder l'état final de la carte si nécessaire
     if (currentState == GameState::Editor) {
         map.saveMap("assets/map/Lobby.txt");
     }
-
 }

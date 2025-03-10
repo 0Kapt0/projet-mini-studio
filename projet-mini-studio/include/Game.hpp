@@ -10,7 +10,7 @@ using namespace sf;
 
 class Game {
 private:
-    //RenderWindow window;
+
 public:
     void run();
     Game();
