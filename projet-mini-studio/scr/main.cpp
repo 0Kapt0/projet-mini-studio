@@ -4,9 +4,8 @@
 
 int main() {
     RenderWindow window(VideoMode(1440, 1080), "Grapple Example");
-    Player player(Vector2f(50, 50), Color::Red); // Exemple de taille et couleur du joueur
+    Player player(Vector2f(50, 50), Color::Red);
 
-	Player player = Player(Vector2f(50, 50), Color::Red);
 	Enemy enemy = Enemy(Vector2f(50, 50), Color::Blue);
 
     window.setFramerateLimit(60);
