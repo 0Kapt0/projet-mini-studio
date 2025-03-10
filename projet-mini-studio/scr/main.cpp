@@ -9,7 +9,6 @@ using namespace std;
 int main() {
     RenderWindow window(VideoMode(1440, 1080), "Grapple Example");
     Player player(Vector2f(50, 50), Color::Red);
-
 	Enemy enemy = Enemy(Vector2f(50, 50), Color::Blue);
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
 
@@ -23,9 +22,8 @@ int main() {
                 window.close();
 
             player.handleInput(event, window);
-            if (event.type == Event::Closed)
-                window.close();
-            else if (event.type == Event::MouseButtonPressed) {
+
+            if (event.type == Event::MouseButtonPressed) {
                 int tileIndex = 84;
                 map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
             }
