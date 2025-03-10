@@ -1,28 +1,33 @@
 #include <SFML/Graphics.hpp>
+#include "../include/Map.hpp"
+
+using namespace sf;
+using namespace std;
 
 int main() {
-    // Création de la fenêtre
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Fenêtre SFML");
+    RenderWindow window(VideoMode(1920, 1080), "Map Editor");
 
-    // Création d'un cercle
-    sf::CircleShape shape(50); // Rayon de 50 pixels
-    shape.setFillColor(sf::Color::Green);
+    // Créer un objet Map avec le chemin du tileset et du fichier de carte
+    Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
 
-    // Boucle principale
     while (window.isOpen()) {
-        sf::Event event;
+        Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close(); // Fermer la fenêtre
+            if (event.type == Event::Closed)
+                window.close();
+            else if (event.type == Event::MouseButtonPressed) {
+                int tileIndex = 1; // Index de la tuile choisie (modifiable via une interface)
+                map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
+            }
         }
 
-        // Effacer la fenêtre
         window.clear();
-        // Dessiner la forme
-        window.draw(shape);
-        // Afficher le contenu
+        map.draw(window);  // Dessiner la carte
         window.display();
     }
+
+    // Sauvegarder la carte après avoir quitté
+    map.saveMap("map.txt");
 
     return 0;
 }
