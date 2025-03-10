@@ -34,7 +34,7 @@ private:
     static const int TILE_SIZE = 32;
 
     //Dimensions de la carte
-    static const int MAP_WIDTH = 33;
+    static const int MAP_WIDTH = 60;
     static const int MAP_HEIGHT = 33;
 };
 

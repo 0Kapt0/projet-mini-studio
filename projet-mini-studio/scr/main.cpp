@@ -5,7 +5,7 @@ using namespace sf;
 using namespace std;
 
 int main() {
-    RenderWindow window(VideoMode(1080, 1080), "Map Editor");
+    RenderWindow window(VideoMode(1920, 1080), "Map Editor");
 
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
 
@@ -15,7 +15,7 @@ int main() {
             if (event.type == Event::Closed)
                 window.close();
             else if (event.type == Event::MouseButtonPressed) {
-                int tileIndex = 50;
+                int tileIndex = 84;
                 map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
             }
         }

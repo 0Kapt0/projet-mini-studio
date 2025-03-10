@@ -2,18 +2,17 @@
 #include <fstream>
 #include <iostream>
 
-//Constructeur
+// Constructeur
 Map::Map(const string& tilesetPath, const string& mapPath) {
     if (!tilesetTexture.loadFromFile(tilesetPath)) {
         cerr << "Erreur lors du chargement du tileset." << endl;
     }
 
-    collisionTiles = { 1, 5, 8 };
+    collisionTiles = { 84 };
 
     loadMap(mapPath);
     generateTiles();
 }
-
 
 Map::~Map() {}
 
@@ -38,17 +37,16 @@ void Map::generateTiles() {
             sprite.setTexture(tilesetTexture);
             sprite.setTextureRect(IntRect(tileX, tileY, TILE_SIZE, TILE_SIZE));
             sprite.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+
             tiles.push_back(sprite);
         }
     }
 }
 
-
 void Map::loadMap(const string& filename) {
     ifstream file(filename);
     if (file.is_open()) {
         map.clear();
-        blockedTiles.clear();
 
         for (int i = 0; i < MAP_HEIGHT; ++i) {
             vector<int> row;
@@ -56,10 +54,6 @@ void Map::loadMap(const string& filename) {
                 int tile;
                 file >> tile;
                 row.push_back(tile);
-
-                if (collisionTiles.count(tile)) {
-                    blockedTiles.push_back(Vector2i(j, i));
-                }
             }
             map.push_back(row);
         }
@@ -71,13 +65,12 @@ void Map::loadMap(const string& filename) {
     }
 }
 
-
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
     if (file.is_open()) {
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
-            for (int j = 0; j < MAP_WIDTH; ++j) {
-                file << map[i][j] << " ";
+        for (const auto& row : map) {
+            for (int tile : row) {
+                file << tile << " ";
             }
             file << endl;
         }
@@ -93,6 +86,7 @@ void Map::handleClick(int x, int y, int tileIndex) {
 
     if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT) {
         map[mapY][mapX] = tileIndex;
+        generateTiles();
     }
 }
 
@@ -101,16 +95,8 @@ bool Map::isColliding(int x, int y) const {
     return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
 }
 
-
-
-
-
 void Map::draw(RenderWindow& window) {
-    for (int i = 0; i < MAP_HEIGHT; ++i) {
-        for (int j = 0; j < MAP_WIDTH; ++j) {
-            Sprite sprite = tiles[map[i][j]];
-            sprite.setPosition(j * TILE_SIZE, i * TILE_SIZE);
-            window.draw(sprite);
-        }
+    for (const auto& tile : tiles) {
+        window.draw(tile);
     }
 }
