@@ -8,42 +8,70 @@ Map::Map(const string& tilesetPath, const string& mapPath) {
         cerr << "Erreur lors du chargement du tileset." << endl;
     }
 
-    //Découpe du tileset en tuiles
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
-            Sprite sprite;
-            sprite.setTexture(tilesetTexture);
-            sprite.setTextureRect(IntRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE));
-            tiles.push_back(sprite);
-        }
-    }
     collisionTiles = { 1, 5, 8 };
 
     loadMap(mapPath);
+    generateTiles();
 }
 
+
 Map::~Map() {}
+
+void Map::generateTiles() {
+    int tilesetWidth = tilesetTexture.getSize().x / TILE_SIZE;
+
+    tiles.clear();
+    blockedTiles.clear();
+
+    for (size_t y = 0; y < map.size(); ++y) {
+        for (size_t x = 0; x < map[y].size(); ++x) {
+            int tileIndex = map[y][x];
+
+            if (collisionTiles.count(tileIndex)) {
+                blockedTiles.push_back(Vector2i(x, y));
+            }
+
+            int tileX = (tileIndex % tilesetWidth) * TILE_SIZE;
+            int tileY = (tileIndex / tilesetWidth) * TILE_SIZE;
+
+            Sprite sprite;
+            sprite.setTexture(tilesetTexture);
+            sprite.setTextureRect(IntRect(tileX, tileY, TILE_SIZE, TILE_SIZE));
+            sprite.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+            tiles.push_back(sprite);
+        }
+    }
+}
+
 
 void Map::loadMap(const string& filename) {
     ifstream file(filename);
     if (file.is_open()) {
         map.clear();
+        blockedTiles.clear();
+
         for (int i = 0; i < MAP_HEIGHT; ++i) {
             vector<int> row;
             for (int j = 0; j < MAP_WIDTH; ++j) {
                 int tile;
                 file >> tile;
                 row.push_back(tile);
+
+                if (collisionTiles.count(tile)) {
+                    blockedTiles.push_back(Vector2i(j, i));
+                }
             }
             map.push_back(row);
         }
+
+        generateTiles();
     }
     else {
         cerr << "Impossible de charger la carte depuis le fichier." << endl;
     }
 }
 
-//Sauvegarde de la carte dans un fichier texte
+
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
     if (file.is_open()) {
@@ -69,14 +97,11 @@ void Map::handleClick(int x, int y, int tileIndex) {
 }
 
 bool Map::isColliding(int x, int y) const {
-    int mapX = x / TILE_SIZE;
-    int mapY = y / TILE_SIZE;
-
-    if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT) {
-        return collisionTiles.count(map[mapY][mapX]) > 0;
-    }
-    return false;
+    Vector2i tilePos(x / TILE_SIZE, y / TILE_SIZE);
+    return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
 }
+
+
 
 
 

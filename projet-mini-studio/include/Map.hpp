@@ -19,12 +19,14 @@ public:
     void saveMap(const string& filename);
     void handleClick(int x, int y, int tileIndex);
     void draw(RenderWindow& window);
+    void generateTiles();
 
     bool isColliding(int x, int y) const;
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;
     set<int> collisionTiles;
+    vector<Vector2i> blockedTiles;
 
     vector<vector<int>> map;
 
@@ -32,8 +34,8 @@ private:
     static const int TILE_SIZE = 32;
 
     //Dimensions de la carte
-    static const int MAP_WIDTH = 60;
-    static const int MAP_HEIGHT = 34;
+    static const int MAP_WIDTH = 33;
+    static const int MAP_HEIGHT = 33;
 };
 
 #endif // MAP_HPP
