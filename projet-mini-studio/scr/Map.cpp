@@ -17,6 +17,7 @@ Map::Map(const string& tilesetPath, const string& mapPath) {
             tiles.push_back(sprite);
         }
     }
+    collisionTiles = { 1, 5, 8 };
 
     loadMap(mapPath);
 }
@@ -67,11 +68,22 @@ void Map::handleClick(int x, int y, int tileIndex) {
     }
 }
 
+bool Map::isColliding(int x, int y) const {
+    int mapX = x / TILE_SIZE;
+    int mapY = y / TILE_SIZE;
+
+    if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT) {
+        return collisionTiles.count(map[mapY][mapX]) > 0;
+    }
+    return false;
+}
+
+
 
 void Map::draw(RenderWindow& window) {
     for (int i = 0; i < MAP_HEIGHT; ++i) {
         for (int j = 0; j < MAP_WIDTH; ++j) {
-            Sprite sprite = tiles[map[i][j]];  // Récupère la tuile correspondante
+            Sprite sprite = tiles[map[i][j]];
             sprite.setPosition(j * TILE_SIZE, i * TILE_SIZE);
             window.draw(sprite);
         }

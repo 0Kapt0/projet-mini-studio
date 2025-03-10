@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <set>
 
 using namespace sf;
 using namespace std;
@@ -19,9 +20,11 @@ public:
     void handleClick(int x, int y, int tileIndex);
     void draw(RenderWindow& window);
 
+    bool isColliding(int x, int y) const;
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;
+    set<int> collisionTiles;
 
     vector<vector<int>> map;
 
