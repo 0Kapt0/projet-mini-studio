@@ -1,8 +1,9 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
-
+#include <iostream>
 #include <SFML/Graphics.hpp>
 using namespace sf;
+using namespace std;
 
 class Entity
 {
@@ -12,7 +13,7 @@ private:
 public:
 	Entity();
 
-	Entity(const IntRect& rect, const Color& color);
+	Entity(const Vector2f& size, const Color& color);
 
 	~Entity();
 

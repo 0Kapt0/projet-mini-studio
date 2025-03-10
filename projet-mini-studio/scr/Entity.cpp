@@ -6,14 +6,13 @@ Entity::Entity()
 	sprite.setTexture(texture);
 }
 
-Entity::Entity(const IntRect& rect, const Color& color)
+Entity::Entity(const Vector2f& size, const Color& color)
 {
-	texture.create(rect.width, rect.height);
+	texture.create(size.x, size.y);
 	Image image;
-	image.create(rect.width, rect.height, color);
+	image.create(size.x, size.y, color);
 	texture.update(image);
 	sprite.setTexture(texture);
-	sprite.setTextureRect(rect);
 }
 
 Entity::~Entity()

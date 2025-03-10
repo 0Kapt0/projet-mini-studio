@@ -9,7 +9,7 @@ private:
 	int jumpNum = 0;
 public:
 	Player();
-	Player(const IntRect& rect, const Color& color);
+	Player(const Vector2f& size, const Color& color);
 	~Player();
 	void update(float dt);
 };

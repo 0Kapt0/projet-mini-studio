@@ -6,9 +6,9 @@ Player::Player()
 	velocity = Vector2f(0, 0);
 }
 
-Player::Player(const IntRect& rect, const Color& color) : Entity(rect, color)
+Player::Player(const Vector2f& size, const Color& color) : Entity(size, color)
 {
-	speed = 200;
+	speed = 450;
 	velocity = Vector2f(0, 0);
 }
 
@@ -22,19 +22,29 @@ void Player::update(float dt)
 	{
 		canJump = true;
 	}
+
+	velocity.y += 14.8f;
+
+	if (getSprite().getPosition().y > 200)
+	{
+		canJump = true;
+		jumpNum = 0;
+		velocity.y = 0;
+	}
+	if (!Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right))
+		velocity.x = 0;
 	
-	velocity.y -= 9.8f;
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 		velocity.x = -speed;
 	if (Keyboard::isKeyPressed(Keyboard::Right))
 		velocity.x = speed;
 	if (Keyboard::isKeyPressed(Keyboard::Up) && canJump)
 	{
-		velocity.y += speed;
+		velocity.y = -speed;
 		jumpNum++;
 		canJump = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Down))
-		velocity.y -= speed;
+	if (Keyboard::isKeyPressed(Keyboard::Down) && getSprite().getPosition().y < 200)
+		velocity.y += speed;
 	getSprite().move(velocity * dt);
 }

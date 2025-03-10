@@ -1,12 +1,13 @@
 #include <SFML/Graphics.hpp>
+#include "../include/Player.hpp"
 
 int main() {
     // Création de la fenêtre
     sf::RenderWindow window(sf::VideoMode(800, 600), "Fenêtre SFML");
 
-    // Création d'un cercle
-    sf::CircleShape shape(50); // Rayon de 50 pixels
-    shape.setFillColor(sf::Color::Green);
+	Player player = Player(Vector2f(50, 50), Color::Red);
+
+    window.setFramerateLimit(60);
 
     // Boucle principale
     while (window.isOpen()) {
@@ -15,11 +16,11 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close(); // Fermer la fenêtre
         }
-
+		player.update(0.016f);
         // Effacer la fenêtre
         window.clear();
-        // Dessiner la forme
-        window.draw(shape);
+
+		player.draw(window);
         // Afficher le contenu
         window.display();
     }
