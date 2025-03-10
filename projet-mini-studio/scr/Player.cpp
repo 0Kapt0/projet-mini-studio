@@ -45,17 +45,35 @@ void Player::update(float dt)
             canJump = true;
             jumpNum = 0;
             velocity.y = 0;
+            dashMomentum = false;
         }
-        if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D))
-            velocity.x = 0;
+        if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D)) {
+            if (dashMomentum) {
+                if (lastInputDirection == 'L') {
+                    velocity.x += 14.8f;
+                }
+                if (lastInputDirection == 'R') {
+                    velocity.x -= 14.8f;
+                }
+                if (velocity.x > -50 && velocity.x < 50) {
+                    velocity.x = 0;
+                    dashMomentum = false;
+                }
+            }
+            else {
+                velocity.x = 0;
+            }
+        }
 
         if (Keyboard::isKeyPressed(Keyboard::Q) && getSprite().getPosition().x - speed * dt) {
             velocity.x = -speed;
             lastInputDirection = 'L';
+            dashMomentum = false;
         }
         if (Keyboard::isKeyPressed(Keyboard::D)) {
             velocity.x = speed;
             lastInputDirection = 'R';
+            dashMomentum = false;
         }
         if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
         {
@@ -79,8 +97,8 @@ void Player::update(float dt)
             velocity.y = 0;
 
             switch (lastInputDirection) {
-            case('L'): dashDirection.x = -speed * 3.f; break;
-            case('R'): dashDirection.x = speed * 3.f; break;
+            case('L'): dashDirection.x = -speed * 3.5f; break;
+            case('R'): dashDirection.x = speed * 3.5f; break;
             }
             //dashDirection = velocity * 3.f; // si on veut un dash dans toutes les directions
         }
@@ -88,9 +106,11 @@ void Player::update(float dt)
 
     if (dashing) {
         dashDuration += dt;
-        if (dashDuration >= 0.2) {
+        if (dashDuration >= 0.1) {
             dashing = false;
             dashDuration = 0;
+            dashMomentum = true;
+            velocity = dashDirection;
         }
 		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
         getSprite().move(dashDirection.x * dt, 0);

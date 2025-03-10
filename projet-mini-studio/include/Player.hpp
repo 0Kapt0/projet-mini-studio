@@ -25,6 +25,7 @@ private:
     Vector2f velocity;
     bool canJump = true;
     int jumpNum = 0;
+    //DASH
     bool canDash = true;
     bool dashing = false;
     Vector2f dashDirection;
@@ -32,6 +33,8 @@ private:
     float dashDuration = 0;
     float dashCooldown = 0.8;
     float dashTimer = 0;
+    bool dashMomentum = false;
+    //
     Grapple grapple;
     bool grapplingTouched = false;
     //ATTACK
