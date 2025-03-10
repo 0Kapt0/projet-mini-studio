@@ -26,6 +26,11 @@ Sprite& Entity::getSprite()
 	return sprite;
 }
 
+const Sprite& Entity::getSpriteConst() const
+{
+	return sprite;
+}
+
 void Entity::draw(RenderWindow& window)
 {
 	window.draw(sprite);

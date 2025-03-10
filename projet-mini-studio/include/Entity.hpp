@@ -2,6 +2,7 @@
 #define ENTITY_HPP
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <vector>
 using namespace sf;
 using namespace std;
 
@@ -18,6 +19,8 @@ public:
 	~Entity();
 
 	Sprite& getSprite();
+
+	const Sprite& getSpriteConst() const;
 
 	void draw(RenderWindow& window);
 };
