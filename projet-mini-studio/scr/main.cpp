@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
+#include "../include/RangedEnemy.hpp"
 
 using namespace sf;
 using namespace std;
@@ -12,6 +13,8 @@ int main()
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
 
     Player player(Vector2f(50, 50), Color::Red, map);
+
+    /*RangedEnemy enemy(sf::Vector2f(50, 50), sf::Color::Blue);*/
 
     window.setFramerateLimit(60);
 

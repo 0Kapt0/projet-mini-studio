@@ -24,6 +24,7 @@
     <ClInclude Include="include\Grapple.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Player.hpp" />
+    <ClInclude Include="include\RangedEnemy.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\Enemy.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\Map.cpp" />
     <ClCompile Include="scr\Player.cpp" />
+    <ClCompile Include="scr\RangedEnemy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
