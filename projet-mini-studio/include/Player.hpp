@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "Grapple.hpp"
 #include "Entity.hpp"
-#include "Map.hpp"
 
 using namespace sf;
 
@@ -16,10 +15,11 @@ public:
 
     void update(float dt);
     void draw(RenderWindow& window);
-    void handleInput(const Event& event, const RenderWindow& window);
+    void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isColliding(int x, int y, float dt);
 
 private:
+	bool leftButtonHold = false;
     Map& map;
     float speed;
     Vector2f velocity;

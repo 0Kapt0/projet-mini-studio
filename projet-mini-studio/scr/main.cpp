@@ -17,21 +17,20 @@ int main()
 
     Clock clock;
     while (window.isOpen()) {
+        float deltaTime = clock.restart().asSeconds();
         Event event;
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
 
-            player.handleInput(event, window);
+            
 
-            if (event.type == Event::MouseButtonPressed) {
+            if (Mouse::isButtonPressed(Mouse::Right)) {
                 int tileIndex = 84;
                 map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
             }
         }
-
-        float deltaTime = clock.restart().asSeconds();
-
+        player.handleInput(event, window, deltaTime);
         player.update(deltaTime);
 
 		enemy.update(0.016f);
