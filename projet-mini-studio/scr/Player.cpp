@@ -33,7 +33,7 @@ void Player::update(float dt)
         dashTimer += dt;
         if (dashTimer >= dashCooldown && getSprite().getPosition().y > 800) canDash = true;
 
-        if (!Keyboard::isKeyPressed(Keyboard::Z) && jumpNum < 2)
+        if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
         {
             canJump = true;
         }
@@ -75,7 +75,7 @@ void Player::update(float dt)
             lastInputDirection = 'R';
             dashMomentum = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
+        if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
         {
             velocity.y = -speed;
             jumpNum++;
@@ -90,7 +90,7 @@ void Player::update(float dt)
 
 		cout << velocity.x << " " << velocity.y << endl;
 
-        if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
+        if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
             dashing = true;
             canDash = false;
             dashTimer = 0;

@@ -25,8 +25,10 @@
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Player.hpp" />
     <ClInclude Include="include\RangedEnemy.hpp" />
+    <ClInclude Include="scr\ChargingBoss.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="scr\ChargingBoss.cpp" />
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
