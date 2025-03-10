@@ -1,14 +1,19 @@
-#include "Entity.hpp"
+#ifndef ENEMY_HPP
+#define ENEMY_HPP
 
-class Enemy : public Entity
-{
-private:
-	float speed;
-	Vector2f velocity;
+#include "Entity.hpp" 
+
+class Enemy : public Entity {
+protected:
+    float speed;
+    Vector2f velocity;
 
 public:
-	Enemy();
-	Enemy(const Vector2f& size, const Color& color);
-	~Enemy();
-	void update(float dt);
+    Enemy();
+    Enemy(const Vector2f& size, const Color& color);
+    virtual ~Enemy();
+
+    virtual void update(float dt);
 };
+
+#endif

@@ -14,7 +14,7 @@ int main()
 
     Player player(Vector2f(50, 50), Color::Red, map);
 
-    /*RangedEnemy enemy(sf::Vector2f(50, 50), sf::Color::Blue);*/
+    RangedEnemy rangedenemy(Vector2f(50, 50), Color::Yellow);
 
     window.setFramerateLimit(60);
 
@@ -37,12 +37,15 @@ int main()
 
         player.update(deltaTime);
 
+        rangedenemy.update(deltaTime);
 		enemy.update(0.016f);
         // Effacer la fenêtre
         window.clear();
         map.draw(window);
 		player.draw(window);
 		enemy.draw(window);
+        rangedenemy.draw(window);
+		rangedenemy.drawProjectiles(window);
         // Afficher le contenu
         window.display();
     }

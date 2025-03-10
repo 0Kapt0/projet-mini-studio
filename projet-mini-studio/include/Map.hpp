@@ -23,6 +23,10 @@ public:
 
     bool isColliding(int x, int y) const;
     const vector<vector<int>>& getMap() const { return map; }
+
+    //Dimensions de la carte
+    static const int MAP_WIDTH = 60;
+    static const int MAP_HEIGHT = 33;
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;
@@ -33,10 +37,6 @@ private:
 
     //Taille des tuiles
     static const int TILE_SIZE = 32;
-
-    //Dimensions de la carte
-    static const int MAP_WIDTH = 60;
-    static const int MAP_HEIGHT = 33;
 };
 
 #endif // MAP_HPP

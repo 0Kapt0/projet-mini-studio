@@ -3,13 +3,13 @@
 Enemy::Enemy()
 {
 	speed = 200;
-	velocity = sf::Vector2f(0, 0);
+	velocity = Vector2f(0, 0);
 }
 
-Enemy::Enemy(const sf::Vector2f& size, const sf::Color& color) : Entity(size, color)
+Enemy::Enemy(const Vector2f& size, const Color& color) : Entity(size, color)
 {
 	speed = 300;
-	velocity = sf::Vector2f(0, 0);
+	velocity = Vector2f(0, 0);
 }
 
 Enemy::~Enemy()
