@@ -31,6 +31,10 @@ const Sprite& Entity::getSpriteConst() const
 	return sprite;
 }
 
+bool Entity::intersects(const Entity& other) const {
+	return sprite.getGlobalBounds().intersects(other.sprite.getGlobalBounds());
+}
+
 void Entity::draw(RenderWindow& window)
 {
 	window.draw(sprite);

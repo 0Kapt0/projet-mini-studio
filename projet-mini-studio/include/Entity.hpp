@@ -20,6 +20,8 @@ public:
 
 	Sprite& getSprite();
 
+	bool intersects(const Entity& other) const;
+
 	const Sprite& getSpriteConst() const;
 
 	void draw(RenderWindow& window);
