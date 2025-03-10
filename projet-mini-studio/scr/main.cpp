@@ -37,11 +37,10 @@ int main() {
 		enemy.update(0.016f);
         // Effacer la fenêtre
         window.clear();
-
+        map.draw(window);
 		player.draw(window);
 		enemy.draw(window);
         // Afficher le contenu
-        map.draw(window);
         window.display();
     }
 

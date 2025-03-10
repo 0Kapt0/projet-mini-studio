@@ -16,7 +16,7 @@ Player::~Player()
 {
 }
 
-void Player::update(float dt)
+void Player::update(float dt, vector<vector<int>>& map)
 {
 	if (!dashing) {
 		dashTimer += dt;
@@ -29,7 +29,7 @@ void Player::update(float dt)
 
 		velocity.y += 14.8f;
 
-		if (getSprite().getPosition().y > 200)
+		if (getSprite().getPosition().y > 800)
 		{
 			canJump = true;
 			jumpNum = 0;
@@ -97,4 +97,10 @@ void Player::handleInput(const Event& event, const RenderWindow& window)
 		direction /= length; // Normaliser la direction
 		grapple.launch(startPosition, direction);
 	}
+}
+
+void Player::draw(RenderWindow& window)
+{
+	window.draw(getSprite());
+	grapple.draw(window);
 }

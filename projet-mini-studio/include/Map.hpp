@@ -22,6 +22,7 @@ public:
     void generateTiles();
 
     bool isColliding(int x, int y) const;
+    const vector<vector<int>>& getMap() const { return map; }
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;

@@ -13,9 +13,10 @@ public:
     Player(const Vector2f& size, const Color& color);
     ~Player();
 
-    void update(float dt);
+    void update(float dt, vector<vector<int>>& map);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, const RenderWindow& window);
+	
 
 private:
 	float speed;
@@ -31,9 +32,6 @@ private:
 	float dashTimer = 0;
 	Grapple grapple;
 	bool grapplingTouched = false;
-public:
-	Player();
-	Player(const Vector2f& size, const Color& color);
-	~Player();
-	void update(float dt);
 };
+
+#endif
