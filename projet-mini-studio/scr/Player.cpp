@@ -18,14 +18,23 @@ Player::~Player()
 
 void Player::update(float dt)
 {
-	velocity = Vector2f(0, 0);
+	if (!Keyboard::isKeyPressed(Keyboard::Up) && jumpNum < 2)
+	{
+		canJump = true;
+	}
+	
+	velocity.y -= 9.8f;
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 		velocity.x = -speed;
 	if (Keyboard::isKeyPressed(Keyboard::Right))
 		velocity.x = speed;
-	if (Keyboard::isKeyPressed(Keyboard::Up))
-		velocity.y = -speed;
+	if (Keyboard::isKeyPressed(Keyboard::Up) && canJump)
+	{
+		velocity.y += speed;
+		jumpNum++;
+		canJump = false;
+	}
 	if (Keyboard::isKeyPressed(Keyboard::Down))
-		velocity.y = speed;
+		velocity.y -= speed;
 	getSprite().move(velocity * dt);
 }
