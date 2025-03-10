@@ -20,6 +20,8 @@ public:
 
 	Sprite& getSprite();
 
+	const Sprite& getSpriteConst() const;
+
 	void draw(RenderWindow& window);
 };
 

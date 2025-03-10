@@ -1,16 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
-#include "../include/Map.hpp"
 
 using namespace sf;
 using namespace std;
 
-int main() {
+int main() 
+{
     RenderWindow window(VideoMode(1440, 1080), "Grapple Example");
-    Player player(Vector2f(50, 50), Color::Red);
 	Enemy enemy = Enemy(Vector2f(50, 50), Color::Blue);
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
+
+    Player player(Vector2f(50, 50), Color::Red, map);
 
     window.setFramerateLimit(60);
 
@@ -33,7 +34,6 @@ int main() {
 
         player.update(deltaTime);
 
-		player.update(0.016f);
 		enemy.update(0.016f);
         // Effacer la fenêtre
         window.clear();
