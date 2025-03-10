@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Player.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
+    <ClCompile Include="scr\Game.cpp" />
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\Map.cpp" />
     <ClCompile Include="scr\Player.cpp" />
