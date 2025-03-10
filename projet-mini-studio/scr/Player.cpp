@@ -14,6 +14,12 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
 	speed = 450;
 	velocity = Vector2f(0, 0);
 	this->map = map;
+
+    attackTexture.create(size.x * 1.5f, size.y * 1.5f);
+    Image image;
+    image.create(size.x * 1.5f, size.y * 1.5f, Color::Blue);
+    attackTexture.update(image);
+    attackSprite.setTexture(attackTexture);
 }
 
 
@@ -25,7 +31,7 @@ void Player::update(float dt)
 {
     if (!dashing) {
         dashTimer += dt;
-        if (dashTimer >= dashCooldown && getSprite().getPosition().y > 200) canDash = true;
+        if (dashTimer >= dashCooldown && getSprite().getPosition().y > 800) canDash = true;
 
         if (!Keyboard::isKeyPressed(Keyboard::Z) && jumpNum < 2)
         {
@@ -57,7 +63,7 @@ void Player::update(float dt)
             jumpNum++;
             canJump = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 200)
+        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
             velocity.y += speed;
 
 		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
@@ -80,7 +86,7 @@ void Player::update(float dt)
         }
     }
 
-    else { //(dashing)
+    if (dashing) {
         dashDuration += dt;
         if (dashDuration >= 0.2) {
             dashing = false;
@@ -94,6 +100,36 @@ void Player::update(float dt)
     }
     // Mettre à jour le grappin
     grapple.update(dt);
+
+    if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
+        attacking = true;
+        canAttack = false;
+        attackTimer = 0;
+
+        switch (lastInputDirection) {
+            case('L'): attackDirection = "left"; break;
+            case('R'): attackDirection = "right"; break;
+        }
+    }
+    attackTimer += dt;
+    if (attackTimer >= attackCooldown) canAttack = true;
+
+    if (attacking) {
+        attackDuration += dt;
+        if (attackDuration >= 0.2){
+            attacking = false;
+            attackDuration = 0;
+        }
+        if (attackDirection == "left"){
+            attackSprite.setPosition(getSprite().getPosition().x - (getSprite().getLocalBounds().width * getSprite().getScale().x) / 2
+                - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
+                getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        }
+        if (attackDirection == "right") {
+            attackSprite.setPosition(getSprite().getPosition().x + (getSprite().getLocalBounds().width * getSprite().getScale().x) / 2,
+                getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        }
+    }
 }
 
 
@@ -115,6 +151,7 @@ void Player::draw(RenderWindow& window)
 {
 	window.draw(getSprite());
 	grapple.draw(window);
+    if (attacking) window.draw(attackSprite);
 }
 
 void Player::isColliding(int x, int y, float dt)

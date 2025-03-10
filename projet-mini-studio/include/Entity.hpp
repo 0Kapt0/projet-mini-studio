@@ -22,7 +22,7 @@ public:
 
 	const Sprite& getSpriteConst() const;
 
-	void draw(RenderWindow& window);
+	virtual void draw(RenderWindow& window);
 };
 
 #endif

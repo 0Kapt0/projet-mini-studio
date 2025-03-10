@@ -27,10 +27,10 @@ int main()
 
             player.handleInput(event, window);
 
-            if (event.type == Event::MouseButtonPressed) {
+            /*if (event.type == Event::MouseButtonPressed) {
                 int tileIndex = 84;
                 map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
-            }
+            }*/
         }
 
         float deltaTime = clock.restart().asSeconds();
