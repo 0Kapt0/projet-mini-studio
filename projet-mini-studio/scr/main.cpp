@@ -1,8 +1,10 @@
 #include <SFML/Graphics.hpp>
+#include "../include/Game.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
+
 
 using namespace sf;
 using namespace std;
@@ -68,8 +70,10 @@ int main()
 		rangedenemy.drawProjectiles(window);
         window.display();
     }
+int main() {
+    Game game;
 
-    map.saveMap("assets/map/Lobby.txt");
+    game.run();
 
     return 0;
 }
