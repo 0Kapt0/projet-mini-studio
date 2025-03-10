@@ -2,28 +2,30 @@
 #include "../include/Player.hpp"
 
 int main() {
-    // Création de la fenêtre
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Fenêtre SFML");
+    RenderWindow window(VideoMode(1440, 1080), "Grapple Example");
+    Player player(Vector2f(50, 50), Color::Red); // Exemple de taille et couleur du joueur
 
-	Player player = Player(Vector2f(50, 50), Color::Red);
+	window.setFramerateLimit(60);
 
-    window.setFramerateLimit(60);
-
-    // Boucle principale
+    Clock clock;
     while (window.isOpen()) {
-        sf::Event event;
+        Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close(); // Fermer la fenêtre
-        }
-		player.update(0.016f);
-        // Effacer la fenêtre
-        window.clear();
+            if (event.type == Event::Closed)
+                window.close();
 
-		player.draw(window);
-        // Afficher le contenu
+            player.handleInput(event, window);
+        }
+
+        float deltaTime = clock.restart().asSeconds();
+
+        player.update(deltaTime);
+
+        window.clear();
+        player.draw(window);
         window.display();
     }
 
     return 0;
 }
+
