@@ -15,7 +15,7 @@ public:
     ~Player();
 
     void update(float dt);
-    void draw(RenderWindow& window);
+    void draw(RenderWindow& window) override;
     void handleInput(const Event& event, const RenderWindow& window);
 	void isColliding(int x, int y, float dt);
 
@@ -25,6 +25,7 @@ private:
     Vector2f velocity;
     bool canJump = true;
     int jumpNum = 0;
+    //DASH
     bool canDash = true;
     bool dashing = false;
     Vector2f dashDirection;
@@ -32,8 +33,19 @@ private:
     float dashDuration = 0;
     float dashCooldown = 0.8;
     float dashTimer = 0;
+    bool dashMomentum = false;
+    //
     Grapple grapple;
     bool grapplingTouched = false;
+    //ATTACK
+    bool canAttack = true;
+    bool attacking = false;
+    Texture attackTexture;
+    Sprite attackSprite;
+    std::string attackDirection = "mid";
+    float attackDuration = 0;
+    float attackCooldown = 1;
+    float attackTimer = 0;
 
 };
 
