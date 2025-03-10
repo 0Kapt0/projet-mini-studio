@@ -17,7 +17,7 @@ public:
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, const RenderWindow& window);
-	void isColliding(int x, int y);
+	void isColliding(int x, int y, float dt);
 
 private:
     Map& map;
