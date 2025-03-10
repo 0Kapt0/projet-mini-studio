@@ -20,12 +20,10 @@ int main() {
                 map.handleClick(event.mouseButton.x, event.mouseButton.y, tileIndex);
             }
         }
-
         window.clear();
         map.draw(window);  // Dessiner la carte
         window.display();
     }
-
     // Sauvegarder la carte après avoir quitté
     map.saveMap("map.txt");
 
