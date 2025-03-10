@@ -65,6 +65,7 @@ void Player::update(float dt)
         getSprite().move(velocity * dt);
 
 		cout << velocity.x << " " << velocity.y << endl;
+		cout << getSpriteConst().getPosition().x << " " << getSpriteConst().getPosition().y << endl;
 
         if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
             dashing = true;
@@ -99,7 +100,7 @@ void Player::update(float dt)
 
 void Player::handleInput(const Event& event, const RenderWindow& window)
 {
-	if (event.type == Event::KeyPressed && event.key.code == Keyboard::A)
+	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		// Lancer le grappin depuis la position actuelle du joueur dans la direction de la souris
 		Vector2f startPosition = getSprite().getPosition();
@@ -123,9 +124,34 @@ void Player::isColliding(int x, int y, float dt)
 	int newY = getSpriteConst().getPosition().y + velocity.y * dt;
 
 	// Vérifie la collision avant d'appliquer le mouvement
-	if (map.isColliding(newX, newY))
+	if (map.isColliding(newX, getSpriteConst().getPosition().y))
 	{
-        velocity.x = 0;
+		if (velocity.x > 0)
+		{
+			newX = (newX / 32) * 32;
+            getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
+		}
+		else if (velocity.x < 0)
+		{
+			newX = (newX / 32) * 32 + 32;
+            getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
+		}
+		velocity.x = 0;
+	}
+	if (map.isColliding(getSpriteConst().getPosition().x, newY))
+	{
+		if (velocity.y > 0)
+		{
+			newY = (newY / 32) * 32;
+			jumpNum = 0;
+            getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
+		}
+		else if (velocity.y < 0)
+		{
+			newY = (newY / 32) * 32 + 32;
+            getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
+		}
+
 		velocity.y = 0;
 	}
 }
