@@ -38,11 +38,12 @@ int main() {
         // Effacer la fenêtre
         window.clear();
 
-		player.draw(window);
-		enemy.draw(window);
         // Afficher le contenu
         map.draw(window);
         window.display();
+
+        player.draw(window);
+        enemy.draw(window);
     }
 
     map.saveMap("assets/map/Lobby.txt");
