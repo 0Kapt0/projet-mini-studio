@@ -64,8 +64,6 @@ void Player::update(float dt)
 
         getSprite().move(velocity * dt);
 
-		cout << velocity.x << " " << velocity.y << endl;
-		cout << getSpriteConst().getPosition().x << " " << getSpriteConst().getPosition().y << endl;
 
         if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
             dashing = true;
@@ -87,8 +85,8 @@ void Player::update(float dt)
             dashing = false;
             dashDuration = 0;
         }
-		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
-        getSprite().move(dashDirection.x * dt, 0);
+		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt * 3);
+        getSprite().move(velocity.x * 3 * dt, 0);
     }
     if (grapple.isActive()) {
         grapple.updateStartPosition(getSprite().getPosition());
@@ -120,38 +118,54 @@ void Player::draw(RenderWindow& window)
 
 void Player::isColliding(int x, int y, float dt)
 {
-	int newX = getSpriteConst().getPosition().x + velocity.x * dt;
-	int newY = getSpriteConst().getPosition().y + velocity.y * dt;
+	int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
+	int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
 
 	// Vérifie la collision avant d'appliquer le mouvement
-	if (map.isColliding(newX, getSpriteConst().getPosition().y))
-	{
-		if (velocity.x > 0)
+    if (velocity.x > 0)
+    {
+		if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
 		{
-			newX = (newX / 32) * 32;
-            getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
+			newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
+			getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
+			velocity.x = 0;
+			dashDirection.x = 0;
+			
 		}
-		else if (velocity.x < 0)
-		{
-			newX = (newX / 32) * 32 + 32;
-            getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
-		}
-		velocity.x = 0;
 	}
-	if (map.isColliding(getSpriteConst().getPosition().x, newY))
+	else if (velocity.x < 0)
 	{
-		if (velocity.y > 0)
+		if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
 		{
-			newY = (newY / 32) * 32;
-			jumpNum = 0;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
+			newX = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
+			getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
+			velocity.x = 0;
+			dashDirection.x = 0;
+			
 		}
-		else if (velocity.y < 0)
-		{
-			newY = (newY / 32) * 32 + 32;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
-		}
+	}
 
-		velocity.y = 0;
+	if (velocity.y > 0)
+	{
+		if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height))
+		{
+			newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 32)) * 32 + 32 - getTexture().getSize().y / 2;
+			jumpNum = 0;
+			getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
+			velocity.y = 0;
+			dashDirection.y = 0;
+			
+		}
+	}
+	else if (velocity.y < 0)
+	{
+		if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
+		{
+			newY = (static_cast<int>(getSprite().getGlobalBounds().top / 32)) * 32 + getTexture().getSize().y / 2;
+			getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
+			velocity.y = 0;
+			dashDirection.y = 0;
+			
+		}
 	}
 }

@@ -20,6 +20,8 @@ public:
 
 	Sprite& getSprite();
 
+	Texture& getTexture();
+
 	const Sprite& getSpriteConst() const;
 
 	void draw(RenderWindow& window);
