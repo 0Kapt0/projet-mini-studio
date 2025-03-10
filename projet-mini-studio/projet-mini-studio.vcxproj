@@ -18,6 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Enemy.hpp" />
+    <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\Map.hpp" />
+    <ClInclude Include="include\Player.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="scr\Enemy.cpp" />
+    <ClCompile Include="scr\Entity.cpp" />
+    <ClCompile Include="scr\main.cpp" />
+    <ClCompile Include="scr\Map.cpp" />
+    <ClCompile Include="scr\Player.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -131,19 +144,6 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Player.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Enemy.hpp" />
-    <ClInclude Include="Entity.hpp" />
-    <ClInclude Include="Map.hpp" />
-    <ClInclude Include="Player.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
