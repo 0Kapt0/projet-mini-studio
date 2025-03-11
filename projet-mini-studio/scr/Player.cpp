@@ -97,7 +97,7 @@ void Player::update(float dt)
 
             velocity.y += 14.8f;
 
-        if (getSprite().getPosition().y > 800)
+        if (getSprite().getPosition().y > 1150)
         {
             canJump = true;
             jumpNum = 0;
@@ -138,7 +138,7 @@ void Player::update(float dt)
             jumpNum++;
             canJump = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
+        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 1150)
             velocity.y += speed;
 
             if (grapple.isStuck()) {
@@ -241,10 +241,19 @@ void Player::update(float dt)
                 getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
         }
     }
-    playerView.setCenter(getSprite().getPosition());
-    getSprite().move(velocity.x* dt, velocity.y* dt);
+    Vector2f cameraPosition = playerView.getCenter();
 
-    std::cout << "Velocity: " << velocity.x << ", " << velocity.y << std::endl;
+    cameraPosition.x = playerPosition.x;
+
+    if (playerPosition.y > 670) {
+        cameraPosition.y = 670;
+    }
+    else {
+        cameraPosition.y = playerPosition.y;
+    }
+
+    playerView.setCenter(cameraPosition);
+    getSprite().move(velocity.x * dt, velocity.y * dt);
 }
 
 }

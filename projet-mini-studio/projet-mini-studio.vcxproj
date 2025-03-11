@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Background.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\EnemyFlying.hpp" />
     <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\Foreground.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Grapple.hpp" />
     <ClInclude Include="include\Map.hpp" />
@@ -31,9 +33,11 @@
     <ClInclude Include="include\TileSelector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="scr\Background.cpp" />
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\EnemyFlying.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
+    <ClCompile Include="scr\Foreground.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
     <ClCompile Include="scr\Game.cpp" />
     <ClCompile Include="scr\main.cpp" />
