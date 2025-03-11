@@ -46,7 +46,6 @@ private:
     float attackDuration = 0;
     float attackCooldown = 1;
     float attackTimer = 0;
-
 };
 
 #endif

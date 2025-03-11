@@ -38,7 +38,7 @@ void Game::run() {
     Menu menu;
     TileSelector tileSelector("assets/tileset/Tileset_Grass.png", 32);
     Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue);
+    Enemy enemy(Vector2f(50, 50), Color::Blue, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
 
     bool collisionMode = false;
