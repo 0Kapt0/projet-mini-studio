@@ -1,6 +1,10 @@
 #include "../include/Map.hpp"
 #include <fstream>
+#include <unordered_set>
 #include <iostream>
+#include <sstream>qqq
+
+unordered_set<int> ignoredTiles = { 74 };
 
 // Constructeur
 Map::Map(const string& tilesetPath, const string& mapPath)
@@ -13,7 +17,7 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1, 2, 3 , 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 84 };
+    collisionTiles = { 1 };
 
     loadMap(mapPath);
     generateTiles();
@@ -51,27 +55,36 @@ void Map::generateTiles() {
     }
 }
 
-void Map::loadMap(const string& filename) {
-    ifstream file(filename);
-    if (file.is_open()) {
-        map.clear();
-
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
-            vector<int> row;
-            for (int j = 0; j < MAP_WIDTH; ++j) {
-                int tile;
-                file >> tile;
-                row.push_back(tile);
-            }
-            map.push_back(row);
-        }
-
-        generateTiles();
+void Map::loadMap(const string& mapPath) {
+    std::ifstream file(mapPath);
+    if (!file) {
+        std::cerr << "Erreur : Impossible de charger la carte " << mapPath << std::endl;
+        return;
     }
-    else {
-        cerr << "Impossible de charger la carte depuis le fichier." << endl;
+
+    map.clear();
+    string line;
+    while (getline(file, line)) {
+        std::vector<int> row;
+        std::stringstream ss(line);
+        int tile;
+        while (ss >> tile) {
+            row.push_back(tile);
+        }
+        map.push_back(row);
+    }
+
+    // DEBUG : Afficher la carte chargée
+    std::cout << "Carte chargée : " << std::endl;
+    for (size_t y = 0; y < map.size(); ++y) {
+        for (size_t x = 0; x < map[y].size(); ++x) {
+            std::cout << map[y][x] << " ";
+        }
+        std::cout << std::endl;
     }
 }
+
+
 
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
@@ -118,9 +131,36 @@ void Map::handleEvent(Event event) {
 
 
 bool Map::isColliding(int x, int y) const {
-    Vector2i tilePos(x / TILE_SIZE, y / TILE_SIZE);
-    return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
+    int tileX = x / TILE_SIZE;
+    int tileY = y / TILE_SIZE;
+
+    // Vérifier si la position est hors limites
+    if (tileY < 0 || tileY >= map.size() || tileX < 0 || tileX >= map[0].size()) {
+        std::cout << "Collision détectée : Hors limites (" << tileX << ", " << tileY << ")" << std::endl;
+        return true; // Collision si hors des limites de la carte
+    }
+
+    int tileID = map[tileY][tileX];
+
+    // DEBUG : Afficher la tuile détectée et ses coordonnées
+    std::cout << "Tuile détectée: " << tileID << " (" << tileX << ", " << tileY << ")" << std::endl;
+
+    // Si la tuile est dans `ignoredTiles`, elle n'a PAS de collision
+    if (ignoredTiles.count(tileID)) {
+        std::cout << "Tuile ignorée: " << tileID << std::endl;
+        return false;
+    }
+
+    // Toutes les autres tuiles provoquent une collision
+    std::cout << "Test collision : Tuile=" << tileID
+        << " (" << tileX << "," << tileY << ") "
+        << (ignoredTiles.count(tileID) ? "IGNOREE" : "COLLISION")
+        << std::endl;
+
+    return true;
 }
+
+
 
 void Map::draw(RenderWindow& window) {
     for (const auto& tile : tiles) {

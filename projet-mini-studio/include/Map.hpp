@@ -29,6 +29,7 @@ public:
     //Dimensions de la carte
     static const int MAP_WIDTH = 60;
     static const int MAP_HEIGHT = 33;
+    static const int TILE_SIZE = 64;
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;
@@ -42,9 +43,6 @@ private:
 
 
     vector<vector<int>> map;
-
-    //Taille des tuiles
-    static const int TILE_SIZE = 64;
 };
 
-#endif // MAP_HPP
+#endif

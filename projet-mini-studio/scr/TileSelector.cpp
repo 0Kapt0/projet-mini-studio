@@ -77,3 +77,8 @@ void TileSelector::draw(RenderWindow& window) {
 int TileSelector::getSelectedTile() const {
     return selectedTileIndex;
 }
+
+
+const std::unordered_set<int>& TileSelector::getCollisionTiles() const {
+    return collisionTiles;
+}

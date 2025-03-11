@@ -2,6 +2,7 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
+#include "../include/Map.hpp"
 #include "Grapple.hpp"
 #include "Entity.hpp"
 
