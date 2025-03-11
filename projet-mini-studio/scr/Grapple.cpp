@@ -18,13 +18,23 @@ void Grapple::launch(const Vector2f& startPosition, const Vector2f& direction) {
 
 void Grapple::update(float deltaTime, RenderWindow& window) {
     if (active && !stuck) {
-        Vector2f newPosition = line[1].position + direction * maxRange * deltaTime;
+        Vector2f newPosition = line[1].position + direction * maxRange * 2.5f *deltaTime;
 
         // Vérifier la collision avec le mur
         if (map.isColliding(newPosition.x, newPosition.y)) {
             stuck = true; // Planter le grappin dans le mur
+			bool newPosFind = false;
+			while (!newPosFind) {
+				newPosition -= direction * 1.0f;
+				if (!map.isColliding(newPosition.x, newPosition.y)) {
+					newPosFind = true;
+					line[1].position = newPosition;
+				}
+			}
+            grappleLength = sqrt(pow(line[1].position.x - line[0].position.x, 2) + pow(line[1].position.y - line[0].position.y, 2));
         }
-        else {
+        else
+        {
             line[1].position = newPosition;
         }
     }
@@ -43,7 +53,7 @@ void Grapple::update(float deltaTime, RenderWindow& window) {
 		direction /= distance; // Normaliser la direction
         Vector2f step = direction * 1.0f; // Ajustez la taille du pas si nécessaire
 
-        while (std::sqrt(std::pow(currentPosition.x - line[1].position.x, 2) + std::pow(currentPosition.y - line[1].position.y, 2)) > 5) {
+        while (std::sqrt(std::pow(currentPosition.x - line[1].position.x, 2) + std::pow(currentPosition.y - line[1].position.y, 2)) > 15) {
             currentPosition.x += step.x;
             currentPosition.y += step.y;
             if (map.isColliding(currentPosition.x, currentPosition.y)) {
@@ -83,4 +93,20 @@ Vector2f Grapple::getStuckPosition() const {
 void Grapple::updateStartPosition(const Vector2f& newPosition) {
     startPosition = newPosition;
     line[0].position = newPosition;
+}
+
+void Grapple::setStuck(bool stuck) {
+	this->stuck = stuck;
+}
+
+void Grapple::setActive(bool active) {
+	this->active = active;
+}
+
+float Grapple::getGrappleLength() const {
+	return grappleLength;
+}
+
+void Grapple::setGrappleLength(float grappleLength) {
+	this->grappleLength = grappleLength;
 }

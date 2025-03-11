@@ -34,7 +34,15 @@ private:
     float dashTimer = 0;
     Grapple grapple;
     bool grapplingTouched = false;
-
+	float grappleLength = 0.0f;
+	bool grappleMove = false;
+	bool onGround = true;
+	float swingForce = 20.0f;
+	float angularVelocity = 0.0f;
+	float angle = 0.0f;
+	float DAMPING = 0.99f;
+	float swingAcceleration = 50.0f;
+	bool grappleStuck = false;
 };
 
 #endif

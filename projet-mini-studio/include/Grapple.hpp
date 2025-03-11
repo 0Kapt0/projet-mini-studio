@@ -19,6 +19,10 @@ public:
     Vector2f getDirection() const;
     void updateStartPosition(const Vector2f& newPosition);
     Vector2f getStuckPosition() const;
+	void setStuck(bool stuck);
+	void setActive(bool active);
+	float getGrappleLength() const;
+	void setGrappleLength(float grappleLength);
 
 private:
 	CircleShape point;
@@ -29,6 +33,7 @@ private:
     float maxRange;
     bool active;
     bool stuck;
+    float grappleLength;
 };
 
 #endif // GRAPPLE_HPP
