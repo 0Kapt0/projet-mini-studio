@@ -12,6 +12,19 @@ class TileSelector {
 public:
     TileSelector(const string& tilesetPath, int tileSize);
 
+    int getTilesetWidth() const {
+        return tilesetTexture.getSize().x / tileSize;
+    }
+
+    int getTilesetHeight() const {
+        return tilesetTexture.getSize().y / tileSize;
+    }
+
+    int getTileSize() const {
+        return tileSize;
+    }
+
+
     void handleEvent(Event event, RenderWindow& window);
     void draw(RenderWindow& window);
     int getSelectedTile() const;
