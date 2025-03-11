@@ -88,6 +88,11 @@ void Game::run() {
 
             case GameState::Playing:
                 player.handleInput(event, window, 0.016f);
+				player.update(0.016f);
+				enemy.update(0.016f);
+				rangedEnemy.update(0.016f);
+
+
                 break;
 
             case GameState::Editor:
