@@ -19,6 +19,8 @@ public:
 	void isColliding(int x, int y, float dt);
 
 private:
+    View playerView;
+
 	bool leftButtonHold = false;
     Map& map;
     float speed;

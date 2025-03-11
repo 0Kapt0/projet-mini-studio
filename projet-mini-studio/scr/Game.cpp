@@ -71,11 +71,11 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                player.update(deltaTime);
-                player.handleInput(event, window, deltaTime);
-                rangedEnemy.update(deltaTime);
-                enemy.update(0.016f);
-                flyingEnemy.update(deltaTime, player);
+                //player.update(deltaTime);
+                //player.handleInput(event, window, deltaTime);
+                //rangedEnemy.update(deltaTime);
+                //enemy.update(0.016f);
+                //flyingEnemy.update(deltaTime, player);
 
 
                 break;
@@ -134,7 +134,12 @@ void Game::run() {
         }
 
         if (currentState == GameState::Playing) {
+            player.update(deltaTime);
 
+            player.handleInput(event, window, deltaTime);
+            rangedEnemy.update(deltaTime);
+            enemy.update(0.016f);
+            flyingEnemy.update(deltaTime, player);
         }
 
         window.clear();
@@ -156,6 +161,7 @@ void Game::run() {
 
         case GameState::Editor:
             map.draw(window);
+			map.drawCam(window);
             tileSelector.draw(window);
             break;
 

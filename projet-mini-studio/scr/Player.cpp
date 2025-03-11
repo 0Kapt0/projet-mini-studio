@@ -19,6 +19,7 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     image.create(size.x * 1.5f, size.y * 1.5f, Color::Blue);
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
+    playerView.setSize(1920, 1080);
 }
 
 Player::~Player()
@@ -240,6 +241,10 @@ void Player::update(float dt)
                 getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
         }
     }
+    playerView.setCenter(getSprite().getPosition());
+    getSprite().move(velocity.x* dt, velocity.y* dt);
+
+    std::cout << "Velocity: " << velocity.x << ", " << velocity.y << std::endl;
 }
 
 }
@@ -282,9 +287,12 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 
 void Player::draw(RenderWindow& window)
 {
+    window.setView(playerView);
+
 	window.draw(getSprite());
 	grapple.draw(window);
     if (attacking) window.draw(attackSprite);
+
 }
 
 void Player::isColliding(int x, int y, float dt)

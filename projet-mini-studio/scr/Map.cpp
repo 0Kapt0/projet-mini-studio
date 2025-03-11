@@ -123,12 +123,13 @@ bool Map::isColliding(int x, int y) const {
 }
 
 void Map::draw(RenderWindow& window) {
-    cameraView.setCenter(cameraPos);
-    window.setView(cameraView);
-
     for (const auto& tile : tiles) {
         window.draw(tile);
     }
 }
 
+void Map::drawCam(RenderWindow& window) {
+    cameraView.setCenter(cameraPos);
+    window.setView(cameraView);
+}
 

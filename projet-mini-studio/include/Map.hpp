@@ -20,6 +20,7 @@ public:
     void handleClick(RenderWindow& window, int x, int y, int tileIndex);
 	void handleEvent(Event event);
     void draw(RenderWindow& window);
+    void drawCam(RenderWindow& window);
     void generateTiles();
 
     bool isColliding(int x, int y) const;
