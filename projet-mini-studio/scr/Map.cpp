@@ -3,16 +3,22 @@
 #include <iostream>
 
 // Constructeur
-Map::Map(const string& tilesetPath, const string& mapPath) {
+Map::Map(const string& tilesetPath, const string& mapPath)
+    : cameraPos(0, 0), cameraSpeed(50.0f), isEditorMode(false) {
+
     if (!tilesetTexture.loadFromFile(tilesetPath)) {
         cerr << "Erreur lors du chargement du tileset." << endl;
     }
+
+    cameraView.setSize(1920, 1080);
+    cameraView.setCenter(cameraPos);
 
     collisionTiles = { 84 };
 
     loadMap(mapPath);
     generateTiles();
 }
+
 
 Map::~Map() {}
 
@@ -37,6 +43,8 @@ void Map::generateTiles() {
             sprite.setTexture(tilesetTexture);
             sprite.setTextureRect(IntRect(tileX, tileY, TILE_SIZE, TILE_SIZE));
             sprite.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+
+            /*sprite.setScale(0.5f, 0.5f);*/
 
             tiles.push_back(sprite);
         }
@@ -80,9 +88,10 @@ void Map::saveMap(const string& filename) {
     }
 }
 
-void Map::handleClick(int x, int y, int tileIndex) {
-    int mapX = x / TILE_SIZE;
-    int mapY = y / TILE_SIZE;
+void Map::handleClick(RenderWindow& window, int x, int y, int tileIndex) {
+    Vector2f worldPos = window.mapPixelToCoords(Vector2i(x, y));
+    int mapX = worldPos.x / TILE_SIZE;
+    int mapY = worldPos.y / TILE_SIZE;
 
     if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT) {
         map[mapY][mapX] = tileIndex;
@@ -90,13 +99,36 @@ void Map::handleClick(int x, int y, int tileIndex) {
     }
 }
 
+void Map::handleEvent(Event event) {
+    if (event.type == Event::KeyPressed) {
+        if (event.key.code == Keyboard::Z || event.key.code == Keyboard::Up) {
+            cameraPos.y -= cameraSpeed;
+        }
+        if (event.key.code == Keyboard::S || event.key.code == Keyboard::Down) {
+            cameraPos.y += cameraSpeed;
+        }
+        if (event.key.code == Keyboard::Q || event.key.code == Keyboard::Left) {
+            cameraPos.x -= cameraSpeed;
+        }
+        if (event.key.code == Keyboard::D || event.key.code == Keyboard::Right) {
+            cameraPos.x += cameraSpeed;
+        }
+    }
+}
+
+
 bool Map::isColliding(int x, int y) const {
     Vector2i tilePos(x / TILE_SIZE, y / TILE_SIZE);
     return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
 }
 
 void Map::draw(RenderWindow& window) {
+    cameraView.setCenter(cameraPos);
+    window.setView(cameraView);
+
     for (const auto& tile : tiles) {
         window.draw(tile);
     }
 }
+
+

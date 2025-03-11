@@ -26,7 +26,7 @@ void TileSelector::handleEvent(Event event, RenderWindow& window) {
     if (event.type == Event::MouseButtonPressed) {
         Vector2i mousePos = Mouse::getPosition(window);
 
-        // Vérifier si on clique dans la zone de la palette
+        //Vérifier si on clique dans la zone de la palette
         int tilesetWidth = tilesetTexture.getSize().x / tileSize;
         int tilesetHeight = tilesetTexture.getSize().y / tileSize;
 
@@ -51,26 +51,28 @@ void TileSelector::toggleCollision() {
             collisionTiles.insert(selectedTileIndex);
     }
 }
-
 void TileSelector::draw(RenderWindow& window) {
-    for (const auto& tile : tiles) {
-        window.draw(tile);
+    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+    int tilesetWidth = tilesetTexture.getSize().x / tileSize;
+    for (size_t i = 0; i < tiles.size(); ++i) {
+        tiles[i].setPosition(viewPos.x + (i % tilesetWidth) * tileSize,
+            viewPos.y + (i / tilesetWidth) * tileSize);
+        window.draw(tiles[i]);
     }
 
     if (selectedTileIndex != -1) {
-        //Vérifie si la tuile sélectionnée a une collision
         bool hasCollision = collisionTiles.count(selectedTileIndex);
 
-        //Afficher un contour de la couleur appropriée
         RectangleShape outline(Vector2f(tileSize, tileSize));
-        outline.setPosition((selectedTileIndex % (tilesetTexture.getSize().x / tileSize)) * tileSize,
-            (selectedTileIndex / (tilesetTexture.getSize().x / tileSize)) * tileSize);
+        outline.setPosition(viewPos.x + (selectedTileIndex % tilesetWidth) * tileSize,
+            viewPos.y + (selectedTileIndex / tilesetWidth) * tileSize);
         outline.setFillColor(Color::Transparent);
         outline.setOutlineColor(hasCollision ? Color::Red : Color::Green);
         outline.setOutlineThickness(2);
         window.draw(outline);
     }
 }
+
 
 int TileSelector::getSelectedTile() const {
     return selectedTileIndex;
