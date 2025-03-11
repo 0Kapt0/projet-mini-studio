@@ -19,7 +19,7 @@ enum class GameState {
     GameOver
 };
 
-Game::Game() {}
+Game::Game() : deltaTime(0.0f) {}
 
 Game::~Game() {
     cout << "Le jeu est détruit\n";
@@ -45,6 +45,7 @@ void Game::run() {
 
     while (window.isOpen()) {
         Event event;
+		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
 
@@ -87,10 +88,9 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                player.handleInput(event, window, 0.016f);
-				player.update(0.016f);
-				enemy.update(0.016f);
-				rangedEnemy.update(0.016f);
+                player.update(deltaTime);
+                rangedEnemy.update(deltaTime);
+                enemy.update(0.016f);
 
 
                 break;
@@ -149,12 +149,8 @@ void Game::run() {
             }
         }
 
-        float deltaTime = clock.restart().asSeconds();
-
         if (currentState == GameState::Playing) {
-            player.update(deltaTime);
-            rangedEnemy.update(deltaTime);
-            enemy.update(0.016f);
+            
         }
 
         window.clear();

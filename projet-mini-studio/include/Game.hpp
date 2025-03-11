@@ -15,6 +15,7 @@ public:
     void run();
     Game();
     ~Game();
+    float deltaTime;
 };
 
 #endif
