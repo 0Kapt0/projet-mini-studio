@@ -55,25 +55,6 @@ void Game::run() {
             if (event.type == Event::Closed)
                 window.close();
 
-            if (event.type == Event::MouseButtonPressed) {
-                if (event.mouseButton.button == Mouse::Left) {
-                    isLeftMousePressed = true;
-                }
-                if (event.mouseButton.button == Mouse::Right) {
-                    isRightMousePressed = true;
-                }
-            }
-
-            if (event.type == Event::MouseButtonReleased) {
-                if (event.mouseButton.button == Mouse::Left) {
-                    isLeftMousePressed = false;
-                }
-                if (event.mouseButton.button == Mouse::Right) {
-                    isRightMousePressed = false;
-                }
-            }
-
-
             //Gestion des événements en fonction de l'état actuel
             switch (currentState) {
             case GameState::Menu:
