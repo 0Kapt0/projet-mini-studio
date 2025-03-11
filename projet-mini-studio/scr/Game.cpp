@@ -72,6 +72,7 @@ void Game::run() {
 
             case GameState::Playing:
                 player.update(deltaTime);
+                player.handleInput(event, window, deltaTime);
                 rangedEnemy.update(deltaTime);
                 enemy.update(0.016f);
                 flyingEnemy.update(deltaTime, player);
