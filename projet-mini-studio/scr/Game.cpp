@@ -32,7 +32,6 @@ void Game::run() {
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
     Map level1("assets/tileset/Tileset_Grass.png", "assets/map/Level1.txt");
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
