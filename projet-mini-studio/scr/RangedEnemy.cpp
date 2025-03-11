@@ -1,12 +1,12 @@
 #include "../include/RangedEnemy.hpp"
 
-RangedEnemy::RangedEnemy() : Enemy() {
+RangedEnemy::RangedEnemy() : Enemy(map) {
     attackCooldown = 2.0f;
     attackTimer = 0;
 }
 
 RangedEnemy::RangedEnemy(const Vector2f& size, const Color& color)
-    : Enemy(size, color) {
+    : Enemy(size, color, map) {
     attackCooldown = 2.0f;
     attackTimer = 0;
 }

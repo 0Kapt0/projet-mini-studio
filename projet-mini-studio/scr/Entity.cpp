@@ -26,6 +26,11 @@ Sprite& Entity::getSprite()
 	return sprite;
 }
 
+Texture& Entity::getTexture()
+{
+	return texture;
+}
+
 const Sprite& Entity::getSpriteConst() const
 {
 	return sprite;

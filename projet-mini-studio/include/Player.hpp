@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "Grapple.hpp"
 #include "Entity.hpp"
-#include "Map.hpp"
 
 using namespace sf;
 
@@ -15,11 +14,12 @@ public:
     ~Player();
 
     void update(float dt);
-    void draw(RenderWindow& window) override;
-    void handleInput(const Event& event, const RenderWindow& window);
+    void draw(RenderWindow& window);
+    void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isColliding(int x, int y, float dt);
 
 private:
+	bool leftButtonHold = false;
     Map& map;
     float speed;
     Vector2f velocity;
@@ -47,6 +47,15 @@ private:
     float attackCooldown = 1;
     float attackTimer = 0;
 
+	float grappleLength = 0.0f;
+	bool grappleMove = false;
+	bool onGround = true;
+	float swingForce = 20.0f;
+	float angularVelocity = 0.0f;
+	float angle = 0.0f;
+	float DAMPING = 0.99f;
+	float swingAcceleration = 50.0f;
+	bool grappleStuck = false;
 };
 
 #endif

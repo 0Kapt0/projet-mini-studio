@@ -38,7 +38,7 @@ void Game::run() {
     Menu menu;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue);
+    Enemy enemy(Vector2f(50, 50), Color::Blue, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
     EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green);
 
@@ -47,9 +47,31 @@ void Game::run() {
 
     while (window.isOpen()) {
         Event event;
+        bool isLeftMousePressed = false;
+        bool isRightMousePressed = false;
+
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
+
+            if (event.type == Event::MouseButtonPressed) {
+                if (event.mouseButton.button == Mouse::Left) {
+                    isLeftMousePressed = true;
+                }
+                if (event.mouseButton.button == Mouse::Right) {
+                    isRightMousePressed = true;
+                }
+            }
+
+            if (event.type == Event::MouseButtonReleased) {
+                if (event.mouseButton.button == Mouse::Left) {
+                    isLeftMousePressed = false;
+                }
+                if (event.mouseButton.button == Mouse::Right) {
+                    isRightMousePressed = false;
+                }
+            }
+
 
             //Gestion des événements en fonction de l'état actuel
             switch (currentState) {
@@ -67,7 +89,12 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                player.handleInput(event, window);
+                player.handleInput(event, window, 0.016f);
+				player.update(0.016f);
+				enemy.update(0.016f);
+				rangedEnemy.update(0.016f);
+
+
                 break;
 
             case GameState::Editor:
