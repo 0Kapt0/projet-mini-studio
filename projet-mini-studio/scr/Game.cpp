@@ -31,6 +31,9 @@ void Game::run() {
 
     GameState currentState = GameState::Menu;
 
+    // Instanciation des objets
+    Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
+    Map level1("assets/tileset/Tileset_Grass.png", "assets/map/Level1.txt");
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
@@ -53,6 +56,11 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Editor;
+                    }
+                }
+               if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
                     }
                 }
                 break;
@@ -131,7 +139,7 @@ void Game::run() {
             break;
 
         case GameState::Playing:
-            map.draw(window);
+            level1.draw(window);
             player.draw(window);
             enemy.draw(window);
             rangedEnemy.draw(window);
