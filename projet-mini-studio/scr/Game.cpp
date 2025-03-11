@@ -93,6 +93,7 @@ void Game::run() {
                 player.update(deltaTime);
                 rangedEnemy.update(deltaTime);
                 enemy.update(0.016f);
+                flyingEnemy.update(deltaTime, player);
 
 
                 break;
@@ -151,10 +152,7 @@ void Game::run() {
         }
 
         if (currentState == GameState::Playing) {
-            player.update(deltaTime);
-            rangedEnemy.update(deltaTime);
-            enemy.update(0.016f);
-            flyingEnemy.update(deltaTime, player);
+
         }
 
         window.clear();
