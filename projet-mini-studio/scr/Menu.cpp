@@ -12,6 +12,7 @@ Menu::Menu() {
     if (!playButton.loadFromFile("assets/menutexture/playbutton.png")) {
         cerr << "Erreur lors du chargement de playtexture." << endl;
     }
+    playSprite.setTexture(playButton);
     if (!editmodeButton.loadFromFile("assets/menutexture/editmode.png")) {
         cerr << "Erreur lors du chargement de editmodetexture." << endl;
     }
@@ -33,7 +34,6 @@ void Menu::draw(RenderWindow& window) {
     Sprite backgroundSprite(backgroundTexture);
     window.draw(backgroundSprite);
     //play
-    Sprite playSprite(playButton);
     playSprite.setScale(0.4f,0.4f);
     playSprite.setPosition(460.0f, 400.0f);
     window.draw(playSprite);
