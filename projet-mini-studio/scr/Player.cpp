@@ -210,8 +210,6 @@ void Player::update(float dt)
     if (grapple.isActive()) {
         grapple.updateStartPosition(getSprite().getPosition());
     }
-    // Mettre à jour le grappin
-    grapple.update(dt);
 
     if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
         attacking = true;

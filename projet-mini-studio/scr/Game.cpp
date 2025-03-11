@@ -65,7 +65,7 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                player.handleInput(event, window);
+                player.handleInput(event, window, 0.016f);
                 break;
 
             case GameState::Editor:
