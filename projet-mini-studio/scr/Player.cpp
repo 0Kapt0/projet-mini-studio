@@ -339,3 +339,4 @@ void Player::isColliding(int x, int y, float dt)
         }
     }
 }
+

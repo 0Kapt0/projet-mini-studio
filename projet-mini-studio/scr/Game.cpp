@@ -5,6 +5,7 @@
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
+#include "../include/EnemyFlying.hpp"
 
 #include <iostream>
 
@@ -37,8 +38,9 @@ void Game::run() {
     Menu menu;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue);
+    Enemy enemy(Vector2f(50, 50), Color::Blue, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
+    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green);
 
     bool collisionMode = false;
     Clock clock;
@@ -80,7 +82,7 @@ void Game::run() {
                         currentState = GameState::Editor;
                     }
                 }
-               if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Playing;
                     }
@@ -97,7 +99,7 @@ void Game::run() {
 
             case GameState::Editor:
                 tileSelector.handleEvent(event, window);
-				map.handleEvent(event);
+                map.handleEvent(event);
 
                 if (event.type == Event::MouseButtonPressed) {
                     Vector2i mousePos = Mouse::getPosition(window);
@@ -134,7 +136,6 @@ void Game::run() {
                     }
                 }
 
-
                 //Touche "C" pour activer/désactiver la collision (ne fonctionne pas pour l'instant)
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::C) {
                     tileSelector.toggleCollision();
@@ -150,7 +151,10 @@ void Game::run() {
         }
 
         if (currentState == GameState::Playing) {
-            
+            player.update(deltaTime);
+            rangedEnemy.update(deltaTime);
+            enemy.update(0.016f);
+            flyingEnemy.update(deltaTime, player);
         }
 
         window.clear();
@@ -166,6 +170,8 @@ void Game::run() {
             enemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
+            flyingEnemy.draw(window);
+
             break;
 
         case GameState::Editor:
