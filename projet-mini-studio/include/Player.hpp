@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "Grapple.hpp"
 #include "Entity.hpp"
-#include "Map.hpp"
 
 using namespace sf;
 
@@ -17,12 +16,8 @@ public:
     void update(float dt);
     void draw(RenderWindow& window) override;
     void handleInput(const Event& event, const RenderWindow& window);
-	void isColliding(int x, int y, float dt);
 
 private:
-    Map& map;
-    float speed;
-    Vector2f velocity;
     bool canJump = true;
     int jumpNum = 0;
     //DASH

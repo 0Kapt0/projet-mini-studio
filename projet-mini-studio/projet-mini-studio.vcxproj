@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ChargingBoss.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\Grapple.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Player.hpp" />
     <ClInclude Include="include\RangedEnemy.hpp" />
-    <ClInclude Include="scr\ChargingBoss.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\ChargingBoss.cpp" />

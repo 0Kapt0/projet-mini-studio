@@ -11,8 +11,8 @@ private:
     vector<RectangleShape> projectiles;
 
 public:
-    RangedEnemy();
-    RangedEnemy(const Vector2f& size, const Color& color);
+    RangedEnemy(Map& map);
+    RangedEnemy(const Vector2f& size, const Color& color, Map& map);
 
     void update(float dt) override;
     void shoot();

@@ -1,7 +1,7 @@
 #include "../include/Player.hpp"
 
 Player::Player(Map& map)
-	: Entity(), grapple(500.0f), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
+	: Entity(map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
 {
 	speed = 200;
 	velocity = Vector2f(0, 0);
@@ -9,7 +9,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-	: Entity(size, color), grapple(500.0f), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
+	: Entity(size, color, map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
 {
 	speed = 450;
 	velocity = Vector2f(0, 0);
@@ -84,11 +84,11 @@ void Player::update(float dt)
         if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
             velocity.y += speed;
 
-		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
+		isColliding(/*getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, */dt);
 
         getSprite().move(velocity * dt);
 
-		cout << velocity.x << " " << velocity.y << endl;
+		//cout << velocity.x << " " << velocity.y << endl;
 
         if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
             dashing = true;
@@ -112,7 +112,7 @@ void Player::update(float dt)
             dashMomentum = true;
             velocity = dashDirection;
         }
-		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
+		isColliding(/*getSpriteConst().getPosition().x, getSpriteConst().getPosition().y,*/ dt);
         getSprite().move(dashDirection.x * dt, 0);
     }
     if (grapple.isActive()) {
@@ -172,17 +172,4 @@ void Player::draw(RenderWindow& window)
 	window.draw(getSprite());
 	grapple.draw(window);
     if (attacking) window.draw(attackSprite);
-}
-
-void Player::isColliding(int x, int y, float dt)
-{
-	int newX = getSpriteConst().getPosition().x + velocity.x * dt;
-	int newY = getSpriteConst().getPosition().y + velocity.y * dt;
-
-	// Vérifie la collision avant d'appliquer le mouvement
-	if (map.isColliding(newX, newY))
-	{
-        velocity.x = 0;
-		velocity.y = 0;
-	}
 }

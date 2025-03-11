@@ -2,6 +2,7 @@
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
+#include "../include/ChargingBoss.hpp"
 
 using namespace sf;
 using namespace std;
@@ -9,12 +10,14 @@ using namespace std;
 int main() 
 {
     RenderWindow window(VideoMode(1440, 1080), "Grapple Example");
-	Enemy enemy = Enemy(Vector2f(50, 50), Color::Blue);
     Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
+	Enemy enemy = Enemy(Vector2f(50, 50), Color::Blue, map);
 
     Player player(Vector2f(50, 50), Color::Red, map);
 
-    RangedEnemy rangedenemy(Vector2f(50, 50), Color::Yellow);
+    RangedEnemy rangedenemy(Vector2f(50, 50), Color::Yellow, map);
+
+    ChargingBoss chargBoss(Vector2f(100, 100), Color::Green, map);
 
     window.setFramerateLimit(60);
 
@@ -38,13 +41,16 @@ int main()
         player.update(deltaTime);
 
         rangedenemy.update(deltaTime);
-		enemy.update(0.016f);
+        //chargBoss.update(deltaTime);
+        chargBoss.behavior(deltaTime, player, window);
+        enemy.update(0.016f);
         // Effacer la fenêtre
         window.clear();
         map.draw(window);
 		player.draw(window);
 		enemy.draw(window);
         rangedenemy.draw(window);
+        chargBoss.draw(window);
 		rangedenemy.drawProjectiles(window);
         // Afficher le contenu
         window.display();

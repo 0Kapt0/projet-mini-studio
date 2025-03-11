@@ -1,12 +1,12 @@
 #include "../include/Enemy.hpp"
 
-Enemy::Enemy()
+Enemy::Enemy(Map& map) : Entity(map)
 {
 	speed = 200;
 	velocity = Vector2f(0, 0);
 }
 
-Enemy::Enemy(const Vector2f& size, const Color& color) : Entity(size, color)
+Enemy::Enemy(const Vector2f& size, const Color& color, Map& map) : Entity(size, color, map)
 {
 	speed = 300;
 	velocity = Vector2f(0, 0);

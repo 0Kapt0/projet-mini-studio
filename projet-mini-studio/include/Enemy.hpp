@@ -9,8 +9,8 @@ protected:
     Vector2f velocity;
 
 public:
-    Enemy();
-    Enemy(const Vector2f& size, const Color& color);
+    Enemy(Map& map);
+    Enemy(const Vector2f& size, const Color& color, Map& map);
     virtual ~Enemy();
 
     virtual void update(float dt);
