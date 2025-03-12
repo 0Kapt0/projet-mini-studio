@@ -26,59 +26,69 @@ Sprite& Entity::getSprite()
 	return sprite;
 }
 
+float Entity::getHeight() {
+    return getSprite().getLocalBounds().height * getSprite().getScale().y;
+}
+float Entity::getWidth() {
+    return getSprite().getLocalBounds().width * getSprite().getScale().x;
+}
+
 Texture& Entity::getTexture()
 {
     return texture;
 }
 
-bool Entity::isColliding(/*int x, int y, */float dt)
+void Entity::isColliding(/*int x, int y, */float dt)
 {
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
     int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
-
+    collided = false;
     // Vérifie la collision avant d'appliquer le mouvement
-    if (velocity.x > 0)
+    if (velocity.x > 0 || dashDirection.x > 0)
     {
         if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
             newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
             getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
             velocity.x = 0;
-            return true;
+            dashDirection.x = 0;
+            collided = true;
         }
     }
-    else if (velocity.x < 0)
+    else if (velocity.x < 0 || dashDirection.x < 0)
     {
         if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
             newX = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
             getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
             velocity.x = 0;
-            return true;
+            dashDirection.x = 0;
+            collided = true;
         }
     }
 
-    if (velocity.y > 0)
+    if (velocity.y > 0 || dashDirection.y > 0)
     {
         if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height))
         {
             newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 32)) * 32 + 32 - getTexture().getSize().y / 2;
             getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
             velocity.y = 0;
-            return true;
+            dashDirection.y = 0;
+            collided = true;
         }
     }
-    else if (velocity.y < 0)
+    else if (velocity.y < 0 || dashDirection.y < 0)
     {
         if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
         {
             newY = (static_cast<int>(getSprite().getGlobalBounds().top / 32)) * 32 + getTexture().getSize().y / 2;
             getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
             velocity.y = 0;
-            return true;
+            dashDirection.y = 0;
+            collided = true;
         }
     }
-    return false;
 }
 
 const Sprite& Entity::getSpriteConst() const

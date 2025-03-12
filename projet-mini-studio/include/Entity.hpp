@@ -16,6 +16,7 @@ public:
 
 	Map& map;
 	Vector2f velocity;
+	Vector2f dashDirection;
 	float speed;
 	
 	Entity(Map& map);
@@ -25,10 +26,13 @@ public:
 	~Entity();
 
 	Sprite& getSprite();
+	float getHeight();
+	float getWidth();
 	
 	Texture& getTexture();
 
-	bool isColliding(/*int x, int y, */float dt);
+	void isColliding(/*int x, int y, */float dt);
+	bool collided = false;
 
 	const Sprite& getSpriteConst() const;
 

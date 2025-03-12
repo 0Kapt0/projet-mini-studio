@@ -23,7 +23,6 @@ private:
     //DASH
     bool canDash = true;
     bool dashing = false;
-    Vector2f dashDirection;
     char lastInputDirection = 'N';
     float dashDuration = 0;
     float dashCooldown = 0.8;

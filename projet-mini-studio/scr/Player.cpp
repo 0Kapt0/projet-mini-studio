@@ -1,7 +1,7 @@
 #include "../include/Player.hpp"
 
 Player::Player(Map& map)
-	: Entity(map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
+	: Entity(map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false)/*, dashDirection(Vector2f(0, 0))*/, lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
 {
 	speed = 200;
 	velocity = Vector2f(0, 0);
@@ -9,7 +9,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-	: Entity(size, color, map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
+	: Entity(size, color, map), grapple(500.0f), canJump(true), jumpNum(0), canDash(true), dashing(false)/*, dashDirection(Vector2f(0, 0))*/, lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false)
 {
 	speed = 450;
 	velocity = Vector2f(0, 0);
@@ -113,6 +113,16 @@ void Player::update(float dt)
             velocity = dashDirection;
         }
 		isColliding(/*getSpriteConst().getPosition().x, getSpriteConst().getPosition().y,*/ dt);
+        if (collided) {
+            switch (lastInputDirection) {
+            case('L'): getSprite().move(speed * 10.f * dt, 0); break;
+            case('R'): getSprite().move(-speed * 10.f * dt, 0); break;
+            }
+            
+            dashing = false;
+            dashDuration = 0;
+            dashDirection.x = 0;
+        }
         getSprite().move(dashDirection.x * dt, 0);
     }
     if (grapple.isActive()) {

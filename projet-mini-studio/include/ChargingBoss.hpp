@@ -16,6 +16,9 @@ public:
 	float dashTimer = 0;
 	float stunTimer = 0;
 
+	std::vector<float> dashTimingVector = { 0.5, 0.75, 1, 1.25, 1.5, 1.25, 1.5 };
+	float dashTiming = 0;
+
 	ChargingBoss(Map& map);
 	ChargingBoss(const Vector2f& size, const Color& color, Map& map);
 
