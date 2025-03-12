@@ -18,9 +18,11 @@ public:
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isColliding(int x, int y, float dt);
+    void checkGrounded();
 
 private:
     View playerView;
+    int groundLock = 0;
 
 	bool leftButtonHold = false;
     Map& map;

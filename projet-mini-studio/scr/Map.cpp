@@ -1,10 +1,6 @@
 ﻿#include "../include/Map.hpp"
 #include <fstream>
-#include <unordered_set>
 #include <iostream>
-#include <sstream>qqq
-
-unordered_set<int> ignoredTiles = { 74 };
 
 // Constructeur
 Map::Map(const string& tilesetPath, const string& mapPath)
@@ -55,32 +51,25 @@ void Map::generateTiles() {
     }
 }
 
-void Map::loadMap(const string& mapPath) {
-    std::ifstream file(mapPath);
-    if (!file) {
-        std::cerr << "Erreur : Impossible de charger la carte " << mapPath << std::endl;
-        return;
-    }
+void Map::loadMap(const string& filename) {
+    ifstream file(filename);
+    if (file.is_open()) {
+        map.clear();
 
-    map.clear();
-    string line;
-    while (getline(file, line)) {
-        std::vector<int> row;
-        std::stringstream ss(line);
-        int tile;
-        while (ss >> tile) {
-            row.push_back(tile);
+        for (int i = 0; i < MAP_HEIGHT; ++i) {
+            vector<int> row;
+            for (int j = 0; j < MAP_WIDTH; ++j) {
+                int tile;
+                file >> tile;
+                row.push_back(tile);
+            }
+            map.push_back(row);
         }
-        map.push_back(row);
-    }
 
-    // DEBUG : Afficher la carte chargée
-    std::cout << "Carte chargée : " << std::endl;
-    for (size_t y = 0; y < map.size(); ++y) {
-        for (size_t x = 0; x < map[y].size(); ++x) {
-            std::cout << map[y][x] << " ";
-        }
-        std::cout << std::endl;
+        generateTiles();
+    }
+    else {
+        cerr << "Impossible de charger la carte depuis le fichier." << endl;
     }
 }
 
