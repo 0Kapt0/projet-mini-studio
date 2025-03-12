@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-Rigidbody2D::Rigidbody2D(float mass, float drag)
-    : mass(mass), drag(drag), gravity(9.8f), map(map) {
+Rigidbody2D::Rigidbody2D(float mass, float drag, Map& map)
+    : mass(mass), drag(drag), gravity(9.8f), map(map), position(0.0f, 0.0f) {
     velocity = sf::Vector2f(0.0f, 0.0f);
     acceleration = sf::Vector2f(0.0f, 0.0f);
 }
@@ -15,17 +15,52 @@ void Rigidbody2D::applyForce(const sf::Vector2f& force) {
 void Rigidbody2D::update(float dt) {
     applyGravity(dt); // Applique la gravité à chaque mise à jour
 
-    // Appliquer l'accélération
+    // Mise à jour de la vélocité
     velocity += acceleration * dt;
 
-    // Appliquer la résistance (drag) sur la vitesse
-    velocity *= drag;
+    // Appliquer le drag exponentiellement pour éviter la disparition instantanée de la vitesse
+    velocity *= std::exp(-drag * dt);
 
     // Mise à jour de la position selon la vitesse
-    position += velocity * dt;
+    sf::Vector2f newPosition = position + velocity * dt;
+
+    // Gestion des collisions avant de valider la nouvelle position
+    if (!handleCollisions(newPosition)) {
+        position = newPosition;
+    }
 
     // Réinitialiser l'accélération après chaque mise à jour
     acceleration = sf::Vector2f(0.0f, 0.0f);
+}
+
+void Rigidbody2D::applyGravity(float dt) {
+    float maxFallSpeed = 600.0f; // Vitesse terminale
+    sf::Vector2f gravityForce(0.0f, gravity * mass);
+
+    applyForce(gravityForce);
+
+    // Empêcher la vitesse d'excéder la vitesse terminale
+    if (velocity.y > maxFallSpeed) {
+        velocity.y = maxFallSpeed;
+    }
+}
+
+bool Rigidbody2D::handleCollisions(sf::Vector2f& newPosition) {
+    bool collided = false;
+
+    // Vérification des collisions horizontales
+    if (map.isColliding(newPosition.x, position.y)) {
+        velocity.x = 0;
+        collided = true;
+    }
+
+    // Vérification des collisions verticales
+    if (map.isColliding(position.x, newPosition.y)) {
+        velocity.y = 0;
+        collided = true;
+    }
+
+    return collided;
 }
 
 void Rigidbody2D::setVelocity(const sf::Vector2f& velocity) {
@@ -51,28 +86,3 @@ void Rigidbody2D::setGravity(float gravity) {
 void Rigidbody2D::setMass(float mass) {
     this->mass = mass;
 }
-
-void Rigidbody2D::applyGravity(float dt) {
-    // Appliquer la gravité sur l'axe Y
-    applyForce(sf::Vector2f(0.0f, gravity * mass));
-}
-
-void Rigidbody2D::handleCollisions(float dt) {
-    if (std::isnan(position.x) || std::isnan(position.y)) {
-        std::cerr << "Position invalide!" << std::endl;
-        return;  // Sortir si la position est invalide
-    }
-    if (std::isnan(velocity.x) || std::isnan(velocity.y)) {
-        std::cerr << "Vitesse invalide!" << std::endl;
-        return;  // Sortir si la vitesse est invalide
-    }
-
-    // Vérification des collisions ici
-    if (map.isColliding(position.x + velocity.x * dt, position.y)) {
-        velocity.x = 0;
-    }
-    if (map.isColliding(position.x, position.y + velocity.y * dt)) {
-        velocity.y = 0;
-    }
-}
-

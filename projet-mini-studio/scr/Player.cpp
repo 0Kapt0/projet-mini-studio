@@ -3,7 +3,7 @@
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -22,8 +22,8 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
     playerView.setSize(1920, 1080);
-    Rigidbody2D rigidbody(1.0f);
-    rigidbody.setPosition(sf::Vector2f(100, 100));
+    Rigidbody2D rigidbody(1.0f, 0.99f, map);
+    rigidbody.setPosition(Vector2f(100, 100));
 }
 
 Player::~Player()
@@ -78,7 +78,6 @@ void Player::update(float dt)
     //isColliding(getSprite().getPosition().x, getSprite().getPosition().y, dt);
     //checkGrounded();
     rigidbody.update(dt);
-    rigidbody.handleCollisions(dt);
 	grappleMove = false;
     Vector2f playerPosition = getSprite().getPosition();
     Vector2f stuckPosition = grapple.getStuckPosition();

@@ -6,33 +6,41 @@
 
 class Rigidbody2D {
 public:
-    Rigidbody2D(float mass, float drag = 0.98f); // Masse et résistance à l'air (drag)
+    // Constructeur prenant en compte la masse, la résistance et la carte
+    Rigidbody2D(float mass, float drag, Map& map);
 
-    void applyForce(const sf::Vector2f& force); // Appliquer une force (par exemple, gravité, saut)
-    void update(float dt); // Met à jour la position, la vitesse et applique la gravité
-    void setVelocity(const sf::Vector2f& velocity); // Définit directement la vitesse
-    sf::Vector2f getVelocity() const; // Retourne la vitesse actuelle
+    // Appliquer une force externe
+    void applyForce(const sf::Vector2f& force);
 
-    void setPosition(const sf::Vector2f& position); // Définit la position du joueur
-    sf::Vector2f getPosition() const; // Retourne la position actuelle
+    // Mise à jour physique
+    void update(float dt);
 
-    void setGravity(float gravity); // Définit la gravité à appliquer
-    void setMass(float mass); // Définit la masse du corps
+    // Gérer la gravité
+    void applyGravity(float dt);
 
-    void handleCollisions(float dt); // Gestion des collisions avec la carte
+    // Gérer les collisions avec la carte
+    bool handleCollisions(sf::Vector2f& newPosition);
+
+    // Getter et Setter pour la vélocité
+    void setVelocity(const sf::Vector2f& velocity);
+    sf::Vector2f getVelocity() const;
+
+    // Getter et Setter pour la position
+    void setPosition(const sf::Vector2f& position);
+    sf::Vector2f getPosition() const;
+
+    // Getter et Setter pour la gravité et la masse
+    void setGravity(float gravity);
+    void setMass(float mass);
 
 private:
-    Map& map;
-
-    sf::Vector2f position; // Position du corps
-    sf::Vector2f velocity; // Vitesse actuelle
+    float mass;                // Masse du corps rigide
+    float drag;                // Coefficient de résistance
+    float gravity;             // Force de gravité
+    sf::Vector2f velocity;     // Vélocité de l'objet
     sf::Vector2f acceleration; // Accélération actuelle
-
-    float mass; // Masse du corps
-    float gravity; // Gravité appliquée
-    float drag; // Résistance à l'air (drag)
-
-    void applyGravity(float dt); // Applique la gravité
+    sf::Vector2f position;     // Position actuelle de l'objet
+    Map& map;                  // Référence vers la carte pour la détection des collisions
 };
 
 #endif // RIGIDBODY2D_HPP
