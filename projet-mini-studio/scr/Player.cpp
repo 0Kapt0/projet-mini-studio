@@ -206,7 +206,7 @@ void Player::update(float dt)
             dashMomentum = true;
             velocity = dashDirection;
         }
-		isColliding(/*getSpriteConst().getPosition().x, getSpriteConst().getPosition().y,*/ dt);
+		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
         if (collided) {
             switch (lastInputDirection) {
             case('L'): getSprite().move(speed * 10.f * dt, 0); break;
@@ -311,6 +311,8 @@ void Player::isColliding(int x, int y, float dt)
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
     int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
 
+    collided = false;
+
     // Vérifie la collision avant d'appliquer le mouvement
     if (velocity.x > 0)
     {
@@ -321,6 +323,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.x = 0;
             dashDirection.x = 0;
             jumpNum = 1;
+            collided = true;
         }
     }
     else if (velocity.x < 0)
@@ -332,6 +335,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.x = 0;
             dashDirection.x = 0;
             jumpNum = 1;
+            collided = true;
         }
     }
 
@@ -345,6 +349,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.y = 0;
             dashDirection.y = 0;
 			onGround = true;
+            collided = true;
         }
     }
     else if (velocity.y < 0)
@@ -355,6 +360,7 @@ void Player::isColliding(int x, int y, float dt)
             getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
             velocity.y = 0;
             dashDirection.y = 0;
+            collided = true;
         }
     }
 }

@@ -7,8 +7,9 @@
 
 class Enemy : public Entity {
 protected:
-    /*float speed;
-    Vector2f velocity;*/
+    float speed;
+    Vector2f velocity;
+    Map map;
 
 public:
     Enemy(Map& map);

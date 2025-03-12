@@ -5,7 +5,7 @@ ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
-	getSprite().setPosition(500, 780);
+	getSprite().setPosition(500, 800);
 }
 
 void ChargingBoss::update(float dt) {
@@ -43,6 +43,7 @@ void ChargingBoss::behavior(float dt, Player& player, RenderWindow& window) {
 }
 
 void ChargingBoss::chase(Player& player, float dt) {
+	getSprite().setColor(Color(239, 12, 197));
 	if (target.x < getSprite().getPosition().x) {
 		velocity.x = -speed;
 		dashDirection = "left";
@@ -66,7 +67,7 @@ void ChargingBoss::charge(float dt) {
 	}
 	getSprite().move(velocity * dt);
 	if (chargingTimer > dashTiming + 0.25f) {
-		getSprite().setColor(Color::Green);
+		getSprite().setColor(Color(239, 12, 197));
 		chargingTimer = 0;
 		currentState = DASHING;
 	}
@@ -89,7 +90,7 @@ void ChargingBoss::dash(float dt) {
 		dashTimer = 0;
 		currentState = CHASING;
 	}
-	isColliding(dt);
+	isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
 	if (collided) {
 		currentState = STUNNED;
 		dashTimer = 0;
