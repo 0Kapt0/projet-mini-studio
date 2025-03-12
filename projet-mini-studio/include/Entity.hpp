@@ -34,6 +34,10 @@ public:
 	void isColliding(/*int x, int y, */float dt);
 	bool collided = false;
 
+	Texture& getTexture();
+
+	bool intersects(const Entity& other) const;
+
 	const Sprite& getSpriteConst() const;
 
 	virtual void draw(RenderWindow& window);

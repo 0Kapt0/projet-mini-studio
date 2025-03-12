@@ -17,8 +17,10 @@ public:
 
     void loadMap(const string& filename);
     void saveMap(const string& filename);
-    void handleClick(int x, int y, int tileIndex);
+    void handleClick(RenderWindow& window, int x, int y, int tileIndex);
+	void handleEvent(Event event);
     void draw(RenderWindow& window);
+    void drawCam(RenderWindow& window);
     void generateTiles();
 
     bool isColliding(int x, int y) const;
@@ -33,10 +35,16 @@ private:
     set<int> collisionTiles;
     vector<Vector2i> blockedTiles;
 
+    View cameraView;
+    Vector2f cameraPos;
+    float cameraSpeed;
+    bool isEditorMode;
+
+
     vector<vector<int>> map;
 
     //Taille des tuiles
-    static const int TILE_SIZE = 32;
+    static const int TILE_SIZE = 64;
 };
 
 #endif // MAP_HPP

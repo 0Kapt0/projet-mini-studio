@@ -1,11 +1,11 @@
 #include "../include/RangedEnemy.hpp"
 
-RangedEnemy::RangedEnemy(Map& map) : Enemy(map) {
+RangedEnemy::RangedEnemy() : Enemy(map) {
     attackCooldown = 2.0f;
     attackTimer = 0;
 }
 
-RangedEnemy::RangedEnemy(const Vector2f& size, const Color& color, Map& map)
+RangedEnemy::RangedEnemy(const Vector2f& size, const Color& color)
     : Enemy(size, color, map) {
     attackCooldown = 2.0f;
     attackTimer = 0;
@@ -13,6 +13,7 @@ RangedEnemy::RangedEnemy(const Vector2f& size, const Color& color, Map& map)
 
 void RangedEnemy::update(float dt) {
     Enemy::update(dt);
+    velocity.y += 14.8f;
 
     attackTimer += dt;
     if (attackTimer >= attackCooldown) {
@@ -22,6 +23,11 @@ void RangedEnemy::update(float dt) {
 
     for (auto& projectile : projectiles) {
         projectile.move(0, 300 * dt);
+    }
+
+    if (getSprite().getPosition().y > 800)
+    {
+        velocity.y = 0;
     }
 }
 
