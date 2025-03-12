@@ -1,9 +1,9 @@
-#include "../include/Player.hpp"
+ï»¿#include "../include/Player.hpp"
 #define TILE_SIZE 64
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength Ã  0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength Ã  0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -73,6 +73,7 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    isColliding(getSprite().getPosition().x, getSprite().getPosition().y, dt);
 	grappleMove = false;
     Vector2f playerPosition = getSprite().getPosition();
     Vector2f stuckPosition = grapple.getStuckPosition();
@@ -311,15 +312,15 @@ void Player::isColliding(int x, int y, float dt)
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
     int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
 
-    std::cout << "Vérification de collision : Joueur X=" << newX
+    std::cout << "VÃ©rification de collision : Joueur X=" << newX
         << " Y=" << newY
         << " (Tuile X=" << newX / TILE_SIZE
         << " Y=" << newY / TILE_SIZE << ")" << std::endl;
 
-    if (velocity.x == 0) std::cout << "Joueur bloqué en X !" << std::endl;
-    if (velocity.y == 0) std::cout << "Joueur bloqué en Y !" << std::endl;
+    if (velocity.x == 0) std::cout << "Joueur bloquÃ© en X !" << std::endl;
+    if (velocity.y == 0) std::cout << "Joueur bloquÃ© en Y !" << std::endl;
 
-    // Vérifie la collision avant d'appliquer le mouvement
+    // VÃ©rifie la collision avant d'appliquer le mouvement
     if (velocity.x > 0)
     {
         if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) ||

@@ -1,4 +1,4 @@
-#include "../include/Map.hpp"
+ï»¿#include "../include/Map.hpp"
 #include <fstream>
 #include <unordered_set>
 #include <iostream>
@@ -74,8 +74,8 @@ void Map::loadMap(const string& mapPath) {
         map.push_back(row);
     }
 
-    // DEBUG : Afficher la carte chargée
-    std::cout << "Carte chargée : " << std::endl;
+    // DEBUG : Afficher la carte chargÃ©e
+    std::cout << "Carte chargÃ©e : " << std::endl;
     for (size_t y = 0; y < map.size(); ++y) {
         for (size_t x = 0; x < map[y].size(); ++x) {
             std::cout << map[y][x] << " ";
@@ -134,20 +134,20 @@ bool Map::isColliding(int x, int y) const {
     int tileX = x / TILE_SIZE;
     int tileY = y / TILE_SIZE;
 
-    // Vérifier si la position est hors limites
+    // VÃ©rifier si la position est hors limites
     if (tileY < 0 || tileY >= map.size() || tileX < 0 || tileX >= map[0].size()) {
-        std::cout << "Collision détectée : Hors limites (" << tileX << ", " << tileY << ")" << std::endl;
+        std::cout << "Collision dÃ©tectÃ©e : Hors limites (" << tileX << ", " << tileY << ")" << std::endl;
         return true; // Collision si hors des limites de la carte
     }
 
     int tileID = map[tileY][tileX];
 
-    // DEBUG : Afficher la tuile détectée et ses coordonnées
-    std::cout << "Tuile détectée: " << tileID << " (" << tileX << ", " << tileY << ")" << std::endl;
+    // DEBUG : Afficher la tuile dÃ©tectÃ©e et ses coordonnÃ©es
+    std::cout << "Tuile dÃ©tectÃ©e: " << tileID << " (" << tileX << ", " << tileY << ")" << std::endl;
 
     // Si la tuile est dans `ignoredTiles`, elle n'a PAS de collision
     if (ignoredTiles.count(tileID)) {
-        std::cout << "Tuile ignorée: " << tileID << std::endl;
+        std::cout << "Tuile ignorÃ©e: " << tileID << std::endl;
         return false;
     }
 
