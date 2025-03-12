@@ -2,7 +2,8 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
-#include "../include/Map.hpp"
+#include "Map.hpp"
+#include "Rigidbody2D.hpp"
 #include "Grapple.hpp"
 #include "Entity.hpp"
 
@@ -21,6 +22,7 @@ public:
     void checkGrounded();
 
 private:
+    Rigidbody2D rigidbody;
     View playerView;
     int groundLock = 0;
 

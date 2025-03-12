@@ -3,7 +3,7 @@
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f) // Initialisez grappleLength à 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f) // Initialisez grappleLength à 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -22,6 +22,8 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
     playerView.setSize(1920, 1080);
+    Rigidbody2D rigidbody(1.0f);
+    rigidbody.setPosition(sf::Vector2f(100, 100));
 }
 
 Player::~Player()
@@ -73,15 +75,10 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
-    isColliding(getSprite().getPosition().x, getSprite().getPosition().y, dt);
-    checkGrounded();
-    if (onGround) {
-        velocity.y = 0;  // ✅ Suppression de la gravité après atterrissage
-    }
-    else {
-        velocity.y += 14.8f;
-        std::cout << "[DEBUG] Gravité appliquée\n";
-    }
+    //isColliding(getSprite().getPosition().x, getSprite().getPosition().y, dt);
+    //checkGrounded();
+    rigidbody.update(dt);
+    rigidbody.handleCollisions(dt);
 	grappleMove = false;
     Vector2f playerPosition = getSprite().getPosition();
     Vector2f stuckPosition = grapple.getStuckPosition();
@@ -132,18 +129,18 @@ void Player::update(float dt)
         }
 
         if (Keyboard::isKeyPressed(Keyboard::Q) && getSprite().getPosition().x - speed * dt) {
-            velocity.x = -speed;
+            rigidbody.applyForce(sf::Vector2f(-speed, 0));
             lastInputDirection = 'L';
             dashMomentum = false;
         }
         if (Keyboard::isKeyPressed(Keyboard::D)) {
-            velocity.x = speed;
+            rigidbody.applyForce(sf::Vector2f(speed, 0));
             lastInputDirection = 'R';
             dashMomentum = false;
         }
         if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
         {
-            velocity.y = -speed;
+            rigidbody.applyForce(sf::Vector2f(0, -speed));
             jumpNum++;
             canJump = false;
             onGround = false;
@@ -216,7 +213,7 @@ void Player::update(float dt)
             dashMomentum = true;
             velocity = dashDirection;
         }
-		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
+		/*isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);*/
         getSprite().move(dashDirection.x * dt, 0);
     }
     if (grapple.isActive()) {
@@ -264,7 +261,7 @@ void Player::update(float dt)
     }
 
     playerView.setCenter(cameraPosition);
-    getSprite().move(velocity.x * dt, velocity.y * dt);
+    getSprite().setPosition(rigidbody.getPosition());
 }
 
 }
@@ -315,87 +312,87 @@ void Player::draw(RenderWindow& window)
 
 }
 
-void Player::isColliding(int x, int y, float dt)
-{
-    int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
-    int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
-
-    bool touchingGround = false;
-
-    // 📌 Correction des collisions horizontales
-    if (velocity.x > 0) { // Mouvement vers la droite
-        if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) ||
-            map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2) ||
-            map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height))
-        {
-            newX = (newX / TILE_SIZE) * TILE_SIZE;
-            getSprite().setPosition(newX, getSpriteConst().getPosition().y);
-            velocity.x = 0;
-        }
-    }
-    else if (velocity.x < 0) { // Mouvement vers la gauche
-        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height))
-        {
-            newX = ((newX / TILE_SIZE) + 1) * TILE_SIZE;
-            getSprite().setPosition(newX, getSpriteConst().getPosition().y);
-            velocity.x = 0;
-        }
-    }
-
-    // 📌 Correction des collisions verticales
-    if (velocity.y >= 0) {
-        if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) ||
-            map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height) ||
-            map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height))
-        {
-            // ✅ Correction stricte de la position (évite les petits sauts)
-            newY = ((newY + getSpriteConst().getGlobalBounds().height) / TILE_SIZE) * TILE_SIZE - getSpriteConst().getGlobalBounds().height;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY);
-
-            // ✅ Sécurité pour éviter que `onGround` ne saute à false immédiatement
-            velocity.y = 0;
-            touchingGround = true;
-            std::cout << "[DEBUG] SOL détecté - Joueur stabilisé\n";
-        }
-    }
-
-    // 🔒 Sécurisation stricte de `onGround`
-    if (touchingGround && !onGround) {
-        onGround = true;
-        jumpNum = 0;
-        canJump = true;
-        std::cout << "[DEBUG] Le joueur est maintenant sur le sol\n";
-    }
-    else if (!touchingGround && velocity.y > 3.0f) {
-        onGround = false;
-        std::cout << "[DEBUG] Le joueur quitte le sol - Gravité activée\n";
-    }
-}
-
-
-void Player::checkGrounded()
-{
-    int bottomY = getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height + 1;
-
-    bool detectedGround =
-        map.isColliding(getSpriteConst().getGlobalBounds().left, bottomY) ||
-        map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, bottomY) ||
-        map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, bottomY);
-
-    if (detectedGround) {
-        if (!onGround) {
-            onGround = true;
-            jumpNum = 0;
-            canJump = true;
-            std::cout << "[DEBUG] Le joueur est maintenant sur le sol\n";
-        }
-    }
-    else {
-        onGround = false;
-    }
-}
+//void Player::isColliding(int x, int y, float dt)
+//{
+//    int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
+//    int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
+//
+//    bool touchingGround = false;
+//
+//    // 📌 Correction des collisions horizontales
+//    if (velocity.x > 0) { // Mouvement vers la droite
+//        if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) ||
+//            map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2) ||
+//            map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height))
+//        {
+//            newX = (newX / TILE_SIZE) * TILE_SIZE;
+//            getSprite().setPosition(newX, getSpriteConst().getPosition().y);
+//            velocity.x = 0;
+//        }
+//    }
+//    else if (velocity.x < 0) { // Mouvement vers la gauche
+//        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) ||
+//            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2) ||
+//            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height))
+//        {
+//            newX = ((newX / TILE_SIZE) + 1) * TILE_SIZE;
+//            getSprite().setPosition(newX, getSpriteConst().getPosition().y);
+//            velocity.x = 0;
+//        }
+//    }
+//
+//    // 📌 Correction des collisions verticales
+//    if (velocity.y >= 0) {
+//        if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) ||
+//            map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height) ||
+//            map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height))
+//        {
+//            // ✅ Correction stricte de la position (évite les petits sauts)
+//            newY = ((newY + getSpriteConst().getGlobalBounds().height) / TILE_SIZE) * TILE_SIZE - getSpriteConst().getGlobalBounds().height;
+//            getSprite().setPosition(getSpriteConst().getPosition().x, newY);
+//
+//            // ✅ Sécurité pour éviter que `onGround` ne saute à false immédiatement
+//            velocity.y = 0;
+//            touchingGround = true;
+//            std::cout << "[DEBUG] SOL détecté - Joueur stabilisé\n";
+//        }
+//    }
+//
+//    // 🔒 Sécurisation stricte de `onGround`
+//    if (touchingGround && !onGround) {
+//        onGround = true;
+//        jumpNum = 0;
+//        canJump = true;
+//        std::cout << "[DEBUG] Le joueur est maintenant sur le sol\n";
+//    }
+//    else if (!touchingGround && velocity.y > 3.0f) {
+//        onGround = false;
+//        std::cout << "[DEBUG] Le joueur quitte le sol - Gravité activée\n";
+//    }
+//}
+//
+//
+//void Player::checkGrounded()
+//{
+//    int bottomY = getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height + 1;
+//
+//    bool detectedGround =
+//        map.isColliding(getSpriteConst().getGlobalBounds().left, bottomY) ||
+//        map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, bottomY) ||
+//        map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, bottomY);
+//
+//    if (detectedGround) {
+//        if (!onGround) {
+//            onGround = true;
+//            jumpNum = 0;
+//            canJump = true;
+//            std::cout << "[DEBUG] Le joueur est maintenant sur le sol\n";
+//        }
+//    }
+//    else {
+//        onGround = false;
+//    }
+//}
 
 
 

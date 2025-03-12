@@ -120,9 +120,13 @@ void Map::handleEvent(Event event) {
 
 
 bool Map::isColliding(int x, int y) const {
+    if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_HEIGHT) {
+        return false; // Si l'index est hors limites, ne pas essayer d'accéder à la carte
+    }
     Vector2i tilePos(x / TILE_SIZE, y / TILE_SIZE);
-    return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
+    return std::find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
 }
+
 
 
 
