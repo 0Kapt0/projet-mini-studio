@@ -17,7 +17,7 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1 };
+    collisionTiles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
     loadMap(mapPath);
     generateTiles();
@@ -131,33 +131,8 @@ void Map::handleEvent(Event event) {
 
 
 bool Map::isColliding(int x, int y) const {
-    int tileX = x / TILE_SIZE;
-    int tileY = y / TILE_SIZE;
-
-    // Vérifier si la position est hors limites
-    if (tileY < 0 || tileY >= map.size() || tileX < 0 || tileX >= map[0].size()) {
-        std::cout << "Collision détectée : Hors limites (" << tileX << ", " << tileY << ")" << std::endl;
-        return true; // Collision si hors des limites de la carte
-    }
-
-    int tileID = map[tileY][tileX];
-
-    // DEBUG : Afficher la tuile détectée et ses coordonnées
-    std::cout << "Tuile détectée: " << tileID << " (" << tileX << ", " << tileY << ")" << std::endl;
-
-    // Si la tuile est dans `ignoredTiles`, elle n'a PAS de collision
-    if (ignoredTiles.count(tileID)) {
-        std::cout << "Tuile ignorée: " << tileID << std::endl;
-        return false;
-    }
-
-    // Toutes les autres tuiles provoquent une collision
-    std::cout << "Test collision : Tuile=" << tileID
-        << " (" << tileX << "," << tileY << ") "
-        << (ignoredTiles.count(tileID) ? "IGNOREE" : "COLLISION")
-        << std::endl;
-
-    return true;
+    Vector2i tilePos(x / TILE_SIZE, y / TILE_SIZE);
+    return find(blockedTiles.begin(), blockedTiles.end(), tilePos) != blockedTiles.end();
 }
 
 
