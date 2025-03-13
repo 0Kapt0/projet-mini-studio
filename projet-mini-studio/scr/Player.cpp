@@ -220,20 +220,8 @@ void Player::handleAttack(float dt)
 }
 
 void Player::handleCollisionsAndSync(float dt) {
-    Vector2f newPosition = getSprite().getPosition();
-
-    isColliding(newPosition.x, newPosition.y + velocity.y, dt);
-    velocity.y += 1.8; // Simule la gravité
-
-   /* else {
-        velocity.y = 0;
-        canJump = true;
-    }*/
-
-    newPosition.x += velocity.x;
-    newPosition.y += velocity.y;
-
-    getSprite().setPosition(newPosition);
+    isColliding(getSprite().getPosition().x, getSprite().getPosition().y, dt);
+    getSprite().move(velocity * dt);
 }
 
 
