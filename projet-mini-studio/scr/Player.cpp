@@ -273,9 +273,9 @@ void Player::draw(RenderWindow& window)
 	grapple.draw(window);
     if (attacking) window.draw(attackSprite);
 
-    RectangleShape hitboxDebug(Vector2f(50, 50));
-    hitboxDebug.setPosition(rigidbody.getPosition());
-    hitboxDebug.setFillColor(Color(255, 0, 0, 100));
-    window.draw(hitboxDebug);
+    //RectangleShape hitboxDebug(Vector2f(50, 50));
+    //hitboxDebug.setPosition(rigidbody.getPosition());
+    //hitboxDebug.setFillColor(Color(255, 0, 0, 100));
+    //window.draw(hitboxDebug);
 
 }

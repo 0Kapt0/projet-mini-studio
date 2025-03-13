@@ -1,6 +1,8 @@
 #include "../include/Game.hpp"
+#include "../include/Settings.hpp"
 #include "../include/Map.hpp"
 #include "../include/Menu.hpp"
+#include "../include/Pause.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
@@ -41,13 +43,14 @@ void Game::run() {
 
     foreground.loadTextures("assets/foreground/layer1.png",
         "assets/foreground/layer2.png");
-
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
     Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
+    Settings settings;
+    Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
@@ -89,7 +92,10 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
+                }
 
                 break;
 
@@ -139,6 +145,15 @@ void Game::run() {
                 break;
 
             case GameState::Pause:
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (pause.playSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                    if (pause.menuSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Menu;
+                    }
+
+                }
                 break;
 
             case GameState::GameOver:
@@ -156,7 +171,6 @@ void Game::run() {
             float cameraX = player.getSprite().getPosition().x;
             background.update(cameraX);
             foreground.update(cameraX);
-
             chargingBoss.behavior(deltaTime, player, window);
         }
 
@@ -180,7 +194,7 @@ void Game::run() {
 
             break;
         case GameState::Settings:
-
+            settings.draw(window);
             break;
         case GameState::Editor:
             background.draw(window);
@@ -191,6 +205,7 @@ void Game::run() {
             break;
 
         case GameState::Pause:
+            pause.draw(window);
             break;
 
         case GameState::GameOver:

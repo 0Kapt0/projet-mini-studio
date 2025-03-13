@@ -57,7 +57,10 @@
     <ClInclude Include="include\Rigidbody2D.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\BasicEnemy.hpp">
+    <ClInclude Include="include\Pause.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Settings.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,7 +110,10 @@
     <ClCompile Include="scr\Rigidbody2D.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="scr\BasicEnemy.cpp">
+    <ClCompile Include="scr\Pause.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\Settings.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

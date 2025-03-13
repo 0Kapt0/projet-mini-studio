@@ -30,9 +30,11 @@
     <ClInclude Include="include\Grapple.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Menu.hpp" />
+    <ClInclude Include="include\Pause.hpp" />
     <ClInclude Include="include\Player.hpp" />
     <ClInclude Include="include\RangedEnemy.hpp" />
     <ClInclude Include="include\Rigidbody2D.hpp" />
+    <ClInclude Include="include\Settings.hpp" />
     <ClInclude Include="include\TileSelector.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,9 +50,11 @@
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\Map.cpp" />
     <ClCompile Include="scr\Menu.cpp" />
+    <ClCompile Include="scr\Pause.cpp" />
     <ClCompile Include="scr\Player.cpp" />
     <ClCompile Include="scr\RangedEnemy.cpp" />
     <ClCompile Include="scr\Rigidbody2D.cpp" />
+    <ClCompile Include="scr\Settings.cpp" />
     <ClCompile Include="scr\TileSelector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
