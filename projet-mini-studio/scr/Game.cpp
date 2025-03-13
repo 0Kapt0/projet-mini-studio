@@ -50,7 +50,7 @@ void Game::run() {
     Menu menu;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
-    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
+    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
     EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
 	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
     ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);
