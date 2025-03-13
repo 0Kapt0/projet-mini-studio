@@ -8,6 +8,7 @@
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
 #include "../include/EnemyFlying.hpp"
+#include "../include/BasicEnemy.hpp"
 #include "../include/ChargingBoss.hpp"
 #include "../include/Background.hpp"
 
@@ -52,9 +53,9 @@ void Game::run() {
     Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue, map);
-    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
-    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green);
+    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
+    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
+	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
     ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);
 
     bool collisionMode = false;
@@ -165,7 +166,7 @@ void Game::run() {
 
             player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
-            enemy.update(0.016f);
+			basicEnemy.update(deltaTime, player);
             flyingEnemy.update(deltaTime, player);
             float cameraX = player.getSprite().getPosition().x;
             background.update(cameraX);
@@ -184,7 +185,7 @@ void Game::run() {
             background.draw(window);
             level1.draw(window);
             player.draw(window);
-            enemy.draw(window);
+			basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
             flyingEnemy.draw(window);
