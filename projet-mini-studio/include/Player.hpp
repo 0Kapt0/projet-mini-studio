@@ -17,6 +17,7 @@ public:
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isColliding(int x, int y, float dt);
+	void isSwingColliding(Vector2f& newPos, float dt);
 
 private:
 	bool leftButtonHold = false;
@@ -37,7 +38,7 @@ private:
 	float grappleLength = 0.0f;
 	bool grappleMove = false;
 	bool onGround = true;
-	float swingForce = 20.0f;
+	float swingForce = 100.0f;
 	float angularVelocity = 0.0f;
 	float angle = 0.0f;
 	float DAMPING = 0.99f;

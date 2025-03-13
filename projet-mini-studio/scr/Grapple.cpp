@@ -60,7 +60,6 @@ void Grapple::update(float deltaTime, RenderWindow& window) {
                 active = false; // Désactiver le grappin s'il croise un autre mur
 				stuck = false;
                 line[1].position = { 0, 0 };
-				cout << "plus stuck" << endl;
                 break;
             }
         }
