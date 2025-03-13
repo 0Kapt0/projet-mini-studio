@@ -23,13 +23,14 @@ public:
 
 private:
     //fonction du update
+    void handleGrapplePull(float dt);
+    void handleNormalMovement(float dt);
+    void handleDashingMovement(float dt);
     void handleMovement(float dt);
-    void handleJump(float dt);
-    void handleGrapple(float dt);
-    void handleDash(float dt);
-    void handleAttack(float dt);
-    void handleCollisionsAndSync(float dt);
-    void updateCamera();
+    void handleCollisions(float dt);
+    void applyMovement(float dt);
+    void updateGrapplePosition();
+    /*void updateCamera();*/
 
     //Rigidbody2D rigidbody;
     View playerView;
