@@ -3,7 +3,7 @@
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength � 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength � 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength � 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength � 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -22,8 +22,6 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
     playerView.setSize(1920, 1080);
-    Rigidbody2D rigidbody(1.0f, 0.99f, map);
-    rigidbody.setPosition(Vector2f(100, 100));
 }
 
 Player::~Player()
@@ -74,8 +72,7 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
-    rigidbody.update(dt);
-    handleCollisionsAndSync();
+    handleCollisionsAndSync(dt);
     handleMovement(dt);
     handleJump(dt);
     handleGrapple(dt);
@@ -103,12 +100,15 @@ void Player::updateCamera()
 
 void Player::handleMovement(float dt) {
     if (Keyboard::isKeyPressed(Keyboard::Q)) {
-        rigidbody.applyForce(Vector2f(-speed, 0));
+        velocity.x = -speed;
         lastInputDirection = 'L';
     }
-    if (Keyboard::isKeyPressed(Keyboard::D)) {
-        rigidbody.applyForce(Vector2f(speed, 0));
+    else if (Keyboard::isKeyPressed(Keyboard::D)) {
+        velocity.x = speed;
         lastInputDirection = 'R';
+    }
+    else {
+        velocity.x = 0;
     }
 }
 
@@ -116,8 +116,7 @@ void Player::handleMovement(float dt) {
 void Player::handleJump(float dt)
 {
     if (Keyboard::isKeyPressed(Keyboard::Z) && canJump) {
-        rigidbody.applyForce(Vector2f(0, -speed * 100));
-        jumpNum++;
+        velocity.y = -speed * 2;
         canJump = false;
     }
 }
@@ -220,18 +219,21 @@ void Player::handleAttack(float dt)
     }
 }
 
-void Player::handleCollisionsAndSync() {
-    Vector2f newPosition = rigidbody.getPosition();
+void Player::handleCollisionsAndSync(float dt) {
+    Vector2f newPosition = getSprite().getPosition();
 
-    bool wasOnGround = canJump;
-    canJump = rigidbody.isOnGround();
+    isColliding(newPosition.x, newPosition.y + velocity.y, dt);
+    velocity.y += 1.8; // Simule la gravité
 
-    if (!wasOnGround && canJump) {
-        velocity.x *= 0.8f;
-    }
+   /* else {
+        velocity.y = 0;
+        canJump = true;
+    }*/
 
-    rigidbody.setPosition(newPosition);
-    getSprite().setPosition(rigidbody.getPosition());
+    newPosition.x += velocity.x;
+    newPosition.y += velocity.y;
+
+    getSprite().setPosition(newPosition);
 }
 
 
@@ -272,20 +274,6 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     grapple.update(dt, window);
 }
 
-void Player::draw(RenderWindow& window)
-{
-    window.setView(playerView);
-
-	window.draw(getSprite());
-	grapple.draw(window);
-    if (attacking) window.draw(attackSprite);
-
-    //RectangleShape hitboxDebug(Vector2f(50, 50));
-    //hitboxDebug.setPosition(rigidbody.getPosition());
-    //hitboxDebug.setFillColor(Color(255, 0, 0, 100));
-    //window.draw(hitboxDebug);
-}
-
 void Player::isColliding(int x, int y, float dt)
 {
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
@@ -300,7 +288,7 @@ void Player::isColliding(int x, int y, float dt)
         {
             if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
             {
-                newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
+                newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
                 getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
                 velocity.x = 0;
                 jumpNum = 1;
@@ -310,7 +298,7 @@ void Player::isColliding(int x, int y, float dt)
         {
             if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
             {
-                newX = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
+                newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
                 getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
                 velocity.x = 0;
                 jumpNum = 1;
@@ -321,7 +309,7 @@ void Player::isColliding(int x, int y, float dt)
         {
             if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height))
             {
-                newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 32)) * 32 + 32 - getTexture().getSize().y / 2;
+                newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
                 jumpNum = 0;
                 getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
                 velocity.y = 0;
@@ -333,7 +321,7 @@ void Player::isColliding(int x, int y, float dt)
         {
             if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
             {
-                newY = (static_cast<int>(getSprite().getGlobalBounds().top / 32)) * 32 + getTexture().getSize().y / 2;
+                newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
                 getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
                 velocity.y = 0;
                 dashDirection.y = 0;
@@ -349,7 +337,7 @@ void Player::isColliding(int x, int y, float dt)
         {
 			if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
 			{
-				newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
+				newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
 				getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
                 dashDirection.x = 0;
 				jumpNum = 1;
@@ -359,7 +347,7 @@ void Player::isColliding(int x, int y, float dt)
         {
             if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
             {
-                newX = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
+                newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
                 getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
                 dashDirection.x = 0;
                 jumpNum = 1;
@@ -378,7 +366,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x , newPos.y + getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 32)) * 32 + 32 - getTexture().getSize().y / 2;
+            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
             getSprite().setPosition(getSprite().getPosition().x, newPos.y - 0.1);
             velocity.y = 0;
             angularVelocity = 0;
@@ -392,7 +380,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y - getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y - getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 32)) * 32 + getTexture().getSize().y / 2;
+            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
             getSprite().setPosition(getSprite().getPosition().x, newPos.y + 0.1);
             velocity.y = 0;
             angularVelocity = 0;
@@ -407,7 +395,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
+            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
             getSprite().setPosition(newPos.x - 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
@@ -421,7 +409,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
+            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
             getSprite().setPosition(newPos.x + 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
@@ -430,4 +418,13 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 
         }
     }
+}
+
+void Player::draw(RenderWindow& window)
+{
+    window.setView(playerView);
+
+    window.draw(getSprite());
+    grapple.draw(window);
+    if (attacking) window.draw(attackSprite);
 }

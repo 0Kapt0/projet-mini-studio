@@ -28,10 +28,10 @@ private:
     void handleGrapple(float dt);
     void handleDash(float dt);
     void handleAttack(float dt);
-    void handleCollisionsAndSync();
+    void handleCollisionsAndSync(float dt);
     void updateCamera();
 
-    Rigidbody2D rigidbody;
+    //Rigidbody2D rigidbody;
     View playerView;
     Map& map;
     float speed;
