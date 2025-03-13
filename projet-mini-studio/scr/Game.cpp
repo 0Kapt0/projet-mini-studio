@@ -161,7 +161,7 @@ void Game::run() {
             }
         }
 
-        if (currentState == GameState::Playing || currentState == GameState::Editor) {
+        if (currentState == GameState::Playing) {
             player.update(deltaTime);
 
             player.handleInput(event, window, deltaTime);

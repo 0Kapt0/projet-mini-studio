@@ -14,6 +14,7 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
+    playerView.setSize(1920, 1080);
 }
 
 Player::~Player()
@@ -69,9 +70,25 @@ void Player::update(float dt)
     handleCollisions(dt);
     applyMovement(dt);
     updateGrapplePosition();
+    updateCamera();
 }
 
+void Player::updateCamera()
+{
+    Vector2f playerPosition = getSprite().getPosition();
+    Vector2f cameraPosition = playerView.getCenter();
 
+    cameraPosition.x = playerPosition.x;
+
+    if (playerPosition.y > 670) {
+        cameraPosition.y = 670;
+    }
+    else {
+        cameraPosition.y = playerPosition.y;
+    }
+
+    playerView.setCenter(cameraPosition);
+}
 
 void Player::handleGrapplePull(float dt)
 {
@@ -120,7 +137,7 @@ void Player::handleNormalMovement(float dt)
 
     velocity.y += 14.8f;
 
-    if (getSprite().getPosition().y > 800.f)
+    if (getSprite().getPosition().y > 1100.f)
     {
         canJump = true;
         onGround = true;
@@ -150,7 +167,7 @@ void Player::handleNormalMovement(float dt)
         canJump = false;
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800.f)
+    if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 1100.f)
     {
         velocity.y += speed / 4.f;
     }
@@ -273,7 +290,8 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
         else {
             Vector2f startPosition = getSprite().getPosition();
             Vector2i mousePosition = Mouse::getPosition(window);
-            Vector2f direction = Vector2f(mousePosition) - startPosition;
+            Vector2f worldPosition = window.mapPixelToCoords(mousePosition, playerView);
+            Vector2f direction = worldPosition - startPosition;
             float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
             direction /= length;
             grapple.launch(startPosition, direction);
@@ -292,12 +310,6 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     }
 
     grapple.update(dt, window);
-}
-
-void Player::draw(RenderWindow& window)
-{
-    window.draw(getSprite());
-    grapple.draw(window);
 }
 
 void Player::isColliding(int x, int y, float dt)
@@ -444,4 +456,11 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 
         }
     }
+}
+
+void Player::draw(RenderWindow& window)
+{
+    window.setView(playerView);
+    window.draw(getSprite());
+    grapple.draw(window);
 }

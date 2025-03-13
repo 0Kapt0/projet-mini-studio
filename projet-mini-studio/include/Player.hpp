@@ -30,9 +30,8 @@ private:
     void handleCollisions(float dt);
     void applyMovement(float dt);
     void updateGrapplePosition();
-    /*void updateCamera();*/
+    void updateCamera();
 
-    //Rigidbody2D rigidbody;
     View playerView;
     Map& map;
     float speed;
