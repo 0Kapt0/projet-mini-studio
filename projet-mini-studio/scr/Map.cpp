@@ -1,8 +1,9 @@
 ﻿#include "../include/Map.hpp"
 #include <fstream>
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 
-// Constructeur
 Map::Map(const string& tilesetPath, const string& mapPath)
     : cameraPos(0, 0), cameraSpeed(50.0f), isEditorMode(false) {
 
@@ -13,12 +14,17 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+    collisionTiles = { 1,2,3,4,5,6,7,8,9,10,11,12 };
+
+    slopeInfo[50] = SlopeType::SlopeUp;
+    slopeInfo[65] = SlopeType::SlopeUp;
+
+    slopeInfo[51] = SlopeType::SlopeDown;
+    slopeInfo[68] = SlopeType::SlopeDown;
 
     loadMap(mapPath);
     generateTiles();
 }
-
 
 Map::~Map() {}
 
@@ -75,7 +81,6 @@ void Map::loadMap(const string& filename) {
     }
 }
 
-
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
     if (file.is_open()) {
@@ -119,21 +124,22 @@ void Map::handleEvent(Event event) {
     }
 }
 
-
 bool Map::isColliding(int x, int y) const {
     int tileX = x / TILE_SIZE;
     int tileY = y / TILE_SIZE;
 
-    //Vérification des limites de la carte
     if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH || tileY >= MAP_HEIGHT) {
         return true;
     }
 
-    //Vérification si la tuile est bloquante
-    bool isBlocked = std::find(blockedTiles.begin(), blockedTiles.end(), Vector2i(tileX, tileY)) != blockedTiles.end();
+    SlopeType stype = getSlopeTypeAt(tileX, tileY);
+    if (stype != SlopeType::None) {
+        return false;
+    }
+
+    bool isBlocked = (std::find(blockedTiles.begin(), blockedTiles.end(), Vector2i(tileX, tileY)) != blockedTiles.end());
     return isBlocked;
 }
-
 
 void Map::draw(RenderWindow& window) {
     for (const auto& tile : tiles) {
@@ -146,3 +152,48 @@ void Map::drawCam(RenderWindow& window) {
     window.setView(cameraView);
 }
 
+bool Map::isSlopeTile(int tileX, int tileY) const {
+    if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH || tileY >= MAP_HEIGHT)
+        return false;
+
+    int tileID = map[tileY][tileX];
+    auto it = slopeInfo.find(tileID);
+    return (it != slopeInfo.end() && it->second != SlopeType::None);
+}
+
+SlopeType Map::getSlopeTypeAt(int tileX, int tileY) const {
+    if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH || tileY >= MAP_HEIGHT)
+        return SlopeType::None;
+
+    int tileID = map[tileY][tileX];
+    auto it = slopeInfo.find(tileID);
+    if (it != slopeInfo.end()) {
+        return it->second;
+    }
+    return SlopeType::None;
+}
+
+float Map::getSlopeSurfaceY(int tileX, int tileY, float worldX) const {
+    SlopeType stype = getSlopeTypeAt(tileX, tileY);
+    if (stype == SlopeType::None) {
+        return (tileY + 1) * TILE_SIZE;
+    }
+
+    float tileLeft = tileX * TILE_SIZE;
+    float tileTop = tileY * TILE_SIZE;
+    float localX = worldX - tileLeft;
+
+    switch (stype)
+    {
+    case SlopeType::SlopeUp:
+        return tileTop + (TILE_SIZE - localX);
+
+    case SlopeType::SlopeDown:
+        return tileTop + localX;
+
+    default:
+        break;
+    }
+
+    return tileTop + TILE_SIZE;
+}
