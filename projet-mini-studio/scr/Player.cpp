@@ -90,10 +90,10 @@ void Player::update(float dt)
             dashTimer += dt;
             if (dashTimer >= dashCooldown && getSprite().getPosition().y > 200) canDash = true;
 
-            if (!Keyboard::isKeyPressed(Keyboard::Z) && jumpNum < 2)
-            {
-                canJump = true;
-            }
+        if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
+        {
+            canJump = true;
+        }
 
             velocity.y += 14.8f;
 
@@ -132,7 +132,7 @@ void Player::update(float dt)
             lastInputDirection = 'R';
             dashMomentum = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
+        if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
         {
             velocity.y = -speed;
             jumpNum++;
@@ -182,12 +182,13 @@ void Player::update(float dt)
 				grappleStuck = false;
 			}
 
+		//cout << velocity.x << " " << velocity.y << endl;
 
-            if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
-                dashing = true;
-                canDash = false;
-                dashTimer = 0;
-                velocity.y = 0;
+        if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
+            dashing = true;
+            canDash = false;
+            dashTimer = 0;
+            velocity.y = 0;
 
             switch (lastInputDirection) {
             case('L'): dashDirection.x = -speed * 3.5f; break;
@@ -206,6 +207,16 @@ void Player::update(float dt)
             velocity = dashDirection;
         }
 		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
+        if (collided) {
+            switch (lastInputDirection) {
+            case('L'): getSprite().move(speed * 10.f * dt, 0); break;
+            case('R'): getSprite().move(-speed * 10.f * dt, 0); break;
+            }
+            
+            dashing = false;
+            dashDuration = 0;
+            dashDirection.x = 0;
+        }
         getSprite().move(dashDirection.x * dt, 0);
     }
     if (grapple.isActive()) {
@@ -300,6 +311,8 @@ void Player::isColliding(int x, int y, float dt)
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
     int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
 
+    collided = false;
+
     // Vérifie la collision avant d'appliquer le mouvement
     if (velocity.x > 0)
     {
@@ -310,6 +323,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.x = 0;
             dashDirection.x = 0;
             jumpNum = 1;
+            collided = true;
         }
     }
     else if (velocity.x < 0)
@@ -321,6 +335,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.x = 0;
             dashDirection.x = 0;
             jumpNum = 1;
+            collided = true;
         }
     }
 
@@ -334,6 +349,7 @@ void Player::isColliding(int x, int y, float dt)
             velocity.y = 0;
             dashDirection.y = 0;
 			onGround = true;
+            collided = true;
         }
     }
     else if (velocity.y < 0)
@@ -344,6 +360,7 @@ void Player::isColliding(int x, int y, float dt)
             getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
             velocity.y = 0;
             dashDirection.y = 0;
+            collided = true;
         }
     }
 }
