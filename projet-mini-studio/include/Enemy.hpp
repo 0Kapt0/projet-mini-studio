@@ -20,3 +20,5 @@ public:
 };
 
 #endif
+
+//here is my Enemy Flying, please add a fsm AI that has 4 states : patrolling (betwens set points),  chasing (following the player when they enter the detection radius), searching (going to the last known player position after he leaves the detection radius) and attacking (when the enemy touches the player

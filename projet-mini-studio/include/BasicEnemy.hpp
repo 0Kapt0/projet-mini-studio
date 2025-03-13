@@ -1,18 +1,19 @@
-#ifndef ENEMYFLYING_HPP
-#define ENEMYFLYING_HPP
+#ifndef BASICENEMY_HPP
+#define BASICENEMY_HPP
 
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include <vector>
 
-class EnemyFlying : public Enemy {
+class BasicEnemy : public Enemy {
 protected:
     float speed;
     Vector2f velocity;
     float detectionRadius;
-    std::vector<Vector2f> waypoints;
+    vector<Vector2f> waypoints;
     size_t currentWaypointIndex;
     Vector2f lastKnownPlayerPosition;
+    float gravity;
 
     enum State {
         PATROLLING,
@@ -22,9 +23,9 @@ protected:
     } state;
 
 public:
-    EnemyFlying(Map& map);
-    EnemyFlying(const Vector2f& size, const Color& color, Map& map);
-    virtual ~EnemyFlying();
+    BasicEnemy(Map& map);
+    BasicEnemy(const Vector2f& size, const Color& color, Map& map);
+    virtual ~BasicEnemy();
 
     virtual void update(float dt, const Player& player);
     bool isPlayerInRadius(const Vector2f& playerPosition);

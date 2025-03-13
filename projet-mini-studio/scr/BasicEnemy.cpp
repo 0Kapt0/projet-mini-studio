@@ -1,33 +1,33 @@
-#include "../include/EnemyFlying.hpp"
+#include "../include/BasicEnemy.hpp"
 #include <cmath>
 
-EnemyFlying::EnemyFlying(Map& map)
+BasicEnemy::BasicEnemy(Map& map)
     : Enemy(map), currentWaypointIndex(0), state(PATROLLING)
 {
-    speed = 300;
+    speed = 200;
     velocity = Vector2f(0, 0);
-    detectionRadius = 200.0f; 
+    detectionRadius = 300.0f; // Example radius
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
 }
 
-EnemyFlying::EnemyFlying(const Vector2f& size, const Color& color, Map& map)
+BasicEnemy::BasicEnemy(const Vector2f& size, const Color& color, Map& map)
     : Enemy(size, color, map), currentWaypointIndex(0), state(PATROLLING)
 {
     speed = 300;
     velocity = Vector2f(0, 0);
-    detectionRadius = 200.0f; 
+    detectionRadius = 300.0f; // Example radius
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
 }
 
-EnemyFlying::~EnemyFlying()
+BasicEnemy::~BasicEnemy()
 {
 }
 
-bool EnemyFlying::isPlayerInRadius(const Vector2f& playerPosition) {
+bool BasicEnemy::isPlayerInRadius(const Vector2f& playerPosition) {
     Vector2f position = getSprite().getPosition();
     Vector2f direction = playerPosition - position;
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -35,8 +35,11 @@ bool EnemyFlying::isPlayerInRadius(const Vector2f& playerPosition) {
     return distance <= detectionRadius;
 }
 
-void EnemyFlying::update(float dt, const Player& player) {
+void BasicEnemy::update(float dt, const Player& player) {
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
+
+    // Call the base class update method to handle gravity
+    Enemy::update(dt);
 
     switch (state) {
     case PATROLLING:
@@ -69,7 +72,7 @@ void EnemyFlying::update(float dt, const Player& player) {
     getSprite().move(velocity * dt);
 }
 
-void EnemyFlying::patrol(float dt) {
+void BasicEnemy::patrol(float dt) {
     if (waypoints.empty()) return;
 
     Vector2f position = getSprite().getPosition();
@@ -87,7 +90,7 @@ void EnemyFlying::patrol(float dt) {
     velocity = (direction / length) * speed;
 }
 
-void EnemyFlying::chase(float dt, const Vector2f& playerPosition) {
+void BasicEnemy::chase(float dt, const Vector2f& playerPosition) {
     Vector2f position = getSprite().getPosition();
     Vector2f direction = playerPosition - position;
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -98,7 +101,7 @@ void EnemyFlying::chase(float dt, const Vector2f& playerPosition) {
     }
 }
 
-void EnemyFlying::search(float dt) {
+void BasicEnemy::search(float dt) {
     Vector2f position = getSprite().getPosition();
     Vector2f direction = lastKnownPlayerPosition - position;
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -109,13 +112,13 @@ void EnemyFlying::search(float dt) {
     }
 }
 
-void EnemyFlying::attack(const Player& player) {
+void BasicEnemy::attack(const Player& player) {
     // Implement attack logic
     // For now, we'll just reset to PATROLLING for demonstration
     state = PATROLLING;
 }
 
-void EnemyFlying::drawDetectionRadius(sf::RenderWindow& window) {
+void BasicEnemy::drawDetectionRadius(sf::RenderWindow& window) {
     Vector2f position = getSprite().getPosition();
     sf::CircleShape detectionCircle(detectionRadius);
     detectionCircle.setPosition(position - Vector2f(detectionRadius, detectionRadius));
@@ -123,7 +126,7 @@ void EnemyFlying::drawDetectionRadius(sf::RenderWindow& window) {
     window.draw(detectionCircle);
 }
 
-void EnemyFlying::setWaypoints(const std::vector<Vector2f>& newWaypoints) {
+void BasicEnemy::setWaypoints(const std::vector<Vector2f>& newWaypoints) {
     waypoints = newWaypoints;
     currentWaypointIndex = 0; // Reset to start from the first waypoint
 }
