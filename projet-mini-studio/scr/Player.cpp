@@ -284,6 +284,8 @@ void Player::draw(RenderWindow& window)
     //hitboxDebug.setPosition(rigidbody.getPosition());
     //hitboxDebug.setFillColor(Color(255, 0, 0, 100));
     //window.draw(hitboxDebug);
+}
+
 void Player::isColliding(int x, int y, float dt)
 {
     int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
