@@ -3,8 +3,8 @@
 #include <iostream>
 #define TILE_SIZE 64
 
-Rigidbody2D::Rigidbody2D(float mass, float drag, Map& map)
-    : mass(mass), drag(drag), gravity(9.8f), map(map), position(0.0f, 0.0f) {
+Rigidbody2D::Rigidbody2D(float mass, float drag, Map& map, Entity& entity)
+    : mass(mass), drag(drag), gravity(9.8f), map(map), entity(entity), position(0.0f, 0.0f) {
     velocity = Vector2f(0.0f, 0.0f);
     acceleration = Vector2f(0.0f, 0.0f);
 }
@@ -20,13 +20,22 @@ void Rigidbody2D::update(float dt) {
 
     velocity *= exp(-drag * dt);
 
+    
     if (isOnGround()) {
-        velocity.x *= 0.92f;
+        if (std::abs(velocity.x) > 10.0f && !moving) {  // 🔥 Applique la friction SEULEMENT si le joueur ne bouge pas
+            float friction = 2200.0f * dt;
+            if (velocity.x > 0) {
+                velocity.x -= friction;
+                if (velocity.x < 0) velocity.x = 0;
+            }
+            else {
+                velocity.x += friction;
+                if (velocity.x > 0) velocity.x = 0;
+            }
+        }
     }
 
-    if (abs(velocity.x) < 5.0f) {
-        velocity.x = 0;
-    }
+
 
     Vector2f newPosition = position + velocity * dt;
 
@@ -38,8 +47,8 @@ void Rigidbody2D::update(float dt) {
 }
 
 void Rigidbody2D::applyGravity(float dt) {
-    float gravityForce = 1500.0f;
-    float maxFallSpeed = 800.0f;
+    float gravityForce = 2500.0f;
+    float maxFallSpeed = 1200.0f;
 
     velocity.y += gravityForce * dt;
 
@@ -56,48 +65,50 @@ void Rigidbody2D::applyGravity(float dt) {
 bool Rigidbody2D::handleCollisions(Vector2f& newPosition) {
     bool onGround = false;
 
-    FloatRect bounds(position.x, position.y, 50, 50);
-    Vector2f spriteOrigin(bounds.width / 2, bounds.height / 2);
-    FloatRect correctedBounds(newPosition.x - (bounds.width / 2), newPosition.y - (bounds.height / 2), bounds.width, bounds.height);
+    FloatRect bounds = entity.getSprite().getGlobalBounds();
+    bounds.left = newPosition.x;
+    bounds.top = newPosition.y;
 
-    int left = correctedBounds.left + 5;
-    int right = correctedBounds.left + correctedBounds.width - 5;
-    int top = correctedBounds.top + 3;
-    int bottom = correctedBounds.top + correctedBounds.height - 1;
+    int left = static_cast<int>(bounds.left + 3);
+    int right = static_cast<int>(bounds.left + bounds.width - 3);
+    int top = static_cast<int>(bounds.top + 3);
+    int bottom = static_cast<int>(bounds.top + bounds.height - 1);
 
+    int belowLeft = static_cast<int>(bounds.left + 3);
+    int belowRight = static_cast<int>(bounds.left + bounds.width - 3);
+    int belowBottom = static_cast<int>(bounds.top + bounds.height + 2); // 🔥 Vérifie 2px sous le joueur
 
-    cout << "[DEBUG] Collision Gauche: " << map.isColliding(left, top) << " " << map.isColliding(left, bottom) << endl;
-    cout << "[DEBUG] Collision Droite: " << map.isColliding(right, top) << " " << map.isColliding(right, bottom) << endl;
+    bool hasGroundBelowLeft = map.isColliding(belowLeft, belowBottom);
+    bool hasGroundBelowRight = map.isColliding(belowRight, belowBottom);
 
-
+    // ✅ Vérification et correction des collisions au sol
     if (map.isColliding(left, bottom) || map.isColliding(right, bottom)) {
         if (velocity.y > 0) {
             velocity.y = 0;
-            newPosition.y = (bottom / TILE_SIZE) * TILE_SIZE - correctedBounds.height + 1;
+            newPosition.y = (bottom / TILE_SIZE) * TILE_SIZE - bounds.height + 1;
             onGround = true;
-            cout << "[DEBUG] ✅ Joueur AU SOL, Position Y corrigée: " << newPosition.y << endl;
         }
     }
     else if (map.isColliding(left, top) || map.isColliding(right, top)) {
         if (velocity.y < 0) {
             velocity.y = 0;
             newPosition.y = ((top / TILE_SIZE) * TILE_SIZE) + TILE_SIZE;
-            cout << "[DEBUG] ⛔ Joueur HEURTE un plafond, Y corrigé: " << newPosition.y << endl;
         }
     }
 
-    if (map.isColliding(left, top) || map.isColliding(left, bottom)) {
+    // ✅ Correction des collisions latérales uniquement si le joueur ne peut pas tomber
+    if ((map.isColliding(left, top) || map.isColliding(left, bottom)) && hasGroundBelowLeft) {
         if (velocity.x < 0) {
-            velocity.x *= -0.2f;
+            velocity.x = 0;
+            newPosition.x = (left / TILE_SIZE) * TILE_SIZE + TILE_SIZE + 2; // 🔥 Décalage ajusté
         }
     }
-    if (map.isColliding(right, top) || map.isColliding(right, bottom)) {
+    if ((map.isColliding(right, top) || map.isColliding(right, bottom)) && hasGroundBelowRight) {
         if (velocity.x > 0) {
-            velocity.x *= -0.2f;
+            velocity.x = 0;
+            newPosition.x = (right / TILE_SIZE) * TILE_SIZE - bounds.width - 2; // 🔥 Décalage ajusté
         }
     }
-
-
 
     if (onGround) {
         velocity.y = 0.1f;
@@ -105,6 +116,8 @@ bool Rigidbody2D::handleCollisions(Vector2f& newPosition) {
 
     return onGround;
 }
+
+
 
 
 
@@ -139,4 +152,9 @@ bool Rigidbody2D::isOnGround() const {
     return map.isColliding(position.x - 10, position.y + 50) || 
            map.isColliding(position.x + 10, position.y + 50);
 }
+
+void Rigidbody2D::setMoving(bool isMoving) {
+    moving = isMoving;
+}
+
 

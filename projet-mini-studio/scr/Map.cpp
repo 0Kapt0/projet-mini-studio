@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 
-// Constructeur
 Map::Map(const string& tilesetPath, const string& mapPath)
     : cameraPos(0, 0), cameraSpeed(50.0f), isEditorMode(false) {
 
@@ -25,13 +24,12 @@ Map::~Map() {}
 void Map::generateTiles() {
     int tilesetWidth = tilesetTexture.getSize().x / TILE_SIZE;
     tiles.clear();
-    blockedTiles.clear(); // 🔥 Reset avant de recréer
+    blockedTiles.clear();
 
     for (size_t y = 0; y < map.size(); ++y) {
         for (size_t x = 0; x < map[y].size(); ++x) {
             int tileIndex = map[y][x];
 
-            // 📌 Vérification si la tuile est bloquante
             if (collisionTiles.count(tileIndex)) {
                 blockedTiles.push_back(Vector2i(x, y));
             }
@@ -47,15 +45,13 @@ void Map::generateTiles() {
             tiles.push_back(sprite);
         }
     }
-
-    std::cout << "[DEBUG] 🟢 Nombre de tuiles bloquantes détectées : " << blockedTiles.size() << std::endl;
 }
 
 void Map::loadMap(const string& filename) {
     ifstream file(filename);
     if (file.is_open()) {
         map.clear();
-        blockedTiles.clear(); // 🔥 Reset des tuiles bloquantes
+        blockedTiles.clear();
 
         for (int i = 0; i < MAP_HEIGHT; ++i) {
             vector<int> row;
@@ -64,16 +60,14 @@ void Map::loadMap(const string& filename) {
                 file >> tile;
                 row.push_back(tile);
 
-                // 📌 Vérification : si cette tuile est bloquante
                 if (collisionTiles.count(tile)) {
                     blockedTiles.push_back(Vector2i(j, i));
-                    std::cout << "[DEBUG] 🔴 Tuile BLOQUANTE ajoutée ! X: " << j << " Y: " << i << std::endl;
                 }
             }
             map.push_back(row);
         }
 
-        generateTiles(); // Génération après le chargement
+        generateTiles();
     }
     else {
         cerr << "Impossible de charger la carte depuis le fichier." << endl;
@@ -129,18 +123,11 @@ bool Map::isColliding(int x, int y) const {
     int tileX = x / TILE_SIZE;
     int tileY = y / TILE_SIZE;
 
-    // 📌 Vérification des limites de la carte
     if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH || tileY >= MAP_HEIGHT) {
-        std::cout << "[DEBUG] 🚧 Collision avec les bords ! X: " << x << " Y: " << y << std::endl;
         return true;
     }
 
-    // 📌 Vérification si la tuile est bloquante
     bool isBlocked = std::find(blockedTiles.begin(), blockedTiles.end(), Vector2i(tileX, tileY)) != blockedTiles.end();
-
-    std::cout << "[DEBUG] 🔍 Vérification collision TileX: " << tileX << " TileY: " << tileY
-        << " -> " << (isBlocked ? "❌ BLOQUANT" : "✅ PAS de collision") << std::endl;
-
     return isBlocked;
 }
 

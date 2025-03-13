@@ -3,7 +3,7 @@
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.05f, map, *this) // Initialisez grappleLength à 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.05f, map, *this) // Initialisez grappleLength à 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -22,8 +22,7 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
     playerView.setSize(1920, 1080);
-    Rigidbody2D rigidbody(1.0f, 0.99f, map);
-    rigidbody.setPosition(Vector2f(100, 100));
+    rigidbody.setPosition(getSprite().getPosition());
 }
 
 Player::~Player()
@@ -103,25 +102,39 @@ void Player::updateCamera()
 }
 
 void Player::handleMovement(float dt) {
+    float moveSpeed = 450.0f; // 🔥 Vitesse constante (au sol et en l'air)
+
+    Vector2f velocity = rigidbody.getVelocity(); // Récupère la vitesse actuelle
+
     if (Keyboard::isKeyPressed(Keyboard::Q)) {
-        rigidbody.applyForce(Vector2f(-speed, 0));
+        velocity.x = -moveSpeed; // 🔥 Définit directement la vitesse sans accélération
         lastInputDirection = 'L';
     }
-    if (Keyboard::isKeyPressed(Keyboard::D)) {
-        rigidbody.applyForce(Vector2f(speed, 0));
+    else if (Keyboard::isKeyPressed(Keyboard::D)) {
+        velocity.x = moveSpeed;
         lastInputDirection = 'R';
     }
+    else {
+        velocity.x = 0; // ✅ Stop net si aucune touche n'est pressée
+    }
+
+    rigidbody.setVelocity(velocity); // Applique la vitesse au rigidbody
 }
+
+
+
 
 
 void Player::handleJump(float dt)
 {
     if (Keyboard::isKeyPressed(Keyboard::Z) && canJump) {
-        rigidbody.applyForce(Vector2f(0, -speed * 8));
+        rigidbody.applyForce(Vector2f(0, -speed * 80));
         jumpNum++;
         canJump = false;
     }
 }
+
+
 
 void Player::handleGrapple(float dt)
 {
@@ -245,10 +258,4 @@ void Player::draw(RenderWindow& window)
 	window.draw(getSprite());
 	grapple.draw(window);
     if (attacking) window.draw(attackSprite);
-
-    RectangleShape hitboxDebug(Vector2f(50, 50));
-    hitboxDebug.setPosition(rigidbody.getPosition());
-    hitboxDebug.setFillColor(Color(255, 0, 0, 100));
-    window.draw(hitboxDebug);
-
 }

@@ -4,7 +4,7 @@ Entity::Entity()
 {
 	texture.loadFromFile("res/sprites/ship.png");
 	sprite.setTexture(texture);
-	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+	/*sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);*/
 }
 
 Entity::Entity(const Vector2f& size, const Color& color)
@@ -14,7 +14,7 @@ Entity::Entity(const Vector2f& size, const Color& color)
 	image.create(size.x, size.y, color);
 	texture.update(image);
 	sprite.setTexture(texture);
-	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+	/*sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);*/
 }
 
 Entity::~Entity()
