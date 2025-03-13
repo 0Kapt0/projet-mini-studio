@@ -54,12 +54,15 @@ void Enemy::isColliding(int x, int y, float dt)
     int newX = getSpriteConst().getPosition().x + velocity.x * dt;
     int newY = getSpriteConst().getPosition().y + velocity.y * dt;
 
+    collided = false;
+
     // Vérifie la collision avant d'appliquer le mouvement
     if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
     {
         newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
         getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
         velocity.x = 0;
+        collided = true;
     }
 
     else if (velocity.x < 0)
@@ -69,6 +72,7 @@ void Enemy::isColliding(int x, int y, float dt)
             newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
             getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
             velocity.x = 0;
+            collided = true;
         }
     }
     if (velocity.y > 0)
@@ -78,6 +82,7 @@ void Enemy::isColliding(int x, int y, float dt)
             newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
             getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
             velocity.y = 0;
+            collided = true;
         }
     }
     else if (velocity.y < 0)
@@ -87,6 +92,7 @@ void Enemy::isColliding(int x, int y, float dt)
             newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
             getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
             velocity.y = 0;
+            collided = true;
         }
     }
 }

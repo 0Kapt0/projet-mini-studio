@@ -3,7 +3,7 @@
 
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength � 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -11,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength � 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -142,6 +142,36 @@ void Player::handleDash(float dt)
         canDash = false;
         dashTimer = 0;
         velocity.y = 0;
+                angle += angularVelocity * dt;
+
+                Vector2f newPos = Vector2f(grapple.getStuckPosition().x + (angle) * grapple.getGrappleLength(),
+                    grapple.getStuckPosition().y + cos(angle) * grapple.getGrappleLength());
+
+				if (sqrt(pow(newPos.x - playerPosition.x, 2) + pow(newPos.y - playerPosition.y, 2)) > 20) {
+					Vector2f direction = newPos - playerPosition;
+					float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+					direction /= length;
+					newPos = playerPosition + direction * dt * speed;
+				}
+
+
+
+                getSprite().setPosition(newPos);
+
+                velocity = Vector2f(0, 0);
+            }
+            else
+			{
+				grappleStuck = false;
+			}
+
+		//cout << velocity.x << " " << velocity.y << endl;
+
+        if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
+            dashing = true;
+            canDash = false;
+            dashTimer = 0;
+            velocity.y = 0;
 
         switch (lastInputDirection) {
         case 'L': dashDirection.x = -speed * 3.5f; break;

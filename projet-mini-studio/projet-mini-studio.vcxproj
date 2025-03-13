@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Background.hpp" />
+    <ClInclude Include="include\ChargingBoss.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\EnemyFlying.hpp" />
     <ClInclude Include="include\Entity.hpp" />
@@ -35,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\Background.cpp" />
+    <ClCompile Include="scr\ChargingBoss.cpp" />
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\EnemyFlying.cpp" />
     <ClCompile Include="scr\Entity.cpp" />

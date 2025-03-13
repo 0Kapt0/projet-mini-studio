@@ -6,6 +6,7 @@
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
 #include "../include/EnemyFlying.hpp"
+#include "../include/ChargingBoss.hpp"
 #include "../include/Background.hpp"
 
 #include <iostream>
@@ -50,6 +51,7 @@ void Game::run() {
     Enemy enemy(Vector2f(50, 50), Color::Blue, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
     EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green);
+    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);
 
     bool collisionMode = false;
     Clock clock;
@@ -148,6 +150,7 @@ void Game::run() {
             background.update(cameraX);
             foreground.update(cameraX);
 
+            chargingBoss.behavior(deltaTime, player, window);
         }
 
         window.clear();
@@ -166,6 +169,8 @@ void Game::run() {
             rangedEnemy.drawProjectiles(window);
             flyingEnemy.draw(window);
             foreground.draw(window);
+            chargingBoss.draw(window);
+
             break;
 
         case GameState::Editor:

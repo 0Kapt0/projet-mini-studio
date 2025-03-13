@@ -3,6 +3,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "Map.hpp"
 using namespace sf;
 using namespace std;
 
@@ -12,6 +13,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 public:
+	
 	Entity();
 
 	Entity(const Vector2f& size, const Color& color);
@@ -19,7 +21,10 @@ public:
 	~Entity();
 
 	Sprite& getSprite();
-
+	float getHeight();
+	float getWidth();
+	bool collided = false;
+	
 	Texture& getTexture();
 
 	bool intersects(const Entity& other) const;
