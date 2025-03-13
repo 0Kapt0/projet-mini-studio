@@ -117,7 +117,7 @@ void Player::handleMovement(float dt) {
 void Player::handleJump(float dt)
 {
     if (Keyboard::isKeyPressed(Keyboard::Z) && canJump) {
-        rigidbody.applyForce(Vector2f(0, -speed * 8));
+        rigidbody.applyForce(Vector2f(0, -speed * 100));
         jumpNum++;
         canJump = false;
     }
@@ -137,41 +137,37 @@ void Player::handleGrapple(float dt)
 
 void Player::handleDash(float dt)
 {
+    Vector2f playerPosition = getSprite().getPosition();
+
     if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
         dashing = true;
         canDash = false;
         dashTimer = 0;
         velocity.y = 0;
-                angle += angularVelocity * dt;
+        angle += angularVelocity * dt;
 
-                Vector2f newPos = Vector2f(grapple.getStuckPosition().x + (angle) * grapple.getGrappleLength(),
-                    grapple.getStuckPosition().y + cos(angle) * grapple.getGrappleLength());
+        Vector2f newPos = Vector2f(grapple.getStuckPosition().x + (angle)*grapple.getGrappleLength(),
+            grapple.getStuckPosition().y + cos(angle) * grapple.getGrappleLength());
 
-				if (sqrt(pow(newPos.x - playerPosition.x, 2) + pow(newPos.y - playerPosition.y, 2)) > 20) {
-					Vector2f direction = newPos - playerPosition;
-					float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-					direction /= length;
-					newPos = playerPosition + direction * dt * speed;
-				}
+        if (sqrt(pow(newPos.x - playerPosition.x, 2) + pow(newPos.y - playerPosition.y, 2)) > 20) {
+            Vector2f direction = newPos - playerPosition;
+            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            direction /= length;
+            newPos = playerPosition + direction * dt * speed;
+        }
 
+        getSprite().setPosition(newPos);
+        velocity = Vector2f(0, 0);
+    }
+    else {
+        grappleStuck = false;
+    }
 
-
-                getSprite().setPosition(newPos);
-
-                velocity = Vector2f(0, 0);
-            }
-            else
-			{
-				grappleStuck = false;
-			}
-
-		//cout << velocity.x << " " << velocity.y << endl;
-
-        if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
-            dashing = true;
-            canDash = false;
-            dashTimer = 0;
-            velocity.y = 0;
+    if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
+        dashing = true;
+        canDash = false;
+        dashTimer = 0;
+        velocity.y = 0;
 
         switch (lastInputDirection) {
         case 'L': dashDirection.x = -speed * 3.5f; break;
@@ -190,6 +186,7 @@ void Player::handleDash(float dt)
         getSprite().move(dashDirection.x * dt, 0);
     }
 }
+
 
 void Player::handleAttack(float dt)
 {
