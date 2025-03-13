@@ -240,7 +240,7 @@ void Player::update(float dt)
     }
 }
 
-}
+
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
