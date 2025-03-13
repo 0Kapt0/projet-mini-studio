@@ -7,6 +7,7 @@
 #include "../include/TileSelector.hpp"
 #include "../include/EnemyFlying.hpp"
 #include "../include/ChargingBoss.hpp"
+#include "../include/Background.hpp"
 
 #include <iostream>
 
@@ -32,10 +33,18 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
+    background.loadTextures("assets/background/layer1.png",
+        "assets/background/layer2.png",
+        "assets/background/layer3.png",
+        "assets/background/layer4.png");
+
+    foreground.loadTextures("assets/foreground/layer1.png",
+        "assets/foreground/layer2.png");
+
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map level1("assets/tileset/Tileset_Grass.png", "assets/map/Level1.txt");
+    Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
@@ -79,11 +88,6 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                //player.update(deltaTime);
-                //player.handleInput(event, window, deltaTime);
-                //rangedEnemy.update(deltaTime);
-                //enemy.update(0.016f);
-                //flyingEnemy.update(deltaTime, player);
 
 
                 break;
@@ -141,13 +145,17 @@ void Game::run() {
             }
         }
 
-        if (currentState == GameState::Playing) {
+        if (currentState == GameState::Playing || currentState == GameState::Editor) {
             player.update(deltaTime);
 
             player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
             enemy.update(0.016f);
             flyingEnemy.update(deltaTime, player);
+            float cameraX = player.getSprite().getPosition().x;
+            background.update(cameraX);
+            foreground.update(cameraX);
+
             chargingBoss.behavior(deltaTime, player, window);
         }
 
@@ -159,12 +167,14 @@ void Game::run() {
             break;
 
         case GameState::Playing:
+            background.draw(window);
             level1.draw(window);
             player.draw(window);
             enemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
             flyingEnemy.draw(window);
+            foreground.draw(window);
             chargingBoss.draw(window);
 
             break;
@@ -172,9 +182,11 @@ void Game::run() {
 
             break;
         case GameState::Editor:
+            background.draw(window);
             map.draw(window);
 			map.drawCam(window);
             tileSelector.draw(window);
+            foreground.draw(window);
             break;
 
         case GameState::Pause:

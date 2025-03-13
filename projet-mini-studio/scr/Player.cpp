@@ -1,7 +1,9 @@
-#include "../include/Player.hpp"
+ï»¿#include "../include/Player.hpp"
+#define TILE_SIZE 64
+
 
 Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength ï¿½ 0.0f
 {
     speed = 200;
     velocity = Vector2f(0, 0);
@@ -9,7 +11,7 @@ Player::Player(Map& map)
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
-    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f) // Initialisez grappleLength à 0.0f
+    : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f), rigidbody(1.0f, 0.99f, map) // Initialisez grappleLength ï¿½ 0.0f
 {
     speed = 450;
     velocity = Vector2f(0, 0);
@@ -20,6 +22,8 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     attackTexture.update(image);
     attackSprite.setTexture(attackTexture);
     playerView.setSize(1920, 1080);
+    Rigidbody2D rigidbody(1.0f, 0.99f, map);
+    rigidbody.setPosition(Vector2f(100, 100));
 }
 
 Player::~Player()
@@ -30,16 +34,16 @@ Player::~Player()
 Vector2f findTangentPoint(const Vector2f& center, float radius, const Vector2f& point) {
     float dx = point.x - center.x;
     float dy = point.y - center.y;
-    float distance = std::sqrt(dx * dx + dy * dy);
+    float distance = sqrt(dx * dx + dy * dy);
 
     if (distance < radius) {
         // Pas de tangente possible
         return Vector2f(0, 0);
     }
 
-    float angle = std::acos(radius / distance);
-    float cosAngle = std::cos(angle);
-    float sinAngle = std::sin(angle);
+    float angle = acos(radius / distance);
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
 
     Vector2f tangent1(
         center.x + radius * (dx * cosAngle - dy * sinAngle) / distance,
@@ -64,137 +68,110 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
     float cross = point1.x * point2.y - point1.y * point2.x;
 
     // Calculer l'angle en radians
-    float angle = std::atan(cross / dot);
+    float angle = atan(cross / dot);
 
     return angle;
 }
 
 void Player::update(float dt)
 {
-	grappleMove = false;
+    rigidbody.update(dt);
+    handleCollisionsAndSync();
+    handleMovement(dt);
+    handleJump(dt);
+    handleGrapple(dt);
+    handleDash(dt);
+    handleAttack(dt);
+    updateCamera();
+}
+
+void Player::updateCamera()
+{
     Vector2f playerPosition = getSprite().getPosition();
-    Vector2f stuckPosition = grapple.getStuckPosition();
-    if (grapple.isStuck() && leftButtonHold) {
-        Vector2f direction = stuckPosition - playerPosition;
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-        direction /= length; // Normaliser la direction
-        velocity = direction * speed * 1.9f;
-		grappleMove = true;
-        onGround = false;
+    Vector2f cameraPosition = playerView.getCenter();
+
+    cameraPosition.x = playerPosition.x;
+
+    if (playerPosition.y > 670) {
+        cameraPosition.y = 670;
+    }
+    else {
+        cameraPosition.y = playerPosition.y;
     }
 
+    playerView.setCenter(cameraPosition);
+}
 
-    if (!grappleMove)
-    {
-        if (!dashing) {
-            dashTimer += dt;
-            if (dashTimer >= dashCooldown && getSprite().getPosition().y > 200) canDash = true;
+void Player::handleMovement(float dt) {
+    if (Keyboard::isKeyPressed(Keyboard::Q)) {
+        rigidbody.applyForce(Vector2f(-speed, 0));
+        lastInputDirection = 'L';
+    }
+    if (Keyboard::isKeyPressed(Keyboard::D)) {
+        rigidbody.applyForce(Vector2f(speed, 0));
+        lastInputDirection = 'R';
+    }
+}
 
-        if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
-        {
-            canJump = true;
+
+void Player::handleJump(float dt)
+{
+    if (Keyboard::isKeyPressed(Keyboard::Z) && canJump) {
+        rigidbody.applyForce(Vector2f(0, -speed * 100));
+        jumpNum++;
+        canJump = false;
+    }
+}
+
+void Player::handleGrapple(float dt)
+{
+    grappleMove = false;
+    if (grapple.isStuck() && leftButtonHold) {
+        Vector2f direction = grapple.getStuckPosition() - getSprite().getPosition();
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        direction /= length;
+        velocity = direction * speed * 1.9f;
+        grappleMove = true;
+    }
+}
+
+void Player::handleDash(float dt)
+{
+    Vector2f playerPosition = getSprite().getPosition();
+
+    if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
+        dashing = true;
+        canDash = false;
+        dashTimer = 0;
+        velocity.y = 0;
+        angle += angularVelocity * dt;
+
+        Vector2f newPos = Vector2f(grapple.getStuckPosition().x + (angle)*grapple.getGrappleLength(),
+            grapple.getStuckPosition().y + cos(angle) * grapple.getGrappleLength());
+
+        if (sqrt(pow(newPos.x - playerPosition.x, 2) + pow(newPos.y - playerPosition.y, 2)) > 20) {
+            Vector2f direction = newPos - playerPosition;
+            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            direction /= length;
+            newPos = playerPosition + direction * dt * speed;
         }
 
-            velocity.y += 14.8f;
+        getSprite().setPosition(newPos);
+        velocity = Vector2f(0, 0);
+    }
+    else {
+        grappleStuck = false;
+    }
 
-        if (getSprite().getPosition().y > 800)
-        {
-            canJump = true;
-            jumpNum = 0;
-            velocity.y = 0;
-            dashMomentum = false;
-        }
-        if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D)) {
-            if (dashMomentum) {
-                if (lastInputDirection == 'L') {
-                    velocity.x += 14.8f;
-                }
-                if (lastInputDirection == 'R') {
-                    velocity.x -= 14.8f;
-                }
-                if (velocity.x > -50 && velocity.x < 50) {
-                    velocity.x = 0;
-                    dashMomentum = false;
-                }
-            }
-            else {
-                velocity.x = 0;
-            }
-        }
+    if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
+        dashing = true;
+        canDash = false;
+        dashTimer = 0;
+        velocity.y = 0;
 
-        if (Keyboard::isKeyPressed(Keyboard::Q) && getSprite().getPosition().x - speed * dt) {
-            velocity.x = -speed;
-            lastInputDirection = 'L';
-            dashMomentum = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::D)) {
-            velocity.x = speed;
-            lastInputDirection = 'R';
-            dashMomentum = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
-        {
-            velocity.y = -speed;
-            jumpNum++;
-            canJump = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
-            velocity.y += speed;
-
-            if (grapple.isStuck()) {
-                if (!grappleStuck)
-                {
-					grappleStuck = true;
-                    angle = calculateAngle(playerPosition, grapple.getStuckPosition());
-					angularVelocity = 0;
-                }
-                float gravityEffect = -swingForce * sin(angle);
-                angularVelocity += gravityEffect * dt;
-                angularVelocity *= DAMPING;
-
-                if (Keyboard::isKeyPressed(Keyboard::Q) && angularVelocity > -2.0f) {
-                    angularVelocity -= swingAcceleration * dt;
-                }
-                if (Keyboard::isKeyPressed(Keyboard::D) && angularVelocity < 2.0f) {
-                    angularVelocity += swingAcceleration * dt;
-                }
-
-                angle += angularVelocity * dt;
-
-                Vector2f newPos = Vector2f(grapple.getStuckPosition().x + (angle) * grapple.getGrappleLength(),
-                    grapple.getStuckPosition().y + cos(angle) * grapple.getGrappleLength());
-
-				if (sqrt(pow(newPos.x - playerPosition.x, 2) + pow(newPos.y - playerPosition.y, 2)) > 20) {
-					Vector2f direction = newPos - playerPosition;
-					float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-					direction /= length;
-					newPos = playerPosition + direction * dt * speed;
-				}
-
-
-
-                getSprite().setPosition(newPos);
-
-                velocity = Vector2f(0, 0);
-            }
-            else
-			{
-				grappleStuck = false;
-			}
-
-		//cout << velocity.x << " " << velocity.y << endl;
-
-        if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash) {
-            dashing = true;
-            canDash = false;
-            dashTimer = 0;
-            velocity.y = 0;
-
-            switch (lastInputDirection) {
-            case('L'): dashDirection.x = -speed * 3.5f; break;
-            case('R'): dashDirection.x = speed * 3.5f; break;
-            }
-            //dashDirection = velocity * 3.f; // si on veut un dash dans toutes les directions
+        switch (lastInputDirection) {
+        case 'L': dashDirection.x = -speed * 3.5f; break;
+        case 'R': dashDirection.x = speed * 3.5f; break;
         }
     }
 
@@ -206,59 +183,51 @@ void Player::update(float dt)
             dashMomentum = true;
             velocity = dashDirection;
         }
-		isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
-        if (collided) {
-            switch (lastInputDirection) {
-            case('L'): getSprite().move(speed * 10.f * dt, 0); break;
-            case('R'): getSprite().move(-speed * 10.f * dt, 0); break;
-            }
-            
-            dashing = false;
-            dashDuration = 0;
-            dashDirection.x = 0;
-        }
         getSprite().move(dashDirection.x * dt, 0);
     }
-    if (grapple.isActive()) {
-        grapple.updateStartPosition(getSprite().getPosition());
-    }
+}
 
-    if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
+
+void Player::handleAttack(float dt)
+{
+    if (Mouse::isButtonPressed(Mouse::Left) && canAttack) {
         attacking = true;
         canAttack = false;
         attackTimer = 0;
 
         switch (lastInputDirection) {
-            case('L'): attackDirection = "left"; break;
-            case('R'): attackDirection = "right"; break;
+        case 'L': attackDirection = "left"; break;
+        case 'R': attackDirection = "right"; break;
         }
     }
+
     attackTimer += dt;
     if (attackTimer >= attackCooldown) canAttack = true;
 
     if (attacking) {
         attackDuration += dt;
-        if (attackDuration >= 0.2){
+        if (attackDuration >= 0.2) {
             attacking = false;
             attackDuration = 0;
         }
-        if (attackDirection == "left"){
-            attackSprite.setPosition(getSprite().getPosition().x - (getSprite().getLocalBounds().width * getSprite().getScale().x) / 2
-                - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
-                getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
-        }
-        if (attackDirection == "right") {
-            attackSprite.setPosition(getSprite().getPosition().x + (getSprite().getLocalBounds().width * getSprite().getScale().x) / 2,
-                getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
-        }
     }
-    playerView.setCenter(getSprite().getPosition());
-    getSprite().move(velocity.x* dt, velocity.y* dt);
-
-    std::cout << "Velocity: " << velocity.x << ", " << velocity.y << std::endl;
 }
 
+void Player::handleCollisionsAndSync() {
+    Vector2f newPosition = rigidbody.getPosition();
+
+    bool wasOnGround = canJump;
+    canJump = rigidbody.isOnGround();
+
+    if (!wasOnGround && canJump) {
+        velocity.x *= 0.8f;
+    }
+
+    rigidbody.setPosition(newPosition);
+    getSprite().setPosition(rigidbody.getPosition());
 }
+
+
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
@@ -276,7 +245,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             Vector2f startPosition = getSprite().getPosition();
             Vector2i mousePosition = Mouse::getPosition(window);
             Vector2f direction = Vector2f(mousePosition) - startPosition;
-            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            float length = sqrt(direction.x * direction.x + direction.y * direction.y);
             direction /= length;
             grapple.launch(startPosition, direction);
         }
@@ -304,64 +273,9 @@ void Player::draw(RenderWindow& window)
 	grapple.draw(window);
     if (attacking) window.draw(attackSprite);
 
+    RectangleShape hitboxDebug(Vector2f(50, 50));
+    hitboxDebug.setPosition(rigidbody.getPosition());
+    hitboxDebug.setFillColor(Color(255, 0, 0, 100));
+    window.draw(hitboxDebug);
+
 }
-
-void Player::isColliding(int x, int y, float dt)
-{
-    int newX = getSpriteConst().getGlobalBounds().left + velocity.x * dt;
-    int newY = getSpriteConst().getGlobalBounds().top + velocity.y * dt;
-
-    collided = false;
-
-    // Vérifie la collision avant d'appliquer le mouvement
-    if (velocity.x > 0)
-    {
-        if (map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getSpriteConst().getGlobalBounds().width, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
-        {
-            newX = (static_cast<int>((getSprite().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width) / 32)) * 32 + 32 - getTexture().getSize().x / 2;
-            getSprite().setPosition(newX - 0.1, getSpriteConst().getPosition().y);
-            velocity.x = 0;
-            dashDirection.x = 0;
-            jumpNum = 1;
-            collided = true;
-        }
-    }
-    else if (velocity.x < 0)
-    {
-        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
-        {
-            newX = (static_cast<int>(getSprite().getGlobalBounds().left / 32)) * 32 + getTexture().getSize().x / 2;
-            getSprite().setPosition(newX + 0.1, getSpriteConst().getPosition().y);
-            velocity.x = 0;
-            dashDirection.x = 0;
-            jumpNum = 1;
-            collided = true;
-        }
-    }
-
-    if (velocity.y > 0)
-    {
-        if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY + getSpriteConst().getGlobalBounds().height) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY + getSpriteConst().getGlobalBounds().height))
-        {
-            newY = (static_cast<int>((getSprite().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) / 32)) * 32 + 32 - getTexture().getSize().y / 2;
-            jumpNum = 0;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1);
-            velocity.y = 0;
-            dashDirection.y = 0;
-			onGround = true;
-            collided = true;
-        }
-    }
-    else if (velocity.y < 0)
-    {
-        if (map.isColliding(getSpriteConst().getGlobalBounds().left, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width, newY) || map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
-        {
-            newY = (static_cast<int>(getSprite().getGlobalBounds().top / 32)) * 32 + getTexture().getSize().y / 2;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1);
-            velocity.y = 0;
-            dashDirection.y = 0;
-            collided = true;
-        }
-    }
-}
-
