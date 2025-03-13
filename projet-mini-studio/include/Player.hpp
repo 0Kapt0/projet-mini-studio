@@ -18,6 +18,8 @@ public:
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
+	void isColliding(int x, int y, float dt);
+	void isSwingColliding(Vector2f& newPos, float dt);
 
 private:
     //fonction du update
@@ -71,6 +73,15 @@ private:
     float attackDuration = 0;
     float attackCooldown = 1;
     float attackTimer = 0;
+	float grappleLength = 0.0f;
+	bool grappleMove = false;
+	bool onGround = true;
+	float swingForce = 100.0f;
+	float angularVelocity = 0.0f;
+	float angle = 0.0f;
+	float DAMPING = 0.99f;
+	float swingAcceleration = 50.0f;
+	bool grappleStuck = false;
 };
 
 #endif
