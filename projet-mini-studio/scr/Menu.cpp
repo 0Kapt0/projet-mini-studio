@@ -20,6 +20,7 @@ Menu::Menu() {
     if (!settingsButton.loadFromFile("assets/menutexture/settings.png")) {
         cerr << "Erreur lors du chargement de settingstexture." << endl;
     }
+    settingSprite.setTexture(settingsButton);
     if (!menuButton.loadFromFile("assets/menutexture/menu.png")) {
         cerr << "Erreur lors du chargement de editmodetexture." << endl;
     }
@@ -43,10 +44,9 @@ void Menu::draw(RenderWindow& window) {
     window.draw(editSprite);
 
     //settings
-    Sprite settingsSprite(settingsButton);
-    settingsSprite.setScale(0.4f, 0.4f);
-    settingsSprite.setPosition(960.0f, 700.0f);
-    window.draw(settingsSprite);
+    settingSprite.setScale(0.4f, 0.4f);
+    settingSprite.setPosition(960.0f, 700.0f);
+    window.draw(settingSprite);
     //menu
     Sprite menuSprite(menuButton);
     menuSprite.setScale(0.4f, 0.4f);

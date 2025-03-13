@@ -18,7 +18,7 @@ void Grapple::launch(const Vector2f& startPosition, const Vector2f& direction) {
 
 void Grapple::update(float deltaTime, RenderWindow& window) {
     if (active && !stuck) {
-        Vector2f newPosition = line[1].position + direction * maxRange * 2.5f *deltaTime;
+        Vector2f newPosition = line[1].position + direction * maxRange * 2.5f * deltaTime;
 
         // Vérifier la collision avec le mur
         if (map.isColliding(newPosition.x, newPosition.y)) {

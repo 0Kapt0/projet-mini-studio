@@ -18,6 +18,7 @@ enum class GameState {
     Playing,
     Editor,
     Pause,
+    Settings,
     GameOver
 };
 
@@ -68,6 +69,11 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Playing;
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.settingSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Settings;
                     }
                 }
                 break;
@@ -162,7 +168,9 @@ void Game::run() {
             chargingBoss.draw(window);
 
             break;
+        case GameState::Settings:
 
+            break;
         case GameState::Editor:
             map.draw(window);
 			map.drawCam(window);
