@@ -16,6 +16,13 @@ enum class SlopeType {
     SlopeDown
 };
 
+struct TileChange {
+    int x;
+    int y;
+    int oldTile;
+    int newTile;
+};
+
 class Map {
 public:
     Map(const string& tilesetPath, const string& mapPath);
@@ -30,6 +37,13 @@ public:
     void drawCam(RenderWindow& window);
     void generateTiles();
 
+    void undo();
+	void redo();
+    vector<vector<TileChange>> undoStack;
+    vector<vector<TileChange>> redoStack;
+    vector<TileChange> currentDragChanges;
+    void pushAction(const vector<TileChange>& action);
+
     bool isColliding(int x, int y) const;
 
     bool isSlopeTile(int tileX, int tileY) const;
@@ -43,6 +57,8 @@ public:
     static const int TILE_SIZE = 64;
 
 private:
+
+
     Texture tilesetTexture;
     vector<Sprite> tiles;
     set<int> collisionTiles;

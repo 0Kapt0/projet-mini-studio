@@ -101,8 +101,28 @@ void Game::run() {
 
             case GameState::Editor:
             {
+                //Gestion de la caméra (Z,Q,S,D)
                 tileSelector.handleEvent(event, window);
                 map.handleEvent(event);
+
+
+                if (event.type == sf::Event::KeyPressed &&
+                    event.key.code == sf::Keyboard::G)
+                {
+                    showGrid = !showGrid;
+                }
+
+				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z) {
+                    bool ctrl = event.key.control;
+                    bool shift = event.key.shift;
+                    if (ctrl && !shift) {
+                        map.undo();
+                    }
+                    else if (ctrl && shift) {
+                        map.redo();
+                    }
+                }
 
                 Vector2i mousePos = Mouse::getPosition(window);
                 Vector2f worldPos = window.mapPixelToCoords(mousePos);
@@ -125,6 +145,17 @@ void Game::run() {
                     }
                     else if (rightPressed) {
                         map.handleClick(window, mousePos.x, mousePos.y, 74);
+                    }
+                }
+
+                if (event.type == sf::Event::MouseButtonReleased) {
+                    if (event.mouseButton.button == sf::Mouse::Left ||
+                        event.mouseButton.button == sf::Mouse::Right)
+                    {
+                        if (!map.currentDragChanges.empty()) {
+                            map.pushAction(map.currentDragChanges);
+                            map.currentDragChanges.clear();
+                        }
                     }
                 }
 
@@ -187,7 +218,9 @@ void Game::run() {
         case GameState::Editor:
             background.draw(window);
             map.draw(window);
-            map.drawGrid(window);
+            if (showGrid) {
+                map.drawGrid(window);
+            }
 			map.drawCam(window);
             tileSelector.draw(window);
             foreground.draw(window);

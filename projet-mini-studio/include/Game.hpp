@@ -14,6 +14,7 @@ class Game {
 private:
     Background background;
     Foreground foreground;
+	bool showGrid = true;
 public:
     void run();
     Game();
