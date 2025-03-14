@@ -19,8 +19,8 @@ EnemyFlying::EnemyFlying(const Vector2f& size, const Color& color, Map& map)
     velocity = Vector2f(0, 0);
     detectionRadius = 200.0f; 
     // Example waypoints
-    waypoints.push_back(Vector2f(100, 500));
-    waypoints.push_back(Vector2f(700, 500));
+    waypoints.push_back(Vector2f(100, 100));
+    waypoints.push_back(Vector2f(700, 100));
 }
 
 EnemyFlying::~EnemyFlying()
@@ -35,7 +35,8 @@ bool EnemyFlying::isPlayerInRadius(const Vector2f& playerPosition) {
     return distance <= detectionRadius;
 }
 
-void EnemyFlying::update(float dt, const Player& player) {
+void EnemyFlying::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
     switch (state) {

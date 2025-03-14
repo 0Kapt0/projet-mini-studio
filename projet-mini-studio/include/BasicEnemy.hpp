@@ -24,7 +24,8 @@ public:
     BasicEnemy(const Vector2f& size, const Color& color, Map& map);
     virtual ~BasicEnemy();
 
-    virtual void update(float dt, const Player& player);
+    //virtual void update(float dt, const Player& player);
+    void update(float dt, Player& player, RenderWindow& window) override;
     bool isPlayerInRadius(const Vector2f& playerPosition);
     bool isTouchingPlayer(const Player& player);
     void drawDetectionRadius(sf::RenderWindow& window);

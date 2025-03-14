@@ -26,10 +26,11 @@ public:
     RangedEnemy(Map& map);
     RangedEnemy(const Vector2f& size, const sf::Color& color, Map& map);
 
-    void update(float dt) override;
-    void update(float dt, const Player& player);
+    void update(float dt, Player& player, RenderWindow& window) override;
+    //void update(float dt, const Player& player);
     void shoot();
-    void drawProjectiles(sf::RenderWindow& window);
+    //void drawProjectiles(sf::RenderWindow& window);
+    void draw(RenderWindow& window) override;
 
     bool isPlayerInRadius(const Vector2f& playerPosition, float radius);
     void setWaypoints(const std::vector<Vector2f>& newWaypoints);

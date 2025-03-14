@@ -11,6 +11,7 @@ BasicEnemy::BasicEnemy(Map& map)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    type = "BasicEnemy";
 }
 
 BasicEnemy::BasicEnemy(const Vector2f& size, const Color& color, Map& map)
@@ -22,6 +23,7 @@ BasicEnemy::BasicEnemy(const Vector2f& size, const Color& color, Map& map)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    type = "BasicEnemy";
 }
 
 BasicEnemy::~BasicEnemy()
@@ -44,7 +46,7 @@ void BasicEnemy::update(float dt, const Player& player) {
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
     // Call the base class update method to handle gravity
-    Enemy::update(dt);
+    Enemy::update(dt, player, window);
 
     switch (state) {
     case PATROLLING:
