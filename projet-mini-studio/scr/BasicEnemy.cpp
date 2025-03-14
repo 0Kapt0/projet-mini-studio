@@ -42,7 +42,7 @@ bool BasicEnemy::isTouchingPlayer(const Player& player) {
     return getSprite().getGlobalBounds().intersects(player.getSpriteConst().getGlobalBounds());
 }
 
-void BasicEnemy::update(float dt, const Player& player) {
+void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
     // Call the base class update method to handle gravity
