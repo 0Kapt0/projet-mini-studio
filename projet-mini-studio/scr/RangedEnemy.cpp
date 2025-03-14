@@ -11,6 +11,7 @@ RangedEnemy::RangedEnemy(Map& map)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    type = "RangedEnemy";
 }
 
 RangedEnemy::RangedEnemy(const Vector2f& size, const sf::Color& color, Map& map)
@@ -23,6 +24,7 @@ RangedEnemy::RangedEnemy(const Vector2f& size, const sf::Color& color, Map& map)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    type = "RangedEnemy";
 }
 
 bool RangedEnemy::isPlayerInRadius(const Vector2f& playerPosition, float radius) {
@@ -33,12 +35,13 @@ bool RangedEnemy::isPlayerInRadius(const Vector2f& playerPosition, float radius)
     return distance <= radius;
 }
 
-void RangedEnemy::update(float dt) {
-    // Call the base class update method to handle gravity
-    Enemy::update(dt);
-}
+//void RangedEnemy::update(float dt) {
+//    // Call the base class update method to handle gravity
+//    Enemy::update(dt);
+//}
 
-void RangedEnemy::update(float dt, const Player& player) {
+void RangedEnemy::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
     switch (state) {
@@ -77,7 +80,7 @@ void RangedEnemy::update(float dt, const Player& player) {
         projectile.move(0, 300 * dt);
     }
 
-    Enemy::update(dt); // Call base class update to handle common enemy behavior
+    Enemy::update(dt, player, window); // Call base class update to handle common enemy behavior
 
     if (getSprite().getPosition().y > 800)
     {
@@ -118,8 +121,18 @@ void RangedEnemy::shoot() {
     projectiles.push_back(projectile);
 }
 
-void RangedEnemy::drawProjectiles(sf::RenderWindow& window) {
+//void RangedEnemy::drawProjectiles(sf::RenderWindow& window) {
+//    for (const auto& projectile : projectiles) {
+//        window.draw(projectile);
+//    }
+//}
+
+void RangedEnemy::draw(RenderWindow& window) {
+
+    window.draw(getSprite());
+    //DRAW PROJECTILES
     for (const auto& projectile : projectiles) {
+        window.draw(projectile);
         window.draw(projectile);
     }
 }
