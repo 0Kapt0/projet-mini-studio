@@ -13,7 +13,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 public:
-	
+	int hp;
 	Entity();
 
 	Entity(const Vector2f& size, const Color& color);
@@ -24,6 +24,12 @@ public:
 	float getHeight();
 	float getWidth();
 	bool collided = false;
+	bool invincible = false;
+	float invincibilityTimer = 0;
+	float invincibilityMaxTime = 1; //modif dans constructeur player ou enemy
+	void invincibilityAfterHit(float dt);
+	std::string type = "null";
+ 	bool toBeDeleted = false;
 	
 	Texture& getTexture();
 

@@ -7,6 +7,8 @@
 
 class EnemyFlying : public Enemy {
 protected:
+    /*float speed;
+    Vector2f velocity;*/
     float detectionRadius;
     std::vector<Vector2f> waypoints;
     size_t currentWaypointIndex;
@@ -24,7 +26,8 @@ public:
     EnemyFlying(const Vector2f& size, const Color& color, Map& map);
     virtual ~EnemyFlying();
 
-    virtual void update(float dt, const Player& player);
+    //virtual void update(float dt, const Player& player);
+    void update(float dt, Player& player, RenderWindow& window) override;
     bool isPlayerInRadius(const Vector2f& playerPosition);
     void drawDetectionRadius(sf::RenderWindow& window);
 
