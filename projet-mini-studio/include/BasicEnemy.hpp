@@ -10,15 +10,12 @@ protected:
     float speed;
     Vector2f velocity;
     float detectionRadius;
-    vector<Vector2f> waypoints;
+    std::vector<Vector2f> waypoints;
     size_t currentWaypointIndex;
-    Vector2f lastKnownPlayerPosition;
-    float gravity;
 
     enum State {
         PATROLLING,
         CHASING,
-        SEARCHING,
         ATTACKING
     } state;
 
@@ -29,6 +26,7 @@ public:
 
     virtual void update(float dt, const Player& player);
     bool isPlayerInRadius(const Vector2f& playerPosition);
+    bool isTouchingPlayer(const Player& player);
     void drawDetectionRadius(sf::RenderWindow& window);
 
     void setWaypoints(const std::vector<Vector2f>& newWaypoints);
@@ -36,7 +34,6 @@ public:
 private:
     void patrol(float dt);
     void chase(float dt, const Vector2f& playerPosition);
-    void search(float dt);
     void attack(const Player& player);
 };
 
