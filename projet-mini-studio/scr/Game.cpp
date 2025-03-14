@@ -59,7 +59,7 @@ void Game::run() {
 	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
     ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);*/
     EntityManager entityManager;
-    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Yellow, map);
+    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
     entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
     entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);

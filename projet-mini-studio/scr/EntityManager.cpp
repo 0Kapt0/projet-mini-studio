@@ -6,27 +6,27 @@ EntityManager::EntityManager() {
 
 void EntityManager::createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
 	if (type == "Player") {
-		std::shared_ptr<Player> _player = std::make_shared<Player>(Vector2f(50, 50), Color::Red, map);
+		std::shared_ptr<Player> _player = std::make_shared<Player>(size, color, map);
 		_player->getSprite().setPosition(position);
 		player = _player;
 	}
 	if (type == "EnemyFlying") {
-		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(Vector2f(50, 50), Color::Green, map);
+		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
 		eFlying->getSprite().setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(Vector2f(50, 50), Color::Yellow, map);
+		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(size, color, map);
 		eRanged->getSprite().setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(Vector2f(50, 50), Color::Blue, map);
+		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(size, color, map);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(Vector2f(100, 100), Color(239, 12, 197), map);
+		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(size, color, map);
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
 	}
