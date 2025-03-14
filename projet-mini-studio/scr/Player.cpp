@@ -131,7 +131,7 @@ void Player::handleGrapplePull(float dt)
 void Player::handleMovement(float dt)
 {
     if (grappleMove) return;
-
+    if (onGround) dashMomentum = false;
     if (!dashing)
     {
         handleNormalMovement(dt);
@@ -146,7 +146,7 @@ void Player::handleMovement(float dt)
 void Player::handleNormalMovement(float dt)
 {
     dashTimer += dt;
-    if (dashTimer >= dashCooldown && getSprite().getPosition().y > 200.f)
+    if (dashTimer >= dashCooldown && onGround)
         canDash = true;
 
     if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
@@ -164,18 +164,35 @@ void Player::handleNormalMovement(float dt)
         velocity.y = 0.f;
     }
 
-    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D))
-        velocity.x = 0.f;
+    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D)) {
+        if (dashMomentum) {
+            if (lastInputDirection == 'L') {
+                velocity.x += 14.8f;
+            }
+            if (lastInputDirection == 'R') {
+                velocity.x -= 14.8f;
+            }
+            if (velocity.x > -50 && velocity.x < 50) {
+                velocity.x = 0;
+                dashMomentum = false;
+            }
+        }
+        else {
+            velocity.x = 0;
+        }
+    }
 
     if (Keyboard::isKeyPressed(Keyboard::Q))
     {
         velocity.x = -speed;
         lastInputDirection = 'L';
+        dashMomentum = false;
     }
     else if (Keyboard::isKeyPressed(Keyboard::D))
     {
         velocity.x = speed;
         lastInputDirection = 'R';
+        dashMomentum = false;
     }
 
     if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
@@ -247,8 +264,8 @@ void Player::handleNormalMovement(float dt)
 
         switch (lastInputDirection)
         {
-        case 'L': dashDirection.x = -speed * 3.f; break;
-        case 'R': dashDirection.x = speed * 3.f; break;
+        case 'L': dashDirection.x = -speed * 3.5f; break;
+        case 'R': dashDirection.x = speed * 3.5f; break;
         default:  dashDirection.x = 0.f;          break;
         }
     }
@@ -257,10 +274,12 @@ void Player::handleNormalMovement(float dt)
 void Player::handleDashingMovement(float dt)
 {
     dashDuration += dt;
-    if (dashDuration >= 0.2f)
+    if (dashDuration >= 0.1f)
     {
         dashing = false;
         dashDuration = 0.f;
+        dashMomentum = true;
+        velocity = dashDirection;
     }
 
     isColliding(getSpriteConst().getPosition().x,
@@ -269,8 +288,8 @@ void Player::handleDashingMovement(float dt)
 
     getSprite().move(dashDirection.x * dt, 0.f);
 
-    velocity.x = 0.f;
-    velocity.y = 0.f;
+    /*velocity.x = 0.f;
+    velocity.y = 0.f;*/
 }
 
 void Player::handleCollisions(float dt)
