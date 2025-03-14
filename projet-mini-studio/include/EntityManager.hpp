@@ -7,6 +7,7 @@
 #include "../include/EnemyFlying.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/BasicEnemy.hpp"
+#include "../include/FlyingBoss.hpp"
 
 using namespace sf;
 

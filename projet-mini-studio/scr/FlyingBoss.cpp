@@ -26,22 +26,25 @@ FlyingBoss::~FlyingBoss()
 {
 }
 
-void FlyingBoss::update(float dt)
+void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 {
 	//Enemy::update(dt);
 	this->attackTimer += dt;
 	this->groundTimer += dt;
 	if (this->state == IN_AIR)
 	{
+		cout << "state : IN AIR" << endl;
 		if (this->groundTimer >= this->groundCooldown)
 		{
 			this->state = FALLING;
 			this->groundTimer = 0.0f;
 		}
-		this->fly(dt);
+		this->inAir(dt);
 	}
-	if (this->state == FALLING)
+	else if (this->state == FALLING)
 	{
+		cout << "state : FALLING" << endl;
+
 		if (map.isColliding(getSprite().getPosition().x, getSprite().getPosition().y + speed * dt))
 		{
 			this->state = ON_GROUND;
@@ -50,6 +53,8 @@ void FlyingBoss::update(float dt)
 	}
 	else if (this->state == ON_GROUND)
 	{
+		cout << "state : ON GROUND" << endl;
+
 		if (this->groundTimer >= this->onGroundCooldown)
 		{
 			this->state = FLYING;
@@ -59,14 +64,16 @@ void FlyingBoss::update(float dt)
 	}
 	else if (this->state == FLYING)
 	{
-		if (getSprite().getPosition().y < 200)
+		cout << "state : FLYING" << endl;
+
+		if (getSprite().getPosition().y < 1500)
 		{
 			this->state = IN_AIR;
 			this->groundTimer = 0.0f;
 		}
 		this->fly(dt);
 	}
-
+	cout << velocity.x << "       " << velocity.y << endl;
 	getSprite().move(velocity * dt);
 }
 
