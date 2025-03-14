@@ -137,7 +137,7 @@ bool Map::isColliding(int x, int y) const {
         return false;
     }
 
-    bool isBlocked = (std::find(blockedTiles.begin(), blockedTiles.end(), Vector2i(tileX, tileY)) != blockedTiles.end());
+    bool isBlocked = (find(blockedTiles.begin(), blockedTiles.end(), Vector2i(tileX, tileY)) != blockedTiles.end());
     return isBlocked;
 }
 
@@ -180,7 +180,7 @@ float Map::getSlopeSurfaceY(int tileX, int tileY, float worldX) const {
     }
 
     float tileLeft = tileX * TILE_SIZE;
-    float tileTop = tileY * TILE_SIZE;
+    float tileTop = tileY * TILE_SIZE - 2;
     float localX = worldX - tileLeft;
 
     switch (stype)
@@ -196,4 +196,53 @@ float Map::getSlopeSurfaceY(int tileX, int tileY, float worldX) const {
     }
 
     return tileTop + TILE_SIZE;
+}
+
+void Map::drawGrid(RenderWindow& window) {
+    int maxX = MAP_WIDTH * TILE_SIZE;
+    int maxY = MAP_HEIGHT * TILE_SIZE;
+
+    Vector2f topLeft = window.getView().getCenter() - window.getView().getSize() / 2.f;
+    Vector2f bottomRight = window.getView().getCenter() + window.getView().getSize() / 2.f;
+
+    int startX = max(0, int(topLeft.x / TILE_SIZE) * TILE_SIZE);
+    int endX = min(maxX, int(bottomRight.x / TILE_SIZE + 1) * TILE_SIZE);
+    int startY = max(0, int(topLeft.y / TILE_SIZE) * TILE_SIZE);
+    int endY = min(maxY, int(bottomRight.y / TILE_SIZE + 1) * TILE_SIZE);
+
+    for (int x = startX; x <= endX; x += TILE_SIZE) {
+        Vertex line[] =
+        {
+            Vertex(Vector2f(float(x), float(startY)), Color::White),
+            Vertex(Vector2f(float(x), float(endY)),   Color::White)
+        };
+        window.draw(line, 2, Lines);
+    }
+
+    for (int y = startY; y <= endY; y += TILE_SIZE) {
+        Vertex line[] =
+        {
+            Vertex(Vector2f(float(startX), float(y)), Color::White),
+            Vertex(Vector2f(float(endX),   float(y)), Color::White)
+        };
+        window.draw(line, 2, Lines);
+    }
+
+    if (topLeft.x < 0 && bottomRight.x > 0) {
+        Vertex yAxis[] =
+        {
+            Vertex(Vector2f(0.f, float(startY)), Color::Red),
+            Vertex(Vector2f(0.f, float(endY)),   Color::Red)
+        };
+        window.draw(yAxis, 2, Lines);
+    }
+
+    if (topLeft.y < 0 && bottomRight.y > 0) {
+        Vertex xAxis[] =
+        {
+            Vertex(Vector2f(float(startX), 0.f), Color::Red),
+            Vertex(Vector2f(float(endX),   0.f), Color::Red)
+        };
+        window.draw(xAxis, 2, Lines);
+    }
 }

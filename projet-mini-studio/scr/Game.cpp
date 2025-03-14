@@ -100,49 +100,37 @@ void Game::run() {
                 break;
 
             case GameState::Editor:
+            {
                 tileSelector.handleEvent(event, window);
                 map.handleEvent(event);
 
-                if (event.type == Event::MouseButtonPressed) {
-                    Vector2i mousePos = Mouse::getPosition(window);
-                    Vector2f worldPos = window.mapPixelToCoords(mousePos);
+                Vector2i mousePos = Mouse::getPosition(window);
+                Vector2f worldPos = window.mapPixelToCoords(mousePos);
 
-                    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+                float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
+                float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
+                Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
 
-                    int tilesetWidth = tileSelector.getTilesetWidth();
-                    int tilesetHeight = tileSelector.getTilesetHeight();
-                    int tileSize = tileSelector.getTileSize();
+                FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
 
-                    FloatRect tileSelectorBounds(
-                        viewPos.x, viewPos.y,
-                        tilesetWidth * tileSize,
-                        tilesetHeight * tileSize
-                    );
+                bool leftPressed = Mouse::isButtonPressed(Mouse::Left);
+                bool rightPressed = Mouse::isButtonPressed(Mouse::Right);
 
-                    if (tileSelectorBounds.contains(worldPos)) {
-                        tileSelector.handleEvent(event, window);
-                    }
-                    else {
+                if (!tileSelectorBounds.contains(worldPos)) {
+                    if (leftPressed) {
                         int selectedTile = tileSelector.getSelectedTile();
-                        int x = event.mouseButton.x;
-                        int y = event.mouseButton.y;
-
-                        //Clic gauche : placer une tuile
-                        if (event.mouseButton.button == Mouse::Left && selectedTile != -1) {
-                            map.handleClick(window, x, y, selectedTile);
+                        if (selectedTile != -1) {
+                            map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
                         }
-                        //Clic droit : effacer une tuile
-                        else if (event.mouseButton.button == Mouse::Right) {
-                            map.handleClick(window, x, y, 74);
-                        }
+                    }
+                    else if (rightPressed) {
+                        map.handleClick(window, mousePos.x, mousePos.y, 74);
                     }
                 }
 
-                //Touche "C" pour activer/désactiver la collision (ne fonctionne pas pour l'instant)
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::C) {
-                    tileSelector.toggleCollision();
-                }
                 break;
+            }
+
 
             case GameState::Pause:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -199,6 +187,7 @@ void Game::run() {
         case GameState::Editor:
             background.draw(window);
             map.draw(window);
+            map.drawGrid(window);
 			map.drawCam(window);
             tileSelector.draw(window);
             foreground.draw(window);

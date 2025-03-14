@@ -26,6 +26,7 @@ public:
     void handleClick(RenderWindow& window, int x, int y, int tileIndex);
     void handleEvent(Event event);
     void draw(RenderWindow& window);
+    void drawGrid(RenderWindow& window);
     void drawCam(RenderWindow& window);
     void generateTiles();
 

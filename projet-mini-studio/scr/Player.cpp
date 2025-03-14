@@ -465,49 +465,52 @@ void Player::handleDashingCollision(float dt)
 bool Player::handleSlopeCollisionOnce()
 {
     float left = getSpriteConst().getGlobalBounds().left;
-    float width = getSpriteConst().getGlobalBounds().width;
-    float bottom = getSpriteConst().getGlobalBounds().top
-        + getSpriteConst().getGlobalBounds().height;
+    float right = left + getSpriteConst().getGlobalBounds().width;
+    float bottom = getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height;
 
-    float leftCornerX = left;
-    float rightCornerX = left + width;
+    float cornerX = left;
 
-    float highestSlopeY = -999999.f;
-    bool  foundSlope = false;
+    int tileX = static_cast<int>(cornerX / 64);
+    int tileY = static_cast<int>(bottom / 64);
 
-    auto checkCorner = [&](float cornerX) {
-        int tileX = static_cast<int>(cornerX / 64.f);
-        int tileY = static_cast<int>(bottom / 64.f);
+    SlopeType slopeType = map.getSlopeTypeAt(tileX, tileY);
 
-        if (map.isSlopeTile(tileX, tileY)) {
-            float slopeY = map.getSlopeSurfaceY(tileX, tileY, cornerX);
-            if (slopeY > highestSlopeY) {
-                highestSlopeY = slopeY;
-                foundSlope = true;
-            }
-        }
-        };
+    if (slopeType == SlopeType::SlopeUp) {
+        cornerX = right;
+    }
+    else if (slopeType == SlopeType::SlopeDown) {
+        cornerX = left;
+    }
+    else {
+        return false;
+    }
 
-    checkCorner(leftCornerX);
-    checkCorner(rightCornerX);
+    tileX = static_cast<int>(cornerX / 64);
+    float slopeY = map.getSlopeSurfaceY(tileX, tileY, cornerX);
 
-    if (foundSlope)
+    if (bottom > slopeY)
     {
-        float playerBottom = bottom;
-        if (playerBottom > highestSlopeY)
-        {
-            float delta = playerBottom - highestSlopeY;
-            getSprite().move(0.f, -delta);
+        float delta = bottom - slopeY;
 
-            velocity.y = 0.f;
-            onGround = true;
+        float correctionSpeed = 0.1f;
+        float correction = std::min(delta, correctionSpeed * 64);
 
-            return true;
+        float horizontalAdjust = 0.f;
+        if (slopeType == SlopeType::SlopeUp) {
+            horizontalAdjust = -correction * 0.5f;
         }
+
+        getSprite().move(horizontalAdjust, -correction);
+        velocity.y = 0.f;
+        onGround = true;
+
+        return true;
     }
 
     return false;
 }
+
+
 
 
 
