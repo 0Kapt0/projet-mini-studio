@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <set>
+#include <unordered_set>
 
 using namespace sf;
 using namespace std;
@@ -30,10 +31,11 @@ public:
     int getSelectedTile() const;
     void toggleCollision();
 
+    const unordered_set<int>& getCollisionTiles() const;
 private:
     Texture tilesetTexture;
     vector<Sprite> tiles;
-    set<int> collisionTiles;
+    unordered_set<int> collisionTiles;
     int tileSize;
     int selectedTileIndex;
 };

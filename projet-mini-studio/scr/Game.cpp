@@ -1,10 +1,16 @@
 #include "../include/Game.hpp"
+#include "../include/Settings.hpp"
 #include "../include/Map.hpp"
 #include "../include/Menu.hpp"
+#include "../include/Pause.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
+#include "../include/EnemyFlying.hpp"
+#include "../include/BasicEnemy.hpp"
+#include "../include/ChargingBoss.hpp"
+#include "../include/Background.hpp"
 
 #include <iostream>
 
@@ -16,10 +22,11 @@ enum class GameState {
     Playing,
     Editor,
     Pause,
+    Settings,
     GameOver
 };
 
-Game::Game() {}
+Game::Game() : deltaTime(0.0f) {}
 
 Game::~Game() {
     cout << "Le jeu est détruit\n";
@@ -29,22 +36,37 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
+    background.loadTextures("assets/background/layer1.png",
+        "assets/background/layer2.png",
+        "assets/background/layer3.png",
+        "assets/background/layer4.png");
+
+    foreground.loadTextures("assets/foreground/layer1.png",
+        "assets/foreground/layer2.png");
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map level1("assets/tileset/Tileset_Grass.png", "assets/map/Level1.txt");
+    Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
+    Settings settings;
+    Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
     Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue);
-    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
+    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
+    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
+	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
+    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);
 
     bool collisionMode = false;
     Clock clock;
 
     while (window.isOpen()) {
         Event event;
+		deltaTime = clock.restart().asSeconds();
+        bool isLeftMousePressed = false;
+        bool isRightMousePressed = false;
+
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
@@ -57,20 +79,29 @@ void Game::run() {
                         currentState = GameState::Editor;
                     }
                 }
-               if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Playing;
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.settingSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Settings;
                     }
                 }
                 break;
 
             case GameState::Playing:
-                player.handleInput(event, window, 0.016f);
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
+                }
+
                 break;
 
             case GameState::Editor:
                 tileSelector.handleEvent(event, window);
-				map.handleEvent(event);
+                map.handleEvent(event);
 
                 if (event.type == Event::MouseButtonPressed) {
                     Vector2i mousePos = Mouse::getPosition(window);
@@ -107,7 +138,6 @@ void Game::run() {
                     }
                 }
 
-
                 //Touche "C" pour activer/désactiver la collision (ne fonctionne pas pour l'instant)
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::C) {
                     tileSelector.toggleCollision();
@@ -115,6 +145,15 @@ void Game::run() {
                 break;
 
             case GameState::Pause:
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (pause.playSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                    if (pause.menuSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Menu;
+                    }
+
+                }
                 break;
 
             case GameState::GameOver:
@@ -122,12 +161,17 @@ void Game::run() {
             }
         }
 
-        float deltaTime = clock.restart().asSeconds();
-
         if (currentState == GameState::Playing) {
             player.update(deltaTime);
+
+            player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
-            enemy.update(0.016f);
+			basicEnemy.update(deltaTime, player);
+            flyingEnemy.update(deltaTime, player);
+            float cameraX = player.getSprite().getPosition().x;
+            background.update(cameraX);
+            foreground.update(cameraX);
+            chargingBoss.behavior(deltaTime, player, window);
         }
 
         window.clear();
@@ -138,19 +182,30 @@ void Game::run() {
             break;
 
         case GameState::Playing:
+            background.draw(window);
             level1.draw(window);
             player.draw(window);
-            enemy.draw(window);
+			basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
-            break;
+            flyingEnemy.draw(window);
+            foreground.draw(window);
+            chargingBoss.draw(window);
 
+            break;
+        case GameState::Settings:
+            settings.draw(window);
+            break;
         case GameState::Editor:
+            background.draw(window);
             map.draw(window);
+			map.drawCam(window);
             tileSelector.draw(window);
+            foreground.draw(window);
             break;
 
         case GameState::Pause:
+            pause.draw(window);
             break;
 
         case GameState::GameOver:

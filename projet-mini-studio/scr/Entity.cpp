@@ -26,9 +26,16 @@ Sprite& Entity::getSprite()
 	return sprite;
 }
 
+float Entity::getHeight() {
+    return getSprite().getLocalBounds().height * getSprite().getScale().y;
+}
+float Entity::getWidth() {
+    return getSprite().getLocalBounds().width * getSprite().getScale().x;
+}
+
 Texture& Entity::getTexture()
 {
-	return texture;
+    return texture;
 }
 
 const Sprite& Entity::getSpriteConst() const

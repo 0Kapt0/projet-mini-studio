@@ -13,6 +13,7 @@ public :
 	Texture editmodeButton;
 	Sprite editSprite;
 	Texture settingsButton;
+	Sprite settingSprite;
 	Texture menuButton;
 	Texture backgroundTexture;
 	Menu();
