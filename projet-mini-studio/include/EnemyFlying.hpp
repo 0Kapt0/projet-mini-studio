@@ -7,8 +7,6 @@
 
 class EnemyFlying : public Enemy {
 protected:
-    float speed;
-    Vector2f velocity;
     float detectionRadius;
     std::vector<Vector2f> waypoints;
     size_t currentWaypointIndex;
