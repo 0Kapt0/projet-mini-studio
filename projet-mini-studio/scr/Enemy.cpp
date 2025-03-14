@@ -22,7 +22,7 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::update(float dt) {
+void Enemy::update(float dt, Player& player, RenderWindow& window) {
 	velocity.y += 14.8f;
    
 	Vector2f position = getSprite().getPosition();

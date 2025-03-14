@@ -2,17 +2,17 @@
 
 ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 
+	type = "ChargingBoss";
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
 	getSprite().setPosition(500, 800);
+	type = "ChargingBoss";
 }
 
-void ChargingBoss::update(float dt) {
 
-}
-
-void ChargingBoss::behavior(float dt, Player& player, RenderWindow& window) {
+void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
+	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));
 	switch (currentState) {

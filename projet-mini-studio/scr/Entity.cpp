@@ -52,3 +52,14 @@ void Entity::draw(RenderWindow& window)
 	window.draw(sprite);
 }
 
+void Entity::invincibilityAfterHit(float dt) {
+	if (invincible) {
+		invincibilityTimer += dt;
+		getSprite().setColor(Color::Black);
+	}
+	if (invincibilityTimer > 1) {
+		getSprite().setColor(Color::White);
+		invincible = false;
+		invincibilityTimer = 0;
+	}
+}
