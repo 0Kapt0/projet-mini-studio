@@ -14,7 +14,10 @@ public:
     Player(Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
-
+    Texture heartTexure;
+    Texture heartemptyTexure;
+    Sprite heart1;
+    Sprite heartempty;
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);

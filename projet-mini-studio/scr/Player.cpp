@@ -3,18 +3,30 @@
 Player::Player(Map& map)
     : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
+   
     speed = 200;
     velocity = Vector2f(0, 0);
     this->map = map;
+
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
     : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
+    hp = 1;
+    cout << hp;
     speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
     playerView.setSize(1920, 1080);
+    if (!heartTexure.loadFromFile("assets/ui/heart.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heart1.setTexture(heartTexure);
+    if (!heartemptyTexure.loadFromFile("assets/ui/heartempty.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heartempty.setTexture(heartemptyTexure);
 }
 
 Player::~Player()
@@ -461,6 +473,17 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 void Player::draw(RenderWindow& window)
 {
     window.setView(playerView);
+    //heart1
+    for (int i = 1; i < 4; i++) {
+        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+        heartempty.setScale(0.1, 0.1f);
+        window.draw(heartempty);
+        if (hp >= i) {
+            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+            heart1.setScale(0.1, 0.1f);
+            window.draw(heart1);
+        }
+    }
     window.draw(getSprite());
     grapple.draw(window);
 }
