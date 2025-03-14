@@ -120,24 +120,25 @@ void Player::update(float dt)
             }
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Q) && getSprite().getPosition().x - speed * dt) {
-            velocity.x = -speed;
-            lastInputDirection = 'L';
-            dashMomentum = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::D)) {
-            velocity.x = speed;
-            lastInputDirection = 'R';
-            dashMomentum = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
-        {
-            velocity.y = -speed;
-            jumpNum++;
-            canJump = false;
-        }
-        if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
-            velocity.y += speed;
+            if (Keyboard::isKeyPressed(Keyboard::Q) && getSprite().getPosition().x - speed * dt)
+            {
+                velocity.x = -speed;
+                lastInputDirection = 'L';
+            }
+            if (Keyboard::isKeyPressed(Keyboard::D))
+            {
+                velocity.x = speed;
+                lastInputDirection = 'R';
+            }
+            if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
+            {
+				onGround = false;
+                velocity.y = -speed;
+                jumpNum++;
+                canJump = false;
+            }
+            if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 800)
+                velocity.y += speed / 4;
 
             if (grapple.isStuck()) {
                 if (!grappleStuck)
@@ -150,10 +151,12 @@ void Player::update(float dt)
                 angularVelocity += gravityEffect * dt;
                 angularVelocity *= DAMPING;
 
-                if (Keyboard::isKeyPressed(Keyboard::Q) && angularVelocity > -2.0f) {
+                if (Keyboard::isKeyPressed(Keyboard::Q) && angularVelocity > -2.0f) 
+                {
                     angularVelocity -= swingAcceleration * dt;
                 }
-                if (Keyboard::isKeyPressed(Keyboard::D) && angularVelocity < 2.0f) {
+                if (Keyboard::isKeyPressed(Keyboard::D) && angularVelocity < 2.0f) 
+                {
                     angularVelocity += swingAcceleration * dt;
                 }
 
@@ -182,7 +185,8 @@ void Player::update(float dt)
 			}
 
 
-            if (Keyboard::isKeyPressed(Keyboard::Space) && canDash) {
+            if (Keyboard::isKeyPressed(Keyboard::Space) && canDash)
+            {
                 dashing = true;
                 canDash = false;
                 dashTimer = 0;
@@ -198,7 +202,8 @@ void Player::update(float dt)
         }
         else {
             dashDuration += dt;
-            if (dashDuration >= 0.2) {
+            if (dashDuration >= 0.2)
+            {
                 dashing = false;
                 dashDuration = 0;
             }
@@ -209,15 +214,13 @@ void Player::update(float dt)
         }
     }
 
-    if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
-        attacking = true;
-        canAttack = false;
-        attackTimer = 0;
+    isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
 
-        switch (lastInputDirection) {
-            case('L'): attackDirection = "left"; break;
-            case('R'): attackDirection = "right"; break;
-        }
+    getSprite().move(velocity * dt);
+   
+    if (grapple.isActive())
+    {
+        grapple.updateStartPosition(getSprite().getPosition());
     }
     attackTimer += dt;
     if (attackTimer >= attackCooldown) canAttack = true;
@@ -244,9 +247,11 @@ void Player::update(float dt)
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
-    if (Mouse::isButtonPressed(Mouse::Left)) {
+    if (Mouse::isButtonPressed(Mouse::Left)) 
+    {
         leftButtonHold = true;
-        if (grapple.isStuck()) {
+        if (grapple.isStuck()) 
+        {
             Vector2f stuckPosition = grapple.getStuckPosition();
             Vector2f playerPosition = getSprite().getPosition();
             Vector2f direction = stuckPosition - playerPosition;
@@ -254,7 +259,8 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             direction /= grappleLength;
             velocity = direction * speed;
         }
-        else {
+        else 
+        {
             Vector2f startPosition = getSprite().getPosition();
             Vector2i mousePosition = Mouse::getPosition(window);
             Vector2f direction = Vector2f(mousePosition) - startPosition;
@@ -263,7 +269,8 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             grapple.launch(startPosition, direction);
         }
     }
-    else {
+    else 
+    {
         leftButtonHold = false;
     }
     if (Mouse::isButtonPressed(Mouse::Right))
