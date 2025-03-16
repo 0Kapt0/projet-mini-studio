@@ -31,7 +31,7 @@ public:
     void loadMap(const string& filename);
     void saveMap(const string& filename);
     void handleClick(RenderWindow& window, int x, int y, int tileIndex);
-    void handleEvent(Event event);
+    void handleEvent(Event event, RenderWindow& window);
     void draw(RenderWindow& window);
     void drawGrid(RenderWindow& window);
     void drawCam(RenderWindow& window);
@@ -63,6 +63,11 @@ private:
     vector<Sprite> tiles;
     set<int> collisionTiles;
     vector<Vector2i> blockedTiles;
+
+    // Variables pour le pan (glisser) et le zoom
+    bool isPanning = false;
+    Vector2i lastMousePos;
+    float currentZoom = 1.0f;
 
     View cameraView;
     Vector2f cameraPos;

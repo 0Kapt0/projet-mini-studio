@@ -95,9 +95,9 @@ void Map::saveMap(const string& filename) {
     }
 }
 
-void Map::handleClick(sf::RenderWindow& window, int x, int y, int tileIndex)
+void Map::handleClick(RenderWindow& window, int x, int y, int tileIndex)
 {
-    sf::Vector2f worldPos = window.mapPixelToCoords(sf::Vector2i(x, y));
+    Vector2f worldPos = window.mapPixelToCoords(Vector2i(x, y));
     int mapX = int(worldPos.x / TILE_SIZE);
     int mapY = int(worldPos.y / TILE_SIZE);
 
@@ -119,7 +119,7 @@ void Map::handleClick(sf::RenderWindow& window, int x, int y, int tileIndex)
     }
 }
 
-void Map::pushAction(const std::vector<TileChange>& action)
+void Map::pushAction(const vector<TileChange>& action)
 {
     redoStack.clear();
     undoStack.push_back(action);
@@ -160,23 +160,48 @@ void Map::redo() {
 
     undoStack.push_back(lastUndoneAction);
 
-    std::cout << "Redo effectué. undoStack size = " << undoStack.size()
-        << ", redoStack size = " << redoStack.size() << std::endl;
+    cout << "Redo effectué. undoStack size = " << undoStack.size()
+        << ", redoStack size = " << redoStack.size() << endl;
 }
 
-void Map::handleEvent(Event event) {
-    if (event.type == Event::KeyPressed) {
-        if (event.key.code == Keyboard::Z || event.key.code == Keyboard::Up) {
-            cameraPos.y -= cameraSpeed;
+void Map::handleEvent(Event event, RenderWindow& window)
+{
+    if (event.type == Event::MouseButtonPressed) {
+        if (event.mouseButton.button == Mouse::Middle) {
+            isPanning = true;
+            lastMousePos = Mouse::getPosition(window);
         }
-        if (event.key.code == Keyboard::S || event.key.code == Keyboard::Down) {
-            cameraPos.y += cameraSpeed;
+    }
+    else if (event.type == Event::MouseButtonReleased) {
+        if (event.mouseButton.button == Mouse::Middle) {
+            isPanning = false;
         }
-        if (event.key.code == Keyboard::Q || event.key.code == Keyboard::Left) {
-            cameraPos.x -= cameraSpeed;
+    }
+    else if (event.type == Event::MouseMoved) {
+        if (isPanning) {
+            Vector2i newPos = Mouse::getPosition(window);
+            Vector2i deltaPos = lastMousePos - newPos;
+
+            cameraView.move(float(deltaPos.x), float(deltaPos.y));
+
+            lastMousePos = newPos;
         }
-        if (event.key.code == Keyboard::D || event.key.code == Keyboard::Right) {
-            cameraPos.x += cameraSpeed;
+    }
+
+    else if (event.type == Event::MouseWheelScrolled) {
+        if (event.mouseWheelScroll.wheel == Mouse::VerticalWheel) {
+            float delta = event.mouseWheelScroll.delta;
+
+            float factor = (delta > 0) ? 0.9f : 1.1f;
+
+            float newZoom = currentZoom * factor;
+            if (newZoom < 0.1f) newZoom = 0.1f;
+            if (newZoom > 5.0f)  newZoom = 5.0f;
+
+            float actualFactor = newZoom / currentZoom;
+            currentZoom = newZoom;
+
+            cameraView.zoom(actualFactor);
         }
     }
 }
@@ -194,7 +219,7 @@ bool Map::isColliding(int x, int y) const {
         return false;
     }
 
-    bool isBlocked = (std::find(blockedTiles.begin(), blockedTiles.end(),
+    bool isBlocked = (find(blockedTiles.begin(), blockedTiles.end(),
         Vector2i(tileX, tileY)) != blockedTiles.end());
     return isBlocked;
 }
@@ -206,7 +231,6 @@ void Map::draw(RenderWindow& window) {
 }
 
 void Map::drawCam(RenderWindow& window) {
-    cameraView.setCenter(cameraPos);
     window.setView(cameraView);
 }
 
@@ -260,10 +284,10 @@ void Map::drawGrid(RenderWindow& window) {
     Vector2f topLeft = window.getView().getCenter() - window.getView().getSize() / 2.f;
     Vector2f bottomRight = window.getView().getCenter() + window.getView().getSize() / 2.f;
 
-    int startX = std::max(0, int(topLeft.x / TILE_SIZE) * TILE_SIZE);
-    int endX = std::min(maxX, int(bottomRight.x / TILE_SIZE + 1) * TILE_SIZE);
-    int startY = std::max(0, int(topLeft.y / TILE_SIZE) * TILE_SIZE);
-    int endY = std::min(maxY, int(bottomRight.y / TILE_SIZE + 1) * TILE_SIZE);
+    int startX = max(0, int(topLeft.x / TILE_SIZE) * TILE_SIZE);
+    int endX = min(maxX, int(bottomRight.x / TILE_SIZE + 1) * TILE_SIZE);
+    int startY = max(0, int(topLeft.y / TILE_SIZE) * TILE_SIZE);
+    int endY = min(maxY, int(bottomRight.y / TILE_SIZE + 1) * TILE_SIZE);
 
     for (int x = startX; x <= endX; x += TILE_SIZE) {
         Vertex line[] =

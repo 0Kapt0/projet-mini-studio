@@ -46,7 +46,7 @@ void Game::run() {
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
+    /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
     Settings settings;
@@ -103,17 +103,21 @@ void Game::run() {
             {
                 //Gestion de la caméra (Z,Q,S,D)
                 tileSelector.handleEvent(event, window);
-                map.handleEvent(event);
+                map.handleEvent(event, window);
 
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
+                }
 
-                if (event.type == sf::Event::KeyPressed &&
-                    event.key.code == sf::Keyboard::G)
+                if (event.type == Event::KeyPressed &&
+                    event.key.code == Keyboard::G)
                 {
                     showGrid = !showGrid;
                 }
 
 				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z) {
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z) {
                     bool ctrl = event.key.control;
                     bool shift = event.key.shift;
                     if (ctrl && !shift) {
@@ -148,9 +152,9 @@ void Game::run() {
                     }
                 }
 
-                if (event.type == sf::Event::MouseButtonReleased) {
-                    if (event.mouseButton.button == sf::Mouse::Left ||
-                        event.mouseButton.button == sf::Mouse::Right)
+                if (event.type == Event::MouseButtonReleased) {
+                    if (event.mouseButton.button == Mouse::Left ||
+                        event.mouseButton.button == Mouse::Right)
                     {
                         if (!map.currentDragChanges.empty()) {
                             map.pushAction(map.currentDragChanges);
@@ -202,7 +206,7 @@ void Game::run() {
 
         case GameState::Playing:
             background.draw(window);
-            level1.draw(window);
+            map.draw(window);
             player.draw(window);
 			basicEnemy.draw(window);
             rangedEnemy.draw(window);
@@ -238,7 +242,7 @@ void Game::run() {
     }
 
     // Sauvegarde de la carte en quittant l'éditeur
-    if (currentState == GameState::Editor) {
+    if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
         map.saveMap("assets/map/Lobby.txt");
     }
 }
