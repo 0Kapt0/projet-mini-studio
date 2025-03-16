@@ -63,3 +63,16 @@ void Entity::invincibilityAfterHit(float dt) {
 		invincibilityTimer = 0;
 	}
 }
+
+float Entity::getPosX() {
+	return getSprite().getPosition().x;
+}
+float Entity::getPosY() {
+	return getSprite().getPosition().y;
+}
+void Entity::setPosX(float newPosX) {
+	getSprite().setPosition(newPosX, getPosY());
+}
+void Entity::setPosY(float newPosY) {
+	getSprite().setPosition(getPosX(), newPosY);
+}

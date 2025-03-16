@@ -21,6 +21,10 @@ public:
 	~Entity();
 
 	Sprite& getSprite();
+	float getPosX();
+	float getPosY();
+	void setPosX(float newPosX);
+	void setPosY(float newPosY);
 	float getHeight();
 	float getWidth();
 	bool collided = false;

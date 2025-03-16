@@ -6,7 +6,7 @@ ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
-	getSprite().setPosition(500, 800);
+	//getSprite().setPosition(500, 800);
 	type = "ChargingBoss";
 }
 
