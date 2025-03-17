@@ -180,10 +180,13 @@ void Map::handleEvent(Event event, RenderWindow& window)
     else if (event.type == Event::MouseMoved) {
         if (isPanning) {
             Vector2i newPos = Mouse::getPosition(window);
-            Vector2i deltaPos = lastMousePos - newPos;
 
-            cameraView.move(float(deltaPos.x), float(deltaPos.y));
+            Vector2f oldWorldPos = window.mapPixelToCoords(lastMousePos, cameraView);
+            Vector2f newWorldPos = window.mapPixelToCoords(newPos, cameraView);
 
+            Vector2f delta = oldWorldPos - newWorldPos;
+
+            cameraView.move(delta);
             lastMousePos = newPos;
         }
     }

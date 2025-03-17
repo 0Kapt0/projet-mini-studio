@@ -242,9 +242,7 @@ void Game::run() {
 
         case GameState::Playing:
             background.draw(window);
-            map.draw(window);
-            player.draw(window);
-            level1.draw(window);
+            map.draw(window);;
             /*player.draw(window);
 			basicEnemy.draw(window);
             rangedEnemy.draw(window);
@@ -266,7 +264,6 @@ void Game::run() {
             }
 
 			map.drawCam(window);
-            /*mapDropdown.draw(window);*/
             tileSelector.draw(window);
             foreground.draw(window);
 
