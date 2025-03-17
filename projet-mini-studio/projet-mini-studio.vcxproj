@@ -27,6 +27,7 @@
     <ClInclude Include="include\EnemyFlying.hpp" />
     <ClInclude Include="include\EnemySelector.hpp" />
     <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\EntityManager.hpp" />
     <ClInclude Include="include\Foreground.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Grapple.hpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="include\RangedEnemy.hpp" />
     <ClInclude Include="include\Rigidbody2D.hpp" />
     <ClInclude Include="include\Settings.hpp" />
+    <ClInclude Include="include\TextureManager.hpp" />
     <ClInclude Include="include\TileSelector.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +50,7 @@
     <ClCompile Include="scr\EnemyFlying.cpp" />
     <ClCompile Include="scr\EnemySelector.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
+    <ClCompile Include="scr\EntityManager.cpp" />
     <ClCompile Include="scr\Foreground.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
     <ClCompile Include="scr\Game.cpp" />
@@ -59,6 +62,7 @@
     <ClCompile Include="scr\RangedEnemy.cpp" />
     <ClCompile Include="scr\Rigidbody2D.cpp" />
     <ClCompile Include="scr\Settings.cpp" />
+    <ClCompile Include="scr\TextureManager.cpp" />
     <ClCompile Include="scr\TileSelector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

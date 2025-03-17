@@ -60,7 +60,7 @@ void TileSelector::toggleCollision()
     }
 }
 
-void TileSelector::draw(sf::RenderWindow& window)
+void TileSelector::draw(RenderWindow& window)
 {
     View oldView = window.getView();
 
