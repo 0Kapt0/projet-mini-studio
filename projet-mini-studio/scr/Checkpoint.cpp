@@ -42,12 +42,15 @@ void Save::loadCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 	}
 }
 
-void Save::reset(const std::string& filename) {
+void Save::reset(const std::string& filename, std::vector<std::shared_ptr<Checkpoint>> checkpointVector) {
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		file << 0 << std::endl << 0 << std::endl;
 	}
 	else {
 		std::cerr << "Impossible de sauvegarder le checkpoint." << std::endl;
+	}
+	for (auto& checkpoint : checkpointVector) {
+		checkpoint->activated = false;
 	}
 }

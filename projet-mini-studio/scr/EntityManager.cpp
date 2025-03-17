@@ -85,7 +85,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 		checkpoint->update();
 	}
 	if (Keyboard::isKeyPressed(Keyboard::R)) {
-		save.reset("assets/checkpoint/player.txt");
+		save.reset("assets/checkpoint/player.txt", checkpointVector);
 	}
 }
 

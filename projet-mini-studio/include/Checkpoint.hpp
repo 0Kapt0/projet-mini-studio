@@ -28,7 +28,7 @@ public:
 
 	void saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& player, std::shared_ptr<Checkpoint>& checkpoint);
 	void loadCheckpoint(const std::string& filename, std::shared_ptr<Player>& player);
-	void reset(const std::string& filename);
+	void reset(const std::string& filename, std::vector<std::shared_ptr<Checkpoint>> checkpointVector);
 };
 
 
