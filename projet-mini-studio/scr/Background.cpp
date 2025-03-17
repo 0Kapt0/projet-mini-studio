@@ -5,10 +5,10 @@
 Background::Background() {}
 
 bool Background::loadTextures(const std::string& layer1, const std::string& layer2,
-    const std::string& layer3) {
-    std::string layers[3] = { layer1, layer2, layer3};
+    const std::string& layer3, const std::string& layer4) {
+    std::string layers[4] = { layer1, layer2, layer3, layer4};
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         if (!textures[i].loadFromFile(layers[i])) {
             std::cerr << "Erreur de chargement de la texture : " << layers[i] << std::endl;
             return false;
@@ -25,7 +25,7 @@ bool Background::loadTextures(const std::string& layer1, const std::string& laye
 }
 
 void Background::update(float cameraX) {
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         sprites[i].setPosition(0, 0);
 
         float offset = fmod(cameraX * speeds[i], 31470);
@@ -36,7 +36,7 @@ void Background::update(float cameraX) {
 }
 
 void Background::draw(sf::RenderWindow& window) {
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         window.draw(sprites[i]);
     }
 }

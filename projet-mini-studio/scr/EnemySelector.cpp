@@ -47,16 +47,17 @@ void EnemySelector::handleEvent(sf::Event event, sf::RenderWindow& window)
     {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
-        // Calculer la zone occupée par la palette
-        // ex: largeur = m_enemyIcons.size() * m_iconSize, hauteur = m_iconSize
-        int paletteWidth = int(m_enemyIcons.size()) * m_iconSize;
+        float offsetX = 1500.f;
+        float offsetY = 0.f;
+        int paletteWidth = (int)m_enemyIcons.size() * m_iconSize;
         int paletteHeight = m_iconSize;
 
-        if (mousePos.x >= 0 && mousePos.x < paletteWidth &&
-            mousePos.y >= 0 && mousePos.y < paletteHeight)
+        //On compare la souris (mousePos.x, mousePos.y) en coords d’écran
+        if (mousePos.x >= offsetX && mousePos.x < offsetX + paletteWidth &&
+            mousePos.y >= offsetY && mousePos.y < offsetY + paletteHeight)
         {
-            // On clique sur l’une des icônes
-            int indexClicked = mousePos.x / m_iconSize;
+            //On calcule l'index en tenant compte de offsetX
+            int indexClicked = (mousePos.x - (int)offsetX) / m_iconSize;
             if (indexClicked >= 0 && indexClicked < (int)m_enemyIcons.size()) {
                 m_selectedIndex = indexClicked;
                 m_selectedEnemy = m_enemyTypes[indexClicked];
@@ -72,21 +73,27 @@ void EnemySelector::draw(sf::RenderWindow& window)
     sf::View oldView = window.getView();
     window.setView(window.getDefaultView());
 
+    float offsetX = 1500.f; // position en x pour la palette
+    float offsetY = 300.f;  // position en y (exemple)
+
     // Dessin des icônes
     for (size_t i = 0; i < m_enemyIcons.size(); i++) {
-        float posX = float(i * m_iconSize);
-        float posY = 0.f;
+        float posX = offsetX + float(i * m_iconSize);
+        float posY = offsetY;
         m_enemyIcons[i].setPosition(posX, posY);
         window.draw(m_enemyIcons[i]);
     }
 
+    // Dessiner le contour de l'icône sélectionnée
     if (m_selectedIndex >= 0 && m_selectedIndex < (int)m_enemyIcons.size()) {
-        float outlineX = float(m_selectedIndex * m_iconSize);
-        float outlineY = 0.f;
+        float outlineX = offsetX + float(m_selectedIndex * m_iconSize);
+        float outlineY = offsetY;
 
         sf::RectangleShape outline(sf::Vector2f((float)m_iconSize, (float)m_iconSize));
         outline.setPosition(outlineX, outlineY);
         outline.setFillColor(sf::Color::Transparent);
+
+        // Couleur de l’outline (ex. jaune)
         outline.setOutlineColor(sf::Color::Yellow);
         outline.setOutlineThickness(2.f);
 

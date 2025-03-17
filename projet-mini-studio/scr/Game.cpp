@@ -57,7 +57,8 @@ void Game::run() {
 
     background.loadTextures("assets/background/Forest1.png",
         "assets/background/Forest2.png",
-        "assets/background/Forest3.png");
+        "assets/background/Forest3.png",
+        "assets/background/Forest4.png");
 
     foreground.loadTextures("assets/foreground/foret_foreground.png", "assets/foreground/Forest-light.png");
     GameState currentState = GameState::Menu;
@@ -314,6 +315,8 @@ void Game::run() {
             if (showGrid) {
                 map.drawGrid(window);
             }
+
+            entityManager.drawEntities(window);
 
 			map.drawCam(window);
             tileSelector.draw(window);
