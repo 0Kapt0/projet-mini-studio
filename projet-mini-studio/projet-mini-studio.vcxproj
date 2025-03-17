@@ -22,6 +22,7 @@
     <ClInclude Include="include\Background.hpp" />
     <ClInclude Include="include\BasicEnemy.hpp" />
     <ClInclude Include="include\ChargingBoss.hpp" />
+    <ClInclude Include="include\Checkpoint.hpp" />
     <ClInclude Include="include\DropDown.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\EnemyFlying.hpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="scr\BasicEnemy.cpp" />
     <ClCompile Include="scr\ChargingBoss.cpp" />
     <ClCompile Include="scr\DropDown.cpp" />
+    <ClCompile Include="scr\Checkpoint.cpp" />
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\EnemyFlying.cpp" />
     <ClCompile Include="scr\Entity.cpp" />

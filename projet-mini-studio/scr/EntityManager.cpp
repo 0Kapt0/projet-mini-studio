@@ -9,6 +9,7 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		std::shared_ptr<Player> _player = std::make_shared<Player>(size, color, map);
 		_player->getSprite().setPosition(position);
 		player = _player;
+		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
 		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
@@ -30,6 +31,11 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
 	}
+	if (type == "Checkpoint") {
+		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
+		testCheckpoint->getSprite().setPosition(position);
+		checkpointVector.push_back(testCheckpoint);
+	}
 }
 
 void EntityManager::destroyEntity() {
@@ -45,8 +51,25 @@ void EntityManager::collisions() {
 			enemy->toBeDeleted = true;
 		}
 		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
-			player->invincible = true;
-			std::cout << "DAMAGE" << std::endl;
+				player->invincible = true;
+			//std::cout << "DAMAGE" << std::endl;
+		}
+	}
+	for (auto& checkpoint : checkpointVector) {
+		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
+			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight()/2 + checkpoint->getHeight()/2);
+			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
+			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
+				if (obj->activated) {
+					obj->activated = false;
+				}
+			});*/
+			for (auto& other : checkpointVector) {
+				if (other->activated) {
+					other->activated = false;
+				}
+			}
+			checkpoint->activated = true;
 		}
 	}
 }
@@ -58,11 +81,20 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
 	}
+	for (auto& checkpoint : checkpointVector) {
+		checkpoint->update();
+	}
+	if (Keyboard::isKeyPressed(Keyboard::R)) {
+		save.reset("assets/checkpoint/player.txt", checkpointVector);
+	}
 }
 
 void EntityManager::drawEntities(RenderWindow& window) {
-	player->draw(window);
 	for (auto& enemy : enemyVector) {
 		enemy->draw(window);
 	}
+	for (auto& checkpoint : checkpointVector) {
+		checkpoint->draw(window);
+	}
+	player->draw(window);
 }

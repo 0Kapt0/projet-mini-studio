@@ -14,7 +14,7 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
     hp = 1;
-    cout << hp;
+    //cout << hp;
     speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
