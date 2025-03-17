@@ -34,7 +34,10 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 	if (type == "Checkpoint") {
 		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
 		testCheckpoint->getSprite().setPosition(position);
+		testCheckpoint->setTexture(textureManager.checkpointTexture, textureManager.checkpointTexture.getSize().x / 4, 
+			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
+		std::cout << textureManager.checkpointTexture.getSize().x / 4 << std::endl;
 	}
 }
 
@@ -70,7 +73,7 @@ void EntityManager::collisions() {
 					other->activated = false;
 				}
 			}
-			checkpoint->activated = true;
+			checkpoint->activate();
 		}
 	}
 }
@@ -95,7 +98,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 		enemy->update(dt, *player, window);
 	}
 	for (auto& checkpoint : checkpointVector) {
-		checkpoint->update();
+		checkpoint->animate(dt);
 	}
 	/*if (Keyboard::isKeyPressed(Keyboard::R)) {
 		save.reset("assets/checkpoint/player.txt", checkpointVector);

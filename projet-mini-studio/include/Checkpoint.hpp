@@ -9,12 +9,17 @@
 class Checkpoint : public Entity {
 public:
 	bool activated = false;
+	bool animating = false;
 	Vector2f respawnPoint;
 	Color baseColor;
 
+	Checkpoint(Texture& texture);
 	Checkpoint(const Vector2f& size, const Color& color, Map& map);
 
-	void update();
+	//void update();
+	void activate();
+	void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
+	void animate(float deltaTime) override;
 };
 
 class Save {
@@ -22,7 +27,6 @@ public:
 
 	std::ifstream ifFile;
 	std::string line;
-	int y = 0;
 	std::vector<std::string> getLine;
 
 	Save();

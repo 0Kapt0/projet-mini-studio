@@ -1,17 +1,67 @@
 #include "../include/Checkpoint.hpp"
 
+Checkpoint::Checkpoint(Texture& texture) {
+	getSprite().setTexture(texture);
+}
 
 Checkpoint::Checkpoint(const Vector2f& size, const Color& color, Map& map) : Entity(size, color) {
 	baseColor = color;
 }
 
-void Checkpoint::update() {
-	if (activated) {
-		getSprite().setColor(Color::Red);
+//void Checkpoint::update() {
+//	if (activated) {
+//		getSprite().setColor(Color::Red);
+//	}
+//	else {
+//		getSprite().setColor(baseColor);
+//	}
+//}
+
+void Checkpoint::activate() {
+	activated = true;
+	animating = true;
+}
+
+void Checkpoint::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
+	getSprite().setTexture(tex);
+	//sprite.setSize(Vector2f(frameWidth, frameHeight));
+	getSprite().setTextureRect(IntRect(0, 0, frameWidth, frameHeight));
+	//getSprite().setOrigin(frameWidth / 2, 0);
+	getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
+
+	frames.clear();
+	for (int i = 0; i < _totalFrames; ++i) {
+		frames.emplace_back(i * frameWidth, 0, frameWidth, frameHeight);
 	}
-	else {
-		getSprite().setColor(baseColor);
+
+	totalFrames = _totalFrames;
+	frameTime = _frameTime;
+	getSprite().setTextureRect(frames[currentFrame]);
+}
+void Checkpoint::animate(float deltaTime) {
+	if (activated && animating) {
+		elapsedTime += deltaTime;
+		if (elapsedTime >= frameTime && !frames.empty()) {
+			elapsedTime = 0.0f;
+
+			if (currentFrame < totalFrames - 1) {
+				currentFrame++;
+			}
+			else {
+				cout << "Animation terminée, blocage sur la dernière frame." << std::endl;
+				return;
+			}
+
+			//getSprite().setTextureRect(frames[currentFrame]);
+		}
 	}
+	if (activated && !animating) {
+		currentFrame = totalFrames - 1; //la dernière
+	}
+	if (!activated) {
+		currentFrame = 0;
+	}
+	getSprite().setTextureRect(frames[currentFrame]);
 }
 
 Save::Save() {
@@ -40,29 +90,8 @@ void Save::saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 void Save::loadCheckpoint(const std::string& filename, std::shared_ptr<Player>& player) {
 	getLine.clear();
 	ifFile.open(filename);
-	y = 0;
 	while (getline(ifFile, line)) {
 		getLine.push_back(line);
-		/*if (y == 0) {
-			player->setPosX(std::stof(line));
-		}
-		else if (y == 1) {
-			player->setPosY(std::stof(line));
-		}
-		else if (y == 2) {
-			player->setMaxHp(std::stoi(line));
-			player->hp = player->getMaxHp();
-		}
-		else if (y == 3) {
-			player->doubleJumpUnlocked = (std::stoi(line));
-		}
-		else if (y == 4) {
-			player->dashUnlocked = (std::stoi(line));
-		}
-		else if (y == 5) {
-			player->grappleUnlocked = (std::stoi(line));
-		}
-		y++;*/
 	}
 	ifFile.close();
 	player->setPosX(std::stof(getLine[0]));
