@@ -5,7 +5,7 @@ TileSelector::TileSelector(const std::string& tilesetPath, int tileSize)
     : tileSize(tileSize), selectedTileIndex(-1)
 {
     if (!tilesetTexture.loadFromFile(tilesetPath)) {
-        std::cerr << "Erreur lors du chargement du tileset." << std::endl;
+        cerr << "Erreur lors du chargement du tileset." << std::endl;
     }
 
     int tilesetWidth = tilesetTexture.getSize().x / tileSize;
@@ -43,7 +43,7 @@ void TileSelector::handleEvent(Event event, RenderWindow& window)
 
                 if (index >= 0 && index < static_cast<int>(tiles.size())) {
                     selectedTileIndex = index;
-                    std::cout << "Tuile sélectionnée : " << selectedTileIndex << std::endl;
+                    std::cout << "Tuile choisie : " << selectedTileIndex << std::endl;
                 }
             }
         }
@@ -95,6 +95,6 @@ int TileSelector::getSelectedTile() const {
     return selectedTileIndex;
 }
 
-const std::unordered_set<int>& TileSelector::getCollisionTiles() const {
+const unordered_set<int>& TileSelector::getCollisionTiles() const {
     return collisionTiles;
 }

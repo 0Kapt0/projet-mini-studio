@@ -64,7 +64,6 @@ private:
     set<int> collisionTiles;
     vector<Vector2i> blockedTiles;
 
-    // Variables pour le pan (glisser) et le zoom
     bool isPanning = false;
     Vector2i lastMousePos;
     float currentZoom = 1.0f;

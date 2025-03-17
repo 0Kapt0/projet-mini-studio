@@ -15,6 +15,8 @@ private:
     Background background;
     Foreground foreground;
 	bool showGrid = true;
+    Font font;
+	View oldView;
 public:
     void run();
     Game();

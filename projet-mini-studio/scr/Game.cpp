@@ -11,6 +11,7 @@
 #include "../include/BasicEnemy.hpp"
 #include "../include/ChargingBoss.hpp"
 #include "../include/Background.hpp"
+#include "../include/DropDown.hpp"
 
 #include <iostream>
 
@@ -35,6 +36,20 @@ Game::~Game() {
 void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
+
+    if (!font.loadFromFile("assets/fonts/arial.ttf")) {
+        cerr << "Erreur chargement de la police.\n";
+    }
+
+    vector<std::string> mapFiles = {
+        "assets/map/Lobby.txt",
+        "assets/map/Level1.txt",
+        "assets/map/Level2.txt"
+    };
+
+    DropDown mapDropdown(font, mapFiles,
+        Vector2f(1600.f, 80.f),   //position à l'écran
+        Vector2f(250.f, 30.f)); //taille (largeur, hauteu
 
     background.loadTextures("assets/background/layer1.png",
         "assets/background/layer2.png",
@@ -92,6 +107,8 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
+                map.loadMap("assets/map/Lobby.txt");
+                map.generateTiles();
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
@@ -101,9 +118,19 @@ void Game::run() {
 
             case GameState::Editor:
             {
-                //Gestion de la caméra (Z,Q,S,D)
                 tileSelector.handleEvent(event, window);
                 map.handleEvent(event, window);
+
+                mapDropdown.handleEvent(event, window);
+
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
+                {
+                    string chosenFile = mapDropdown.getSelectedItem();
+                    if (!chosenFile.empty()) {
+                        map.loadMap(chosenFile);
+                        map.generateTiles();
+                    }
+                }
 
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
@@ -225,9 +252,16 @@ void Game::run() {
             if (showGrid) {
                 map.drawGrid(window);
             }
+
 			map.drawCam(window);
+            /*mapDropdown.draw(window);*/
             tileSelector.draw(window);
             foreground.draw(window);
+
+            oldView = window.getView();
+            window.setView(window.getDefaultView());
+            mapDropdown.draw(window);
+            window.setView(oldView);
             break;
 
         case GameState::Pause:
