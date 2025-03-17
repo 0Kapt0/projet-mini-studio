@@ -26,6 +26,18 @@ Sprite& Entity::getSprite()
 	return sprite;
 }
 
+float Entity::getHeight() {
+    return getSprite().getLocalBounds().height * getSprite().getScale().y;
+}
+float Entity::getWidth() {
+    return getSprite().getLocalBounds().width * getSprite().getScale().x;
+}
+
+Texture& Entity::getTexture()
+{
+    return texture;
+}
+
 const Sprite& Entity::getSpriteConst() const
 {
 	return sprite;
@@ -40,3 +52,14 @@ void Entity::draw(RenderWindow& window)
 	window.draw(sprite);
 }
 
+void Entity::invincibilityAfterHit(float dt) {
+	if (invincible) {
+		invincibilityTimer += dt;
+		getSprite().setColor(Color::Black);
+	}
+	if (invincibilityTimer > 1) {
+		getSprite().setColor(Color::White);
+		invincible = false;
+		invincibilityTimer = 0;
+	}
+}

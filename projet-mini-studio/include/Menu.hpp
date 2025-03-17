@@ -9,9 +9,11 @@ using namespace std;
 class Menu {
 public :
 	Texture playButton;
+	Sprite playSprite;
 	Texture editmodeButton;
 	Sprite editSprite;
 	Texture settingsButton;
+	Sprite settingSprite;
 	Texture menuButton;
 	Texture backgroundTexture;
 	Menu();

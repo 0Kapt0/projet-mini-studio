@@ -1,10 +1,18 @@
 #include "../include/Game.hpp"
+#include "../include/Settings.hpp"
 #include "../include/Map.hpp"
 #include "../include/Menu.hpp"
+#include "../include/Pause.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/TileSelector.hpp"
+#include "../include/EnemyFlying.hpp"
+#include "../include/BasicEnemy.hpp"
+#include "../include/ChargingBoss.hpp"
+#include "../include/Background.hpp"
+#include "../include/EntityManager.hpp"
+#include "../include/DropDown.hpp"
 
 #include <iostream>
 
@@ -16,10 +24,11 @@ enum class GameState {
     Playing,
     Editor,
     Pause,
+    Settings,
     GameOver
 };
 
-Game::Game() {}
+Game::Game() : deltaTime(0.0f) {}
 
 Game::~Game() {
     cout << "Le jeu est détruit\n";
@@ -29,27 +38,62 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
-    // Définir l'état initial du jeu
+    if (!font.loadFromFile("assets/fonts/arial.ttf")) {
+        cerr << "Erreur chargement de la police.\n";
+    }
+
+    vector<std::string> mapFiles = {
+        "assets/map/Lobby.txt",
+        "assets/map/Level1.txt",
+        "assets/map/Level2.txt"
+    };
+
+    DropDown mapDropdown(font, mapFiles,
+        Vector2f(1600.f, 80.f),   //position à l'écran
+        Vector2f(250.f, 30.f)); //taille (largeur, hauteu
+
+    background.loadTextures("assets/background/layer1.png",
+        "assets/background/layer2.png",
+        "assets/background/layer3.png",
+        "assets/background/layer4.png");
+
+    foreground.loadTextures("assets/foreground/layer1.png",
+        "assets/foreground/layer2.png");
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map map("assets/tileset/Tileset_Grass.png", "assets/map/Lobby.txt");
+    /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
+    Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
-    TileSelector tileSelector("assets/tileset/Tileset_Grass.png", 32);
-    Player player(Vector2f(50, 50), Color::Red, map);
-    Enemy enemy(Vector2f(50, 50), Color::Blue);
-    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow);
+    Settings settings;
+    Pause pause;
+    TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
+    /*Player player(Vector2f(50, 50), Color::Red, map);
+    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
+    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
+	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
+    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);*/
+    EntityManager entityManager;
+    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
+    entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
+    entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
+    entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
+    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
 
     bool collisionMode = false;
     Clock clock;
 
     while (window.isOpen()) {
         Event event;
+		deltaTime = clock.restart().asSeconds();
+        bool isLeftMousePressed = false;
+        bool isRightMousePressed = false;
+
         while (window.pollEvent(event)) {
             if (event.type == Event::Closed)
                 window.close();
 
-            // Gestion des événements en fonction de l'état actuel
+            //Gestion des événements en fonction de l'état actuel
             switch (currentState) {
             case GameState::Menu:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -57,38 +101,116 @@ void Game::run() {
                         currentState = GameState::Editor;
                     }
                 }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.settingSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Settings;
+                    }
+                }
                 break;
 
             case GameState::Playing:
-                player.handleInput(event, window);
+                /*map.loadMap("assets/map/Lobby.txt");
+                map.generateTiles();*/
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
+                }
+
                 break;
 
             case GameState::Editor:
-                player.handleInput(event, window);
+            {
                 tileSelector.handleEvent(event, window);
+                map.handleEvent(event, window);
 
-                if (event.type == Event::MouseButtonPressed) {
-                    int selectedTile = tileSelector.getSelectedTile();
-                    int x = event.mouseButton.x;
-                    int y = event.mouseButton.y;
+                mapDropdown.handleEvent(event, window);
 
-                    // Clic gauche : placer une tuile
-                    if (event.mouseButton.button == Mouse::Left && selectedTile != -1) {
-                        map.handleClick(x, y, selectedTile);
-                    }
-                    // Clic droit : effacer une tuile
-                    else if (event.mouseButton.button == Mouse::Right) {
-                        map.handleClick(x, y, 0);
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
+                {
+                    string chosenFile = mapDropdown.getSelectedItem();
+                    if (!chosenFile.empty()) {
+                        map.loadMap(chosenFile);
+                        map.generateTiles();
                     }
                 }
 
-                // Touche "C" pour activer/désactiver la collision
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::C) {
-                    tileSelector.toggleCollision();
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
                 }
+
+                if (event.type == Event::KeyPressed &&
+                    event.key.code == Keyboard::G)
+                {
+                    showGrid = !showGrid;
+                }
+
+				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z) {
+                    bool ctrl = event.key.control;
+                    bool shift = event.key.shift;
+                    if (ctrl && !shift) {
+                        map.undo();
+                    }
+                    else if (ctrl && shift) {
+                        map.redo();
+                    }
+                }
+
+                Vector2i mousePos = Mouse::getPosition(window);
+                Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+                float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
+                float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
+                Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+
+                FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
+
+                bool leftPressed = Mouse::isButtonPressed(Mouse::Left);
+                bool rightPressed = Mouse::isButtonPressed(Mouse::Right);
+
+                if (!tileSelectorBounds.contains(worldPos)) {
+                    if (leftPressed) {
+                        int selectedTile = tileSelector.getSelectedTile();
+                        if (selectedTile != -1) {
+                            map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                        }
+                    }
+                    else if (rightPressed) {
+                        map.handleClick(window, mousePos.x, mousePos.y, 74);
+                    }
+                }
+
+                if (event.type == Event::MouseButtonReleased) {
+                    if (event.mouseButton.button == Mouse::Left ||
+                        event.mouseButton.button == Mouse::Right)
+                    {
+                        if (!map.currentDragChanges.empty()) {
+                            map.pushAction(map.currentDragChanges);
+                            map.currentDragChanges.clear();
+                        }
+                    }
+                }
+
                 break;
+            }
+
 
             case GameState::Pause:
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (pause.playSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                    if (pause.menuSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Menu;
+                    }
+
+                }
                 break;
 
             case GameState::GameOver:
@@ -96,42 +218,63 @@ void Game::run() {
             }
         }
 
-        // Gestion du temps
-        float deltaTime = clock.restart().asSeconds();
+        if (currentState == GameState::Playing) {
+            /*player.update(deltaTime);
 
-        // Mise à jour selon l'état du jeu
-        if (currentState == GameState::Playing || currentState == GameState::Editor) {
-            player.update(deltaTime);
+            player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
-            enemy.update(0.016f);
+			basicEnemy.update(deltaTime, player);
+            flyingEnemy.update(deltaTime, player);*/
+            entityManager.updateEntities(event, deltaTime, window);
+            entityManager.destroyEntity();
+            float cameraX = entityManager.player->getSprite().getPosition().x;
+            background.update(cameraX);
+            foreground.update(cameraX);
+            /*chargingBoss.behavior(deltaTime, player, window);*/
         }
 
         window.clear();
 
-        // Rendu en fonction de l'état du jeu
         switch (currentState) {
         case GameState::Menu:
             menu.draw(window);
             break;
 
         case GameState::Playing:
-            map.draw(window);
-            player.draw(window);
-            enemy.draw(window);
+            background.draw(window);
+            map.draw(window);;
+            /*player.draw(window);
+			basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
-            break;
+            flyingEnemy.draw(window);*/
+            entityManager.drawEntities(window);
+            foreground.draw(window);
+            /*chargingBoss.draw(window);*/
 
+            break;
+        case GameState::Settings:
+            settings.draw(window);
+            break;
         case GameState::Editor:
+            background.draw(window);
             map.draw(window);
+            if (showGrid) {
+                map.drawGrid(window);
+            }
+
+			map.drawCam(window);
             tileSelector.draw(window);
-            player.draw(window);
-            enemy.draw(window);
-            rangedEnemy.draw(window);
-            rangedEnemy.drawProjectiles(window);
+            foreground.draw(window);
+
+            oldView = window.getView();
+            window.setView(window.getDefaultView());
+            mapDropdown.draw(window);
+            window.setView(oldView);
             break;
 
         case GameState::Pause:
+            pause.draw(window);
             break;
 
         case GameState::GameOver:
@@ -142,7 +285,7 @@ void Game::run() {
     }
 
     // Sauvegarde de la carte en quittant l'éditeur
-    if (currentState == GameState::Editor) {
+    if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
         map.saveMap("assets/map/Lobby.txt");
     }
 }
