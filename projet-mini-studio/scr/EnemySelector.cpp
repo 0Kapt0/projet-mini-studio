@@ -69,20 +69,17 @@ void EnemySelector::handleEvent(sf::Event event, sf::RenderWindow& window)
 
 void EnemySelector::draw(sf::RenderWindow& window)
 {
-    // Comme pour TileSelector, on dessine en vue fixe
     sf::View oldView = window.getView();
     window.setView(window.getDefaultView());
 
     // Dessin des icônes
     for (size_t i = 0; i < m_enemyIcons.size(); i++) {
-        // On replace la sprite en fonction de i
         float posX = float(i * m_iconSize);
         float posY = 0.f;
         m_enemyIcons[i].setPosition(posX, posY);
         window.draw(m_enemyIcons[i]);
     }
 
-    // Dessiner un contour autour de l’icône sélectionnée
     if (m_selectedIndex >= 0 && m_selectedIndex < (int)m_enemyIcons.size()) {
         float outlineX = float(m_selectedIndex * m_iconSize);
         float outlineY = 0.f;

@@ -13,6 +13,7 @@
 #include "../include/Background.hpp"
 #include "../include/EntityManager.hpp"
 #include "../include/DropDown.hpp"
+#include "../include/EnemySelector.hpp"
 
 #include <iostream>
 
@@ -42,7 +43,7 @@ void Game::run() {
         cerr << "Erreur chargement de la police.\n";
     }
 
-    vector<std::string> mapFiles = {
+    vector<string> mapFiles = {
         "assets/map/Lobby.txt",
         "assets/map/Level1.txt",
         "assets/map/Level2.txt"
@@ -50,7 +51,9 @@ void Game::run() {
 
     DropDown mapDropdown(font, mapFiles,
         Vector2f(1600.f, 80.f),   //position à l'écran
-        Vector2f(250.f, 30.f)); //taille (largeur, hauteu
+        Vector2f(250.f, 30.f)); //taille (largeur, hauteur
+
+    EnemySelector enemySelector("assets/tileset/enemy_icons.png", 64);
 
     background.loadTextures("assets/background/layer1.png",
         "assets/background/layer2.png",
@@ -114,8 +117,8 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                map.loadMap("assets/map/Lobby.txt");
-                map.generateTiles();
+                /*map.loadMap("assets/map/Lobby.txt");
+                map.generateTiles();*/
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
@@ -183,6 +186,49 @@ void Game::run() {
                     }
                     else if (rightPressed) {
                         map.handleClick(window, mousePos.x, mousePos.y, 74);
+                    }
+                }
+
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    Vector2i mousePos = sf::Mouse::getPosition(window);
+                    Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+                    float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
+                    float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
+                    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+                    FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
+
+                    FloatRect enemySelectorBounds(0, 0, 256, 64);
+
+                    if (!tileSelectorBounds.contains(worldPos)) {
+                        if (mousePos.x >= 0 && mousePos.x < 256 &&
+                            mousePos.y >= 0 && mousePos.y < 64)
+                        {
+
+                        }
+                        else {
+                            int selectedTile = tileSelector.getSelectedTile();
+                            EnemyType eType = enemySelector.getSelectedEnemy();
+
+                            if (eType != EnemyType::None) {
+                                string typeStr;
+                                switch (eType) {
+                                case EnemyType::Flying:        typeStr = "EnemyFlying"; break;
+                                case EnemyType::Ranged:        typeStr = "RangedEnemy"; break;
+                                case EnemyType::Basic:         typeStr = "BasicEnemy"; break;
+                                case EnemyType::ChargingBoss:  typeStr = "ChargingBoss"; break;
+                                default:                       typeStr = "EnemyFlying"; break;
+                                }
+                                entityManager.createEntity(typeStr, worldPos,
+                                    sf::Vector2f(50, 50),
+                                    sf::Color::White, map);
+                            }
+                            else if (selectedTile != -1) {
+                                map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                            }
+                            else {
+                            }
+                        }
                     }
                 }
 
@@ -265,6 +311,7 @@ void Game::run() {
 
 			map.drawCam(window);
             tileSelector.draw(window);
+            enemySelector.draw(window);
             foreground.draw(window);
 
             oldView = window.getView();

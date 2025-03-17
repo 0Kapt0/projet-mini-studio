@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 enum class EnemyType {
+	None,
     Flying,
     Ranged,
     Basic,
