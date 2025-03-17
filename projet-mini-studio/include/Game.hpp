@@ -3,6 +3,7 @@
 
 #include "Background.hpp"
 #include "Foreground.hpp"
+#include "Map.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -17,6 +18,7 @@ private:
 	bool showGrid = true;
     Font font;
 	View oldView;
+    EnemySpawn spawn;
 public:
     void run();
     Game();

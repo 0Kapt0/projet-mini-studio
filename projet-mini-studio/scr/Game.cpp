@@ -55,13 +55,11 @@ void Game::run() {
 
     EnemySelector enemySelector("assets/tileset/enemy_icons.png", 64);
 
-    background.loadTextures("assets/background/layer1.png",
-        "assets/background/layer2.png",
-        "assets/background/layer3.png",
-        "assets/background/layer4.png");
+    background.loadTextures("assets/background/Forest1.png",
+        "assets/background/Forest2.png",
+        "assets/background/Forest3.png");
 
-    foreground.loadTextures("assets/foreground/layer1.png",
-        "assets/foreground/layer2.png");
+    foreground.loadTextures("assets/foreground/foret_foreground.png", "assets/foreground/Forest-light.png");
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
@@ -82,6 +80,8 @@ void Game::run() {
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
     entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
     entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
+
+
 
     bool collisionMode = false;
     Clock clock;
@@ -220,8 +220,13 @@ void Game::run() {
                                 default:                       typeStr = "EnemyFlying"; break;
                                 }
                                 entityManager.createEntity(typeStr, worldPos,
-                                    sf::Vector2f(50, 50),
-                                    sf::Color::White, map);
+                                    Vector2f(50, 50),
+                                    Color::White, map);
+                                spawn.type = typeStr;
+                                spawn.x = worldPos.x;
+                                spawn.y = worldPos.y;
+                                map.enemySpawns.push_back(spawn);
+
                             }
                             else if (selectedTile != -1) {
                                 map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
@@ -304,6 +309,7 @@ void Game::run() {
             break;
         case GameState::Editor:
             background.draw(window);
+            foreground.draw(window);
             map.draw(window);
             if (showGrid) {
                 map.drawGrid(window);
@@ -312,7 +318,7 @@ void Game::run() {
 			map.drawCam(window);
             tileSelector.draw(window);
             enemySelector.draw(window);
-            foreground.draw(window);
+            
 
             oldView = window.getView();
             window.setView(window.getDefaultView());

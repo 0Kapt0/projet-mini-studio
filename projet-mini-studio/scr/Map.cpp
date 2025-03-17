@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <sstream>
 
 Map::Map(const string& tilesetPath, const string& mapPath)
     : cameraPos(0, 0), cameraSpeed(50.0f), isEditorMode(false)
@@ -55,43 +56,95 @@ void Map::generateTiles() {
 
 void Map::loadMap(const string& filename) {
     ifstream file(filename);
-    if (file.is_open()) {
-        map.clear();
-        blockedTiles.clear();
+    if (!file.is_open()) {
+        cerr << "Impossible de charger la carte depuis le fichier." << endl;
+        return;
+    }
 
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
-            vector<int> row;
-            for (int j = 0; j < MAP_WIDTH; ++j) {
-                int tile;
-                file >> tile;
-                row.push_back(tile);
+    map.clear();
+    blockedTiles.clear();
+    enemySpawns.clear();
 
-                if (collisionTiles.count(tile)) {
-                    blockedTiles.push_back(Vector2i(j, i));
-                }
-            }
-            map.push_back(row);
+    string line;
+    bool readingTiles = false;
+    bool readingEnemies = false;
+    int tilesRead = 0;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+
+        if (line == "#TILES") {
+            readingTiles = true;
+            readingEnemies = false;
+            tilesRead = 0;
+            continue;
+        }
+        else if (line == "#ENEMIES") {
+            readingTiles = false;
+            readingEnemies = true;
+            continue;
         }
 
-        generateTiles();
+        if (readingTiles && tilesRead < MAP_HEIGHT) {
+            stringstream ss(line);
+            vector<int> row;
+            row.reserve(MAP_WIDTH);
+
+            for (int j = 0; j < MAP_WIDTH; ++j) {
+                int tileVal;
+                ss >> tileVal;
+                row.push_back(tileVal);
+            }
+            map.push_back(row);
+            tilesRead++;
+        }
+        else if (readingEnemies) {
+            stringstream ss(line);
+            string type;
+            float x, y;
+            ss >> type >> x >> y;
+
+            EnemySpawn spawn;
+            spawn.type = type;
+            spawn.x = x;
+            spawn.y = y;
+            enemySpawns.push_back(spawn);
+        }
     }
-    else {
-        cerr << "Impossible de charger la carte depuis le fichier." << endl;
+
+    generateTiles();
+
+    for (int i = 0; i < MAP_HEIGHT; ++i) {
+        for (int j = 0; j < MAP_WIDTH; ++j) {
+            int tileVal = map[i][j];
+            if (collisionTiles.count(tileVal)) {
+                blockedTiles.push_back(Vector2i(j, i));
+            }
+        }
     }
 }
 
+
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
-    if (file.is_open()) {
-        for (const auto& row : map) {
-            for (int tile : row) {
-                file << tile << " ";
-            }
-            file << endl;
-        }
-    }
-    else {
+    if (!file.is_open()) {
         cerr << "Impossible de sauvegarder la carte." << endl;
+        return;
+    }
+
+    file << "#TILES\n";
+    for (int i = 0; i < MAP_HEIGHT; ++i) {
+        for (int j = 0; j < MAP_WIDTH; ++j) {
+            file << map[i][j] << " ";
+        }
+        file << "\n";
+    }
+
+    file << "#ENEMIES\n";
+    for (auto& spawn : enemySpawns) {
+        file << spawn.type << " "
+            << spawn.x << " "
+            << spawn.y << "\n";
     }
 }
 

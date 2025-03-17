@@ -23,6 +23,12 @@ struct TileChange {
     int newTile;
 };
 
+struct EnemySpawn {
+    string type;
+    float x;
+    float y;
+};
+
 class Map {
 public:
     Map(const string& tilesetPath, const string& mapPath);
@@ -52,13 +58,12 @@ public:
 
     const vector<vector<int>>& getMap() const { return map; }
 
+    vector<EnemySpawn> enemySpawns;
+
     static const int MAP_WIDTH = 300;
     static const int MAP_HEIGHT = 33;
     static const int TILE_SIZE = 64;
-
 private:
-
-
     Texture tilesetTexture;
     vector<Sprite> tiles;
     set<int> collisionTiles;
