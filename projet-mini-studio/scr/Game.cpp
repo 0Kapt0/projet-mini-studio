@@ -78,11 +78,11 @@ void Game::run() {
     entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
     entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
-    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
+    /*entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
     entityManager.createEntity("ChargingBoss", Vector2f(700, 600), Vector2f(100, 100), Color(239, 12, 197), map);
     entityManager.createEntity("ChargingBoss", Vector2f(300, 500), Vector2f(100, 100), Color(239, 12, 197), map);
     entityManager.createEntity("Checkpoint", Vector2f(100, 500), Vector2f(200, 200), Color(239, 12, 197), map);
-    entityManager.createEntity("Checkpoint", Vector2f(400, 500), Vector2f(200, 200), Color(239, 12, 197), map);
+    entityManager.createEntity("Checkpoint", Vector2f(400, 500), Vector2f(200, 200), Color(239, 12, 197), map);*/
 
     bool collisionMode = false;
     Clock clock;

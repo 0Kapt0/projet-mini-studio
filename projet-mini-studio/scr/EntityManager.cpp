@@ -97,7 +97,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	for (auto& checkpoint : checkpointVector) {
 		checkpoint->update();
 	}
-	if (Keyboard::isKeyPressed(Keyboard::R)) {
+	/*if (Keyboard::isKeyPressed(Keyboard::R)) {
 		save.reset("assets/checkpoint/player.txt", checkpointVector);
 	}
 	timer += dt;
@@ -112,7 +112,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	if (Keyboard::isKeyPressed(Keyboard::M) && timer > 1.f) {
 		player->oneUp(1);
 		timer = 0;
-	}
+	}*/
 }
 
 void EntityManager::drawEntities(RenderWindow& window) {
