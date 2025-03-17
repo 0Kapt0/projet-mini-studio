@@ -114,8 +114,8 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                map.loadMap("assets/map/Lobby.txt");
-                map.generateTiles();
+                /*map.loadMap("assets/map/Lobby.txt");
+                map.generateTiles();*/
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
