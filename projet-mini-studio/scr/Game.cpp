@@ -12,6 +12,7 @@
 #include "../include/ChargingBoss.hpp"
 #include "../include/Background.hpp"
 #include "../include/EntityManager.hpp"
+#include "../include/DropDown.hpp"
 
 #include <iostream>
 
@@ -37,6 +38,20 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
+    if (!font.loadFromFile("assets/fonts/arial.ttf")) {
+        cerr << "Erreur chargement de la police.\n";
+    }
+
+    vector<std::string> mapFiles = {
+        "assets/map/Lobby.txt",
+        "assets/map/Level1.txt",
+        "assets/map/Level2.txt"
+    };
+
+    DropDown mapDropdown(font, mapFiles,
+        Vector2f(1600.f, 80.f),   //position à l'écran
+        Vector2f(250.f, 30.f)); //taille (largeur, hauteu
+
     background.loadTextures("assets/background/layer1.png",
         "assets/background/layer2.png",
         "assets/background/layer3.png",
@@ -47,7 +62,7 @@ void Game::run() {
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
-    Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
+    /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
     Settings settings;
@@ -99,6 +114,8 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
+                map.loadMap("assets/map/Lobby.txt");
+                map.generateTiles();
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
@@ -107,49 +124,82 @@ void Game::run() {
                 break;
 
             case GameState::Editor:
+            {
                 tileSelector.handleEvent(event, window);
-                map.handleEvent(event);
+                map.handleEvent(event, window);
 
-                if (event.type == Event::MouseButtonPressed) {
-                    Vector2i mousePos = Mouse::getPosition(window);
-                    Vector2f worldPos = window.mapPixelToCoords(mousePos);
+                mapDropdown.handleEvent(event, window);
 
-                    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
-
-                    int tilesetWidth = tileSelector.getTilesetWidth();
-                    int tilesetHeight = tileSelector.getTilesetHeight();
-                    int tileSize = tileSelector.getTileSize();
-
-                    FloatRect tileSelectorBounds(
-                        viewPos.x, viewPos.y,
-                        tilesetWidth * tileSize,
-                        tilesetHeight * tileSize
-                    );
-
-                    if (tileSelectorBounds.contains(worldPos)) {
-                        tileSelector.handleEvent(event, window);
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
+                {
+                    string chosenFile = mapDropdown.getSelectedItem();
+                    if (!chosenFile.empty()) {
+                        map.loadMap(chosenFile);
+                        map.generateTiles();
                     }
-                    else {
+                }
+
+                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                    window.setView(window.getDefaultView());
+                    currentState = GameState::Pause;
+                }
+
+                if (event.type == Event::KeyPressed &&
+                    event.key.code == Keyboard::G)
+                {
+                    showGrid = !showGrid;
+                }
+
+				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z) {
+                    bool ctrl = event.key.control;
+                    bool shift = event.key.shift;
+                    if (ctrl && !shift) {
+                        map.undo();
+                    }
+                    else if (ctrl && shift) {
+                        map.redo();
+                    }
+                }
+
+                Vector2i mousePos = Mouse::getPosition(window);
+                Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+                float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
+                float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
+                Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+
+                FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
+
+                bool leftPressed = Mouse::isButtonPressed(Mouse::Left);
+                bool rightPressed = Mouse::isButtonPressed(Mouse::Right);
+
+                if (!tileSelectorBounds.contains(worldPos)) {
+                    if (leftPressed) {
                         int selectedTile = tileSelector.getSelectedTile();
-                        int x = event.mouseButton.x;
-                        int y = event.mouseButton.y;
-
-                        //Clic gauche : placer une tuile
-                        if (event.mouseButton.button == Mouse::Left && selectedTile != -1) {
-                            map.handleClick(window, x, y, selectedTile);
+                        if (selectedTile != -1) {
+                            map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
                         }
-                        //Clic droit : effacer une tuile
-                        else if (event.mouseButton.button == Mouse::Right) {
-                            map.handleClick(window, x, y, 74);
+                    }
+                    else if (rightPressed) {
+                        map.handleClick(window, mousePos.x, mousePos.y, 74);
+                    }
+                }
+
+                if (event.type == Event::MouseButtonReleased) {
+                    if (event.mouseButton.button == Mouse::Left ||
+                        event.mouseButton.button == Mouse::Right)
+                    {
+                        if (!map.currentDragChanges.empty()) {
+                            map.pushAction(map.currentDragChanges);
+                            map.currentDragChanges.clear();
                         }
                     }
                 }
 
-                //Touche "C" pour activer/désactiver la collision (ne fonctionne pas pour l'instant)
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::C) {
-                    tileSelector.toggleCollision();
-                }
                 break;
+            }
+
 
             case GameState::Pause:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -192,6 +242,8 @@ void Game::run() {
 
         case GameState::Playing:
             background.draw(window);
+            map.draw(window);
+            player.draw(window);
             level1.draw(window);
             /*player.draw(window);
 			basicEnemy.draw(window);
@@ -209,9 +261,19 @@ void Game::run() {
         case GameState::Editor:
             background.draw(window);
             map.draw(window);
+            if (showGrid) {
+                map.drawGrid(window);
+            }
+
 			map.drawCam(window);
+            /*mapDropdown.draw(window);*/
             tileSelector.draw(window);
             foreground.draw(window);
+
+            oldView = window.getView();
+            window.setView(window.getDefaultView());
+            mapDropdown.draw(window);
+            window.setView(oldView);
             break;
 
         case GameState::Pause:
@@ -226,7 +288,7 @@ void Game::run() {
     }
 
     // Sauvegarde de la carte en quittant l'éditeur
-    if (currentState == GameState::Editor) {
+    if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
         map.saveMap("assets/map/Lobby.txt");
     }
 }

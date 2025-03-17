@@ -21,7 +21,6 @@ public:
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
-	void isColliding(int x, int y, float dt);
 	void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
     bool attacking = false;
@@ -37,6 +36,11 @@ private:
     void applyMovement(float dt);
     void updateGrapplePosition();
     void updateCamera();
+
+    void handleBoundingBoxCollision(float dt);
+    void handleDashingCollision(float dt);
+    bool handleSlopeCollisionOnce();
+    void isColliding(int x, int y, float dt);
 
     View playerView;
     Map& map;

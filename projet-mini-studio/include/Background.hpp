@@ -5,12 +5,12 @@
 
 class Background {
 private:
-    sf::Texture textures[4];   // Textures pour chaque couche
-    sf::Sprite sprites[4];     // Un seul sprite par couche
-    float speeds[4] = { 0.01f, 0.03f, 0.06f, 0.10f }; // Vitesse du défilement
-    float spriteWidth = 1920.0f;  // Largeur de l'écran
-    float spriteHeight = 1080.0f; // Hauteur de l'écran
-    float offsetX[4] = { 0, 0, 0, 0 }; // Défilement horizontal de chaque couche
+    sf::Texture textures[4];
+    sf::Sprite sprites[4];
+    float speeds[4] = { 0.01f, 0.03f, 0.06f, 0.10f };
+    float spriteWidth = 1920.0f;
+    float spriteHeight = 1080.0f;
+    float offsetX[4] = { 0, 0, 0, 0 };
 
 public:
     Background();
