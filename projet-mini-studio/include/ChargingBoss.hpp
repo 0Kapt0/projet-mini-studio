@@ -24,8 +24,7 @@ public:
 
 	//void draw(RenderWindow& window) override;
 
-	void update(float dt) override;
-	void behavior(float dt, Player& player, RenderWindow& window);
+	void update(float dt, Player& player, RenderWindow& window) override;
 	void chase(Player& player, float dt);
 	void charge(float dt);
 	void dash(float dt);

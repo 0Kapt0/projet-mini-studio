@@ -3,18 +3,35 @@
 Player::Player(Map& map)
     : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
+   
     speed = 200;
     velocity = Vector2f(0, 0);
     this->map = map;
+
 }
 
 Player::Player(const Vector2f& size, const Color& color, Map& map)
     : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
+    hp = 1;
+    cout << hp;
     speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
     playerView.setSize(1920, 1080);
+    attackTexture.create(size.x * 1.5f, size.y * 1.5f);
+    Image image;
+    image.create(size.x * 1.5f, size.y * 1.5f, Color::Blue);
+    attackTexture.update(image);
+    attackSprite.setTexture(attackTexture);
+    if (!heartTexure.loadFromFile("assets/ui/heart.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heart1.setTexture(heartTexure);
+    if (!heartemptyTexure.loadFromFile("assets/ui/heartempty.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heartempty.setTexture(heartemptyTexure);
 }
 
 Player::~Player()
@@ -65,8 +82,10 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    invincibilityAfterHit(dt);
     handleGrapplePull(dt);
     handleMovement(dt);
+    handleAttack(dt);
     handleCollisions(dt);
     applyMovement(dt);
     updateGrapplePosition();
@@ -112,7 +131,7 @@ void Player::handleGrapplePull(float dt)
 void Player::handleMovement(float dt)
 {
     if (grappleMove) return;
-
+    if (onGround) dashMomentum = false;
     if (!dashing)
     {
         handleNormalMovement(dt);
@@ -127,10 +146,10 @@ void Player::handleMovement(float dt)
 void Player::handleNormalMovement(float dt)
 {
     dashTimer += dt;
-    if (dashTimer >= dashCooldown && getSprite().getPosition().y > 200.f)
+    if (dashTimer >= dashCooldown && onGround)
         canDash = true;
 
-    if (!Keyboard::isKeyPressed(Keyboard::Z) && jumpNum < 2)
+    if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
     {
         canJump = true;
     }
@@ -145,21 +164,38 @@ void Player::handleNormalMovement(float dt)
         velocity.y = 0.f;
     }
 
-    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D))
-        velocity.x = 0.f;
+    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D)) {
+        if (dashMomentum) {
+            if (lastInputDirection == 'L') {
+                velocity.x += 14.8f;
+            }
+            if (lastInputDirection == 'R') {
+                velocity.x -= 14.8f;
+            }
+            if (velocity.x > -50 && velocity.x < 50) {
+                velocity.x = 0;
+                dashMomentum = false;
+            }
+        }
+        else {
+            velocity.x = 0;
+        }
+    }
 
     if (Keyboard::isKeyPressed(Keyboard::Q))
     {
         velocity.x = -speed;
         lastInputDirection = 'L';
+        dashMomentum = false;
     }
     else if (Keyboard::isKeyPressed(Keyboard::D))
     {
         velocity.x = speed;
         lastInputDirection = 'R';
+        dashMomentum = false;
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::Z) && canJump)
+    if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
     {
         onGround = false;
         velocity.y = -speed;
@@ -216,7 +252,7 @@ void Player::handleNormalMovement(float dt)
         grappleStuck = false;
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::Space) && canDash)
+    if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash)
     {
         dashing = true;
         canDash = false;
@@ -228,8 +264,8 @@ void Player::handleNormalMovement(float dt)
 
         switch (lastInputDirection)
         {
-        case 'L': dashDirection.x = -speed * 3.f; break;
-        case 'R': dashDirection.x = speed * 3.f; break;
+        case 'L': dashDirection.x = -speed * 3.5f; break;
+        case 'R': dashDirection.x = speed * 3.5f; break;
         default:  dashDirection.x = 0.f;          break;
         }
     }
@@ -238,10 +274,12 @@ void Player::handleNormalMovement(float dt)
 void Player::handleDashingMovement(float dt)
 {
     dashDuration += dt;
-    if (dashDuration >= 0.2f)
+    if (dashDuration >= 0.1f)
     {
         dashing = false;
         dashDuration = 0.f;
+        dashMomentum = true;
+        velocity = dashDirection;
     }
 
     isColliding(getSpriteConst().getPosition().x,
@@ -250,8 +288,8 @@ void Player::handleDashingMovement(float dt)
 
     getSprite().move(dashDirection.x * dt, 0.f);
 
-    velocity.x = 0.f;
-    velocity.y = 0.f;
+    /*velocity.x = 0.f;
+    velocity.y = 0.f;*/
 }
 
 void Player::handleCollisions(float dt)
@@ -277,9 +315,10 @@ void Player::updateGrapplePosition()
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
-    if (Mouse::isButtonPressed(Mouse::Left)) {
+    if (/*Mouse::isButtonPressed(Mouse::Left)*/ Keyboard::isKeyPressed(Keyboard::F)) {
         leftButtonHold = true;
-        if (grapple.isStuck()) {
+        if (grapple.isStuck()) 
+        {
             Vector2f stuckPosition = grapple.getStuckPosition();
             Vector2f playerPosition = getSprite().getPosition();
             Vector2f direction = stuckPosition - playerPosition;
@@ -287,7 +326,8 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             direction /= grappleLength;
             velocity = direction * speed;
         }
-        else {
+        else 
+        {
             Vector2f startPosition = getSprite().getPosition();
             Vector2i mousePosition = Mouse::getPosition(window);
             Vector2f worldPosition = window.mapPixelToCoords(mousePosition, playerView);
@@ -297,7 +337,8 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             grapple.launch(startPosition, direction);
         }
     }
-    else {
+    else 
+    {
         leftButtonHold = false;
     }
     if (Mouse::isButtonPressed(Mouse::Right))
@@ -461,6 +502,59 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 void Player::draw(RenderWindow& window)
 {
     window.setView(playerView);
+    //heart1
+    for (int i = 1; i < 4; i++) {
+        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+        heartempty.setScale(0.1, 0.1f);
+        window.draw(heartempty);
+        if (hp >= i) {
+            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+            heart1.setScale(0.1, 0.1f);
+            window.draw(heart1);
+        }
+    }
     window.draw(getSprite());
+    if (attacking)
+        window.draw(attackSprite);
     grapple.draw(window);
+}
+
+void Player::handleAttack(float dt) {
+    if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
+        attacking = true;
+        canAttack = false;
+        attackTimer = 0;
+
+        switch (lastInputDirection) {
+        case('L'): attackDirection = "left"; break;
+        case('R'): attackDirection = "right"; break;
+        }
+    }
+    attackTimer += dt;
+    if (attackTimer >= attackCooldown) canAttack = true;
+
+    //attackSprite.setPosition(getSprite().getPosition());
+    if (attacking) {
+        attackDuration += dt;
+        if (attackDuration >= 0.2) {
+            attacking = false;
+            attackDuration = 0;
+        }
+    }
+    if (attackDirection == "left") {
+        attackSprite.setPosition(getSprite().getPosition().x - getWidth() / 2
+            - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
+            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        lastAttackPosition = attackSprite.getPosition();
+    }
+    if (attackDirection == "right") {
+        attackSprite.setPosition(getSprite().getPosition().x + getWidth() / 2,
+            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        lastAttackPosition = attackSprite.getPosition();
+    }
+}
+
+Sprite Player::getAttackHitBox() {
+
+    return attackSprite;
 }

@@ -14,12 +14,17 @@ public:
     Player(Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
-
+    Texture heartTexure;
+    Texture heartemptyTexure;
+    Sprite heart1;
+    Sprite heartempty;
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isColliding(int x, int y, float dt);
 	void isSwingColliding(Vector2f& newPos, float dt);
+    Sprite getAttackHitBox();
+    bool attacking = false;
 
 private:
     //fonction du update
@@ -28,6 +33,7 @@ private:
     void handleDashingMovement(float dt);
     void handleMovement(float dt);
     void handleCollisions(float dt);
+    void handleAttack(float dt);
     void applyMovement(float dt);
     void updateGrapplePosition();
     void updateCamera();
@@ -66,14 +72,14 @@ private:
 
     //Attaque
     bool canAttack = true;
-    bool attacking = false;
     Texture attackTexture;
     Sprite attackSprite;
-    string attackDirection = "mid";
+    string attackDirection = "right";
     float attackDuration = 0;
     float attackCooldown = 1;
     float attackTimer = 0;
 	bool onGround = true;
+    Vector2f lastAttackPosition;
 };
 
 #endif

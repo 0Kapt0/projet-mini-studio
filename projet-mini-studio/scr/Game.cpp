@@ -11,6 +11,7 @@
 #include "../include/BasicEnemy.hpp"
 #include "../include/ChargingBoss.hpp"
 #include "../include/Background.hpp"
+#include "../include/EntityManager.hpp"
 
 #include <iostream>
 
@@ -52,11 +53,17 @@ void Game::run() {
     Settings settings;
     Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
-    Player player(Vector2f(50, 50), Color::Red, map);
+    /*Player player(Vector2f(50, 50), Color::Red, map);
     RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
     EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
 	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
-    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);
+    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);*/
+    EntityManager entityManager;
+    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
+    entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
+    entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
+    entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
+    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
 
     bool collisionMode = false;
     Clock clock;
@@ -162,16 +169,18 @@ void Game::run() {
         }
 
         if (currentState == GameState::Playing) {
-            player.update(deltaTime);
+            /*player.update(deltaTime);
 
             player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
 			basicEnemy.update(deltaTime, player);
-            flyingEnemy.update(deltaTime, player);
-            float cameraX = player.getSprite().getPosition().x;
+            flyingEnemy.update(deltaTime, player);*/
+            entityManager.updateEntities(event, deltaTime, window);
+            entityManager.destroyEntity();
+            float cameraX = entityManager.player->getSprite().getPosition().x;
             background.update(cameraX);
             foreground.update(cameraX);
-            chargingBoss.behavior(deltaTime, player, window);
+            /*chargingBoss.behavior(deltaTime, player, window);*/
         }
 
         window.clear();
@@ -184,13 +193,14 @@ void Game::run() {
         case GameState::Playing:
             background.draw(window);
             level1.draw(window);
-            player.draw(window);
+            /*player.draw(window);
 			basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
-            flyingEnemy.draw(window);
+            flyingEnemy.draw(window);*/
+            entityManager.drawEntities(window);
             foreground.draw(window);
-            chargingBoss.draw(window);
+            /*chargingBoss.draw(window);*/
 
             break;
         case GameState::Settings:
