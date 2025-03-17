@@ -51,7 +51,6 @@ void EntityManager::collisions() {
 		}
 		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
 			player->invincible = true;
-			std::cout << "DAMAGE" << std::endl;
 		}
 	}
 }

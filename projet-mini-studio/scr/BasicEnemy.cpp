@@ -52,7 +52,7 @@ void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& play
     case PATROLLING:
         patrol(dt);
         if (isPlayerInRadius(playerPosition)) {
-            cout << "Transitioning to CHASING state\n";
+            //cout << "Transitioning to CHASING state\n";
             state = CHASING;
         }
         break;
@@ -60,18 +60,18 @@ void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& play
     case CHASING:
         chase(dt, playerPosition);
         if (isTouchingPlayer(player)) {
-            cout << "Transitioning to ATTACKING state\n";
+            //cout << "Transitioning to ATTACKING state\n";
             state = ATTACKING;
         }
         else if (!isPlayerInRadius(playerPosition)) {
-            cout << "Transitioning to PATROLLING state\n";
+            //cout << "Transitioning to PATROLLING state\n";
             state = PATROLLING;
         }
         break;
 
     case ATTACKING:
         attack(player);
-        cout << "Transitioning to CHASING state\n";
+        //cout << "Transitioning to CHASING state\n";
         state = CHASING;
         break;
     }
@@ -80,13 +80,13 @@ void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& play
 
     // Ensure the enemy is patrolling if not chasing or attacking
     if (state != CHASING && state != ATTACKING) {
-        cout << "Transitioning to PATROLLING state\n";
+        //cout << "Transitioning to PATROLLING state\n";
         state = PATROLLING;
     }
 }
 
 void BasicEnemy::patrol(float dt) {
-    cout << "Patrolling\n";
+    //cout << "Patrolling\n";
     if (waypoints.empty()) return;
 
     Vector2f position = getSprite().getPosition();
@@ -105,7 +105,7 @@ void BasicEnemy::patrol(float dt) {
 }
 
 void BasicEnemy::chase(float dt, const Vector2f& playerPosition) {
-    cout << "Chasing\n";
+    //cout << "Chasing\n";
     Vector2f position = getSprite().getPosition();
     Vector2f direction = playerPosition - position;
     float length = sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -113,7 +113,7 @@ void BasicEnemy::chase(float dt, const Vector2f& playerPosition) {
 }
 
 void BasicEnemy::attack(const Player& player) {
-    cout << "Attacking\n";
+    //cout << "Attacking\n";
     // Implement attack logic
     // For now, we'll just transition to CHASING for demonstration
     state = CHASING;

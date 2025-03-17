@@ -46,11 +46,9 @@ void ChargingBoss::chase(Player& player, float dt) {
 	getSprite().setColor(Color(239, 12, 197));
 	if (target.x < getSprite().getPosition().x) {
 		velocity.x = -speed;
-		dashDirection = "left";
 	}
 	else { 
 		velocity.x = speed;
-		dashDirection = "right";
 	}
 	getSprite().move(velocity * dt);
 }

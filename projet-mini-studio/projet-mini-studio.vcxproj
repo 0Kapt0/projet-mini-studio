@@ -34,11 +34,13 @@
     <ClInclude Include="include\Menu.hpp" />
     <ClInclude Include="include\Pause.hpp" />
     <ClInclude Include="include\Player.hpp" />
+    <ClInclude Include="include\Projectile.hpp" />
     <ClInclude Include="include\RangedEnemy.hpp" />
     <ClInclude Include="include\Rigidbody2D.hpp" />
     <ClInclude Include="include\Settings.hpp" />
     <ClInclude Include="include\TextureManager.hpp" />
     <ClInclude Include="include\TileSelector.hpp" />
+    <ClInclude Include="include\Useful.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\Background.cpp" />
@@ -57,11 +59,13 @@
     <ClCompile Include="scr\Menu.cpp" />
     <ClCompile Include="scr\Pause.cpp" />
     <ClCompile Include="scr\Player.cpp" />
+    <ClCompile Include="scr\Projectile.cpp" />
     <ClCompile Include="scr\RangedEnemy.cpp" />
     <ClCompile Include="scr\Rigidbody2D.cpp" />
     <ClCompile Include="scr\Settings.cpp" />
     <ClCompile Include="scr\TextureManager.cpp" />
     <ClCompile Include="scr\TileSelector.cpp" />
+    <ClCompile Include="scr\Useful.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

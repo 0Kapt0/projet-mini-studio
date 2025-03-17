@@ -1,4 +1,6 @@
 #include "Enemy.hpp"
+#include "Useful.hpp"
+#include "Projectile.hpp"
 
 class FlyingBoss : public Enemy 
 {
@@ -8,7 +10,7 @@ private:
 	float groundTimer;
 	float attackCooldown;
 	float attackTimer;
-	vector<RectangleShape> projectiles;
+	vector<unique_ptr<Projectile>> projectiles;
 	int hp;
 	bool goingRight = true;
 
@@ -28,10 +30,10 @@ public:
 
 
 private:
-	void inAir(float dt);
+	void inAir(float dt, Player& player);
 	void fly(float dt);
 	void onGround(float dt);
 	void fall(float dt);
-	void attack();
+	void attack(float dt, Player& player);
 	void drawProjectiles(RenderWindow& window);
 };

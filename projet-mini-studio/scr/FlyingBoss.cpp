@@ -16,7 +16,7 @@ FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Ene
 	this->attackCooldown = 1.0f;
 	this->attackTimer = 0.0f;
 	this->state = FLYING;
-	this->groundCooldown = 10.0f;
+	this->groundCooldown = 5.0f;
 	this->onGroundCooldown = 3.0f;
 	this->groundTimer = 0.0f;
 	hp = 100;
@@ -28,60 +28,82 @@ FlyingBoss::~FlyingBoss()
 
 void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 {
-	//Enemy::update(dt);
-	this->attackTimer += dt;
-	this->groundTimer += dt;
+	
 	if (this->state == IN_AIR)
 	{
-		cout << "state : IN AIR" << endl;
+		this->groundTimer += dt;
 		if (this->groundTimer >= this->groundCooldown)
 		{
 			this->state = FALLING;
 			this->groundTimer = 0.0f;
 		}
-		this->inAir(dt);
+		this->inAir(dt, player);
 	}
+
 	else if (this->state == FALLING)
 	{
-		cout << "state : FALLING" << endl;
 
-		if (map.isColliding(getSprite().getPosition().x, getSprite().getPosition().y + speed * dt))
+		if (map.isColliding(getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width,
+			getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height + speed * dt) ||
+			map.isColliding(getSprite().getGlobalBounds().left,
+				getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height + speed * dt) ||
+			map.isColliding(getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width / 2,
+				getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height + speed * dt))
 		{
 			this->state = ON_GROUND;
+			this->groundTimer = 0.0f;
 		}
-		this->fall(dt);
+		else
+		{
+			this->fall(dt);
+		}
 	}
+
 	else if (this->state == ON_GROUND)
 	{
-		cout << "state : ON GROUND" << endl;
+		this->groundTimer += dt;
 
 		if (this->groundTimer >= this->onGroundCooldown)
-		{
+		{		
 			this->state = FLYING;
 			this->groundTimer = 0.0f;
 		}
-		this->onGround(dt);
+		else
+		{
+			this->onGround(dt);
+		}
 	}
+
 	else if (this->state == FLYING)
 	{
-		cout << "state : FLYING" << endl;
-
-		if (getSprite().getPosition().y < 1500)
+		if (getSprite().getPosition().y < 500)
 		{
 			this->state = IN_AIR;
 			this->groundTimer = 0.0f;
 		}
-		this->fly(dt);
+		else
+		{
+			this->fly(dt);
+		}
 	}
-	cout << velocity.x << "       " << velocity.y << endl;
+
+	for ( auto& projectile : projectiles)
+	{
+		projectile->move(dt);
+	}
+
+	drawProjectiles(window);
+
 	getSprite().move(velocity * dt);
 }
 
-void FlyingBoss::inAir(float dt)
+void FlyingBoss::inAir(float dt, Player& player)
 {
+	this->attackTimer += dt;
+
 	if (this->attackTimer >= this->attackCooldown)
 	{
-		this->attack();
+		this->attack(dt, player);
 		this->attackTimer = 0.0f;
 	}
 
@@ -113,7 +135,8 @@ void FlyingBoss::fly(float dt)
 
 void FlyingBoss::onGround(float dt)
 {
-
+	velocity.y = 0;
+	velocity.x = 0;
 }
 
 void FlyingBoss::fall(float dt)
@@ -122,18 +145,17 @@ void FlyingBoss::fall(float dt)
 	velocity.x = 0;
 }
 
-void FlyingBoss::attack()
+void FlyingBoss::attack(float dt, Player& player)
 {
-	sf::RectangleShape projectile(Vector2f(10, 20));
-	projectile.setFillColor(sf::Color::Red);
-	projectile.setPosition(getSprite().getPosition().x, getSprite().getPosition().y - 20);
-
-	projectiles.push_back(projectile);
+	Vector2f direction = Vector2f(randomNumber(player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x - 20, player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x + 20),
+		randomNumber(player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y - 20, player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y + 20));
+	
+	projectiles.push_back(make_unique<Projectile>(getSpriteConst().getPosition(), direction, Color::Red));
 }
 
 void FlyingBoss::drawProjectiles(RenderWindow& window)
 {
 	for (const auto& projectile : projectiles) {
-		window.draw(projectile);
+		projectile->draw(window);
 	}
 }
