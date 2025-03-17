@@ -13,8 +13,6 @@ Player::Player(Map& map)
 Player::Player(const Vector2f& size, const Color& color, Map& map)
     : Entity(size, color), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
-    hp = 1;
-    //cout << hp;
     speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
@@ -503,7 +501,7 @@ void Player::draw(RenderWindow& window)
 {
     window.setView(playerView);
     //heart1
-    for (int i = 1; i < 4; i++) {
+    for (int i = 1; i < maxHp + 1; i++) {
         heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
         heartempty.setScale(0.1, 0.1f);
         window.draw(heartempty);
@@ -557,4 +555,20 @@ void Player::handleAttack(float dt) {
 Sprite Player::getAttackHitBox() {
 
     return attackSprite;
+}
+
+bool Player::isAttacking() {
+    return attacking;
+}
+
+int Player::getMaxHp() {
+    return maxHp;
+}
+void Player::setMaxHp(int newMaxHp) {
+    maxHp = newMaxHp;
+}
+
+void Player::oneUp(int value) {
+    maxHp += value;
+    hp += value;
 }

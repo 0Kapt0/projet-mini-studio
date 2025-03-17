@@ -22,6 +22,8 @@ public:
 	std::vector<std::shared_ptr<Enemy>> enemyVector;
 	std::vector<std::shared_ptr<Checkpoint>> checkpointVector;
 
+	float timer = 0;
+
 	Save save;
 
 	void createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
