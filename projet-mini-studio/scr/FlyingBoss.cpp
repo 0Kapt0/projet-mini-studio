@@ -2,7 +2,7 @@
 
 FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
 {
-	this->attackCooldown = 1.0f;
+	this->attackCooldown = 0.3f;
 	this->attackTimer = 0.0f;
 	this->state = FLYING;
 	this->groundCooldown = 10.0f;
@@ -13,7 +13,7 @@ FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
 
 FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map)
 {
-	this->attackCooldown = 1.0f;
+	this->attackCooldown = 0.3f;
 	this->attackTimer = 0.0f;
 	this->state = FLYING;
 	this->groundCooldown = 5.0f;
@@ -64,7 +64,7 @@ void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 		this->groundTimer += dt;
 
 		if (this->groundTimer >= this->onGroundCooldown)
-		{		
+		{
 			this->state = FLYING;
 			this->groundTimer = 0.0f;
 		}
@@ -90,9 +90,15 @@ void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 	for ( auto& projectile : projectiles)
 	{
 		projectile->move(dt);
+		if (projectile->getSprite().getGlobalBounds().intersects(player.getSprite().getGlobalBounds()))
+		{
+			player.hp--;
+		}
 	}
 
-	drawProjectiles(window);
+	projectiles.erase(remove_if(projectiles.begin(), projectiles.end(),
+		[](const unique_ptr<Projectile>& proj) { return proj->toBeDeleted; }),
+		projectiles.end());
 
 	getSprite().move(velocity * dt);
 }
@@ -147,15 +153,24 @@ void FlyingBoss::fall(float dt)
 
 void FlyingBoss::attack(float dt, Player& player)
 {
-	Vector2f direction = Vector2f(randomNumber(player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x - 20, player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x + 20),
-		randomNumber(player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y - 20, player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y + 20));
+	Vector2f direction = Vector2f(randomNumber(player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x - 150, player.getSpriteConst().getPosition().x - getSpriteConst().getPosition().x + 150),
+		randomNumber(player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y - 150, player.getSpriteConst().getPosition().y - getSpriteConst().getPosition().y + 150));
+	float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+	direction /= length;
 	
-	projectiles.push_back(make_unique<Projectile>(getSpriteConst().getPosition(), direction, Color::Red));
+	projectiles.push_back(make_unique<Projectile>(getSprite().getPosition(), direction, Color( 255, 0, 0, 255 ), map));
+}
+
+void FlyingBoss::draw(RenderWindow& window)
+{
+	window.draw(getSprite());
+	drawProjectiles(window);
 }
 
 void FlyingBoss::drawProjectiles(RenderWindow& window)
 {
-	for (const auto& projectile : projectiles) {
+	for (const auto& projectile : projectiles) 
+	{
 		projectile->draw(window);
 	}
 }

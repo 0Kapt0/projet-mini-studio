@@ -71,6 +71,7 @@ void Game::run() {
     Clock clock;
 
     while (window.isOpen()) {
+        window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
@@ -179,7 +180,7 @@ void Game::run() {
 
             player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
-			basicEnemy.update(deltaTime, player);
+            basicEnemy.update(deltaTime, player);
             flyingEnemy.update(deltaTime, player);*/
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
@@ -188,8 +189,6 @@ void Game::run() {
             foreground.update(cameraX);
             /*chargingBoss.behavior(deltaTime, player, window);*/
         }
-
-        window.clear();
 
         switch (currentState) {
         case GameState::Menu:
@@ -200,7 +199,7 @@ void Game::run() {
             background.draw(window);
             level1.draw(window);
             /*player.draw(window);
-			basicEnemy.draw(window);
+            basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
             flyingEnemy.draw(window);*/
@@ -215,7 +214,7 @@ void Game::run() {
         case GameState::Editor:
             background.draw(window);
             map.draw(window);
-			map.drawCam(window);
+            map.drawCam(window);
             tileSelector.draw(window);
             foreground.draw(window);
             break;

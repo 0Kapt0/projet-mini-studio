@@ -11,11 +11,15 @@ class Projectile : public Entity
 private:
     Vector2f direction;
     float speed;
+    RectangleShape shape;
+    Map& map;
 
 public:
-    Projectile(const Vector2f& startPosition, const Vector2f& direction, const Color& color, float speed = 300.0f);
+    Projectile(const Vector2f& startPosition, const Vector2f& direction, const Color& color, Map& _map, float speed = 600.0f);
+    void collision();
     void move(float dt);
     void draw(RenderWindow& window) override;
+    bool toBeDeleted;
 };
 
 #endif // PROJECTILE_HPP

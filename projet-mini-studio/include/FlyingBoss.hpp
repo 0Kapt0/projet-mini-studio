@@ -35,5 +35,6 @@ private:
 	void onGround(float dt);
 	void fall(float dt);
 	void attack(float dt, Player& player);
+	void draw(RenderWindow& window) override;
 	void drawProjectiles(RenderWindow& window);
 };
