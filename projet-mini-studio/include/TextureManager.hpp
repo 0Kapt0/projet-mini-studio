@@ -7,6 +7,8 @@ using namespace sf;
 
 class TextureManager {
 public:
+	Texture checkpointTexture;
+
 	TextureManager();
 
 	Texture getPlayerTexture();
