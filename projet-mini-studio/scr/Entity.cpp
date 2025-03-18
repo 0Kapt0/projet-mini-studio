@@ -78,7 +78,7 @@ void Entity::setPosY(float newPosY) {
 }
 
 void Entity::setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) {
-
+	
 }
 void Entity::animate(float deltaTime) {
 

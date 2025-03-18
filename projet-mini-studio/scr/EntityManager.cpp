@@ -37,7 +37,6 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		testCheckpoint->setTexture(textureManager.checkpointTexture, textureManager.checkpointTexture.getSize().x / 4, 
 			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
-		std::cout << textureManager.checkpointTexture.getSize().x / 4 << std::endl;
 	}
 }
 

@@ -692,3 +692,83 @@ void Player::oneUp(int value) {
     maxHp += value;
     hp += value;
 }
+
+void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
+    getSprite().setTexture(tex);
+    //sprite.setSize(Vector2f(frameWidth, frameHeight));
+    getSprite().setTextureRect(IntRect(0, 0, frameWidth, frameHeight));
+    //getSprite().setOrigin(frameWidth / 2, 0);
+    getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
+    totalFrames = _totalFrames;
+    frameTime = _frameTime;
+
+    frames.clear();
+    //FIRST ROW
+    //1
+    frameWidthResize = 125;
+    frameHeightResize = 117;
+    frameStartingX = 0;
+    frameStartingY = 0;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //2
+    frameStartingX = 125;
+    frameWidthResize = 155;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //3
+    frameStartingX = 308;
+    frameWidthResize = 125;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //4
+    frameStartingX = 402;
+    frameWidthResize = 155; //manque quelques pixels
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //5
+    frameStartingX = 581;
+    frameWidthResize = 125;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //SECOND ROW
+    //1
+    frameStartingX = 10;
+    frameStartingY = 169;
+    frameWidthResize = 48;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //2
+    frameStartingX = 86;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //3
+    frameStartingX = 170;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //THIRD ROW
+    frameStartingX = 91;
+    frameStartingY = 327;
+    frameHeightResize = 136;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+
+
+
+    /*for (int y = 0; y < 2; y++) {
+        if (y == 1) { 
+            totalFrames = 3;
+        }
+        else if (y == 2) { 
+            totalFrames = 2;
+        }
+        for (int i = 0; i < totalFrames; ++i) {
+            frames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+        }
+    }*/
+
+    getSprite().setTextureRect(frames[currentFrame]);
+}
+
+void Player::animate(float deltaTime) {
+    elapsedTime += deltaTime;
+    if (elapsedTime >= frameTime && !frames.empty()) {
+        elapsedTime = 0.0f;
+
+        currentFrame = (currentFrame + 1) % totalFrames;
+        if (currentFrame > totalFrames) currentFrame = 0;
+
+        getSprite().setTextureRect(frames[currentFrame]);
+    }
+}

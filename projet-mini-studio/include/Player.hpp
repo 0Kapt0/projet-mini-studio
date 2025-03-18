@@ -30,6 +30,13 @@ public:
     bool dashUnlocked = true;
     bool grappleUnlocked = true;
 
+    void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
+    int frameWidthResize = 0;
+    int frameHeightResize = 0;
+    int frameStartingX = 0;
+    int frameStartingY = 0;
+    void animate(float deltaTime) override;
+
 private:
     //fonction du update
     void handleGrapplePull(float dt);

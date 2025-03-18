@@ -47,17 +47,18 @@ void Checkpoint::animate(float deltaTime) {
 			if (currentFrame < totalFrames - 1) {
 				currentFrame++;
 			}
-			else {
+			/*else {
 				cout << "Animation terminée, blocage sur la dernière frame." << std::endl;
 				return;
-			}
+			}*/
 
 			//getSprite().setTextureRect(frames[currentFrame]);
 		}
 	}
-	if (activated && !animating) {
-		currentFrame = totalFrames - 1; //la dernière
-	}
+	//if (activated && !animating) {
+	//	std::cout << "yoooo" << std::endl;
+	//	currentFrame = totalFrames - 1; //la dernière
+	//}
 	if (!activated) {
 		currentFrame = 0;
 	}
