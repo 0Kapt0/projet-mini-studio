@@ -11,6 +11,7 @@ using namespace sf;
 
 class Player : public Entity {
 public:
+    Clock jumpCooldownClock;
     Player(Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
