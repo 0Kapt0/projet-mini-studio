@@ -1,6 +1,7 @@
 ﻿#ifndef MAP_HPP
 #define MAP_HPP
 
+#include "EnemySelector.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
@@ -37,6 +38,8 @@ public:
     void loadMap(const string& filename);
     void saveMap(const string& filename);
     void handleClick(RenderWindow& window, int x, int y, int tileIndex);
+    void handleEnemyPlacement(RenderWindow& window, int x, int y, EnemyType enemyType);
+    void handleEnemyRemoval(RenderWindow& window, int x, int y);
     void handleEvent(Event event, RenderWindow& window);
     void draw(RenderWindow& window);
     void drawGrid(RenderWindow& window);

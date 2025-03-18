@@ -5,43 +5,33 @@
 #include <vector>
 #include <string>
 
-// Votre enum, par exemple :
+using namespace std;
+using namespace sf;
+
 enum class EnemyType {
     None,
     Flying,
     Ranged,
     Basic,
     ChargingBoss,
-    // ...
 };
 
 class EnemySelector {
 public:
-    EnemySelector(const std::string& texturePath, int iconSize);
-
-    // Gère le clic (comme le TileSelector)
-    void handleEvent(sf::Event event, sf::RenderWindow& window);
-
-    // Dessine la palette (comme TileSelector)
-    void draw(sf::RenderWindow& window);
-
-    // Récupère l'ennemi sélectionné
+    EnemySelector(const string& texturePath, int iconSize);
+    void handleEvent(Event event, RenderWindow& window);
+    void draw(RenderWindow& window);
     EnemyType getSelectedEnemy() const;
 
 private:
-    sf::Texture m_texture;
-    std::vector<sf::Sprite> m_sprites;  // Toutes les icônes
+    Texture m_texture;
+    vector<Sprite> m_sprites;
     int m_iconSize;
-
-    // Indice choisi
     int m_selectedIndex;
 
-    // Type d’ennemi choisi
     EnemyType m_selectedEnemy;
 
-    // Un tableau qui mappe l'index -> EnemyType (comme tile index -> tile ID).
-    // L’ordre dans m_sprites et m_enemyTypes doit correspondre
-    std::vector<EnemyType> m_enemyTypes;
+    vector<EnemyType> m_enemyTypes;
 };
 
 #endif

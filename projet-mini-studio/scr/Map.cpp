@@ -54,6 +54,29 @@ void Map::generateTiles() {
     }
 }
 
+int enemyTypeToInt(const string& type) {
+    if (type == "EnemyFlying")
+        return 1;
+    else if (type == "RangedEnemy")
+        return 2;
+    else if (type == "BasicEnemy")
+        return 3;
+    else if (type == "ChargingBoss")
+        return 4;
+    return 0;
+}
+
+string intToEnemyType(int value) {
+    switch (value) {
+    case 1: return "EnemyFlying";
+    case 2: return "RangedEnemy";
+    case 3: return "BasicEnemy";
+    case 4: return "ChargingBoss";
+    default: return "";
+    }
+}
+
+
 void Map::loadMap(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -69,6 +92,7 @@ void Map::loadMap(const string& filename) {
     bool readingTiles = false;
     bool readingEnemies = false;
     int tilesRead = 0;
+    int enemyRow = 0;
 
     while (getline(file, line)) {
         if (line.empty()) continue;
@@ -82,6 +106,7 @@ void Map::loadMap(const string& filename) {
         else if (line == "#ENEMIES") {
             readingTiles = false;
             readingEnemies = true;
+            enemyRow = 0;
             continue;
         }
 
@@ -89,7 +114,6 @@ void Map::loadMap(const string& filename) {
             stringstream ss(line);
             vector<int> row;
             row.reserve(MAP_WIDTH);
-
             for (int j = 0; j < MAP_WIDTH; ++j) {
                 int tileVal;
                 ss >> tileVal;
@@ -98,17 +122,20 @@ void Map::loadMap(const string& filename) {
             map.push_back(row);
             tilesRead++;
         }
-        else if (readingEnemies) {
+        else if (readingEnemies && enemyRow < MAP_HEIGHT) {
             stringstream ss(line);
-            string type;
-            float x, y;
-            ss >> type >> x >> y;
-
-            EnemySpawn spawn;
-            spawn.type = type;
-            spawn.x = x;
-            spawn.y = y;
-            enemySpawns.push_back(spawn);
+            for (int j = 0; j < MAP_WIDTH; ++j) {
+                int value;
+                ss >> value;
+                if (value != 0) {
+                    EnemySpawn spawn;
+                    spawn.type = intToEnemyType(value);
+                    spawn.x = j * TILE_SIZE;
+                    spawn.y = enemyRow * TILE_SIZE;
+                    enemySpawns.push_back(spawn);
+                }
+            }
+            enemyRow++;
         }
     }
 
@@ -123,7 +150,6 @@ void Map::loadMap(const string& filename) {
         }
     }
 }
-
 
 void Map::saveMap(const string& filename) {
     ofstream file(filename);
@@ -141,10 +167,22 @@ void Map::saveMap(const string& filename) {
     }
 
     file << "#ENEMIES\n";
-    for (auto& spawn : enemySpawns) {
-        file << spawn.type << " "
-            << spawn.x << " "
-            << spawn.y << "\n";
+
+    vector<vector<int>> enemyGrid(MAP_HEIGHT, vector<int>(MAP_WIDTH, 0));
+
+    for (const auto& spawn : enemySpawns) {
+        int tileX = static_cast<int>(spawn.x) / TILE_SIZE;
+        int tileY = static_cast<int>(spawn.y) / TILE_SIZE;
+        int enemyId = enemyTypeToInt(spawn.type);
+        if (tileX >= 0 && tileX < MAP_WIDTH && tileY >= 0 && tileY < MAP_HEIGHT)
+            enemyGrid[tileY][tileX] = enemyId;
+    }
+
+    for (int i = 0; i < MAP_HEIGHT; ++i) {
+        for (int j = 0; j < MAP_WIDTH; ++j) {
+            file << enemyGrid[i][j] << " ";
+        }
+        file << "\n";
     }
 }
 
@@ -172,13 +210,58 @@ void Map::handleClick(RenderWindow& window, int x, int y, int tileIndex)
     }
 }
 
+void Map::handleEnemyPlacement(RenderWindow& window, int x, int y, EnemyType enemyType) {
+    Vector2f worldPos = window.mapPixelToCoords(Vector2i(x, y), cameraView);
+    int tileX = static_cast<int>(worldPos.x) / TILE_SIZE;
+    int tileY = static_cast<int>(worldPos.y) / TILE_SIZE;
+
+    worldPos.x = tileX * TILE_SIZE;
+    worldPos.y = tileY * TILE_SIZE;
+
+    if (tileX >= 0 && tileX < MAP_WIDTH && tileY >= 0 && tileY < MAP_HEIGHT) {
+        string typeStr;
+        switch (enemyType) {
+        case EnemyType::Flying:       typeStr = "EnemyFlying"; break;
+        case EnemyType::Ranged:       typeStr = "RangedEnemy"; break;
+        case EnemyType::Basic:        typeStr = "BasicEnemy";  break;
+        case EnemyType::ChargingBoss: typeStr = "ChargingBoss"; break;
+        default:                      typeStr = "EnemyFlying"; break;
+        }
+        EnemySpawn spawn;
+        spawn.type = typeStr;
+        spawn.x = worldPos.x;
+        spawn.y = worldPos.y;
+        enemySpawns.push_back(spawn);
+    }
+}
+
+void Map::handleEnemyRemoval(RenderWindow& window, int x, int y) {
+    Vector2f worldPos = window.mapPixelToCoords(Vector2i(x, y), cameraView);
+    int tileX = static_cast<int>(worldPos.x) / TILE_SIZE;
+    int tileY = static_cast<int>(worldPos.y) / TILE_SIZE;
+
+    worldPos.x = tileX * TILE_SIZE;
+    worldPos.y = tileY * TILE_SIZE;
+
+    auto it = enemySpawns.begin();
+    while (it != enemySpawns.end()) {
+        int spawnTileX = static_cast<int>(it->x) / TILE_SIZE;
+        int spawnTileY = static_cast<int>(it->y) / TILE_SIZE;
+        if (spawnTileX == tileX && spawnTileY == tileY) {
+            it = enemySpawns.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
 void Map::pushAction(const vector<TileChange>& action)
 {
     redoStack.clear();
     undoStack.push_back(action);
 }
 
-//Annuler la derniere action
 void Map::undo() {
     if (undoStack.empty()) {
         cout << "Rien à annuler.\n";
@@ -196,7 +279,6 @@ void Map::undo() {
     redoStack.push_back(lastAction);
 }
 
-//Retablir la derniere action annulee
 void Map::redo() {
     if (redoStack.empty()) {
         cout << "Rien à retablir.\n";
@@ -290,37 +372,33 @@ void Map::drawCam(RenderWindow& window) {
     window.setView(cameraView);
 }
 
-void Map::drawEnemySpawns(sf::RenderWindow& window) {
-    // Chargez une texture statique pour les icônes ennemies (charge une seule fois)
-    static sf::Texture enemyIconsTexture;
+void Map::drawEnemySpawns(RenderWindow& window) {
+    static Texture enemyIconsTexture;
     static bool loaded = false;
     if (!loaded) {
         if (!enemyIconsTexture.loadFromFile("assets/tileset/enemy_icons.png")) {
-            std::cerr << "Erreur lors du chargement de enemy_icons.png" << std::endl;
+            cerr << "Erreur lors du chargement de enemy_icons.png" << endl;
         }
         loaded = true;
     }
 
-    int iconSize = TILE_SIZE; // On suppose que l'icône est de la même taille qu'une tuile (par ex. 64)
+    int iconSize = TILE_SIZE;
 
-    // Parcours de chaque spawn et dessin dans la vue active (caméra)
     for (const auto& spawn : enemySpawns) {
-        sf::Sprite sprite;
+        Sprite sprite;
         sprite.setTexture(enemyIconsTexture);
 
-        // Choix du rectangle de texture selon le type enregistré
         if (spawn.type == "EnemyFlying")
-            sprite.setTextureRect(sf::IntRect(0, 0, iconSize, iconSize));
+            sprite.setTextureRect(IntRect(0, 0, iconSize, iconSize));
         else if (spawn.type == "RangedEnemy")
-            sprite.setTextureRect(sf::IntRect(iconSize, 0, iconSize, iconSize));
+            sprite.setTextureRect(IntRect(iconSize, 0, iconSize, iconSize));
         else if (spawn.type == "BasicEnemy")
-            sprite.setTextureRect(sf::IntRect(2 * iconSize, 0, iconSize, iconSize));
+            sprite.setTextureRect(IntRect(2 * iconSize, 0, iconSize, iconSize));
         else if (spawn.type == "ChargingBoss")
-            sprite.setTextureRect(sf::IntRect(3 * iconSize, 0, iconSize, iconSize));
+            sprite.setTextureRect(IntRect(3 * iconSize, 0, iconSize, iconSize));
         else
-            sprite.setTextureRect(sf::IntRect(0, 0, iconSize, iconSize));
+            sprite.setTextureRect(IntRect(0, 0, iconSize, iconSize));
 
-        // Positionner l'icône à la position enregistrée
         sprite.setPosition(spawn.x, spawn.y);
         window.draw(sprite);
     }

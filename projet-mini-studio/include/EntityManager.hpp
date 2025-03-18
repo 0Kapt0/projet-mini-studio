@@ -7,8 +7,10 @@
 #include "../include/EnemyFlying.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/BasicEnemy.hpp"
+#include "../include/Map.hpp"
 
 using namespace sf;
+using namespace std;
 
 class EntityManager {
 public:
@@ -16,16 +18,18 @@ public:
 
 	TextureManager textureManager;
 
-	std::shared_ptr<Player> player;
-	std::vector<std::shared_ptr<Player>> playerVector;
-	std::vector<std::shared_ptr<Enemy>> enemyVector;
+	shared_ptr<Player> player;
+	vector<shared_ptr<Player>> playerVector;
+	vector<shared_ptr<Enemy>> enemyVector;
 
-	void createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
+	void createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
 	void destroyEntity();
 	void collisions();
 
 	void updateEntities(Event& event, float dt, /* Player& player1,*/ RenderWindow& window);
 	void drawEntities(RenderWindow& window);
+
+	void generateEnemies(Map& map);
 };
 
 
