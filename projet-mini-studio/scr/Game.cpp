@@ -3,6 +3,7 @@
 #include "../include/Map.hpp"
 #include "../include/Menu.hpp"
 #include "../include/Pause.hpp"
+#include "../include/Selector.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
@@ -25,6 +26,8 @@ enum class GameState {
     Editor,
     Pause,
     Settings,
+    Selector,
+    Cutscene,
     GameOver
 };
 
@@ -65,6 +68,7 @@ void Game::run() {
     /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
     Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
+    Selector selector;
     Settings settings;
     Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
@@ -107,7 +111,7 @@ void Game::run() {
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
-                        currentState = GameState::Playing;
+                        currentState = GameState::Selector;
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -216,7 +220,14 @@ void Game::run() {
 
                 }
                 break;
-
+            case GameState::Selector:
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                }
+                break;
+            
             case GameState::GameOver:
                 break;
             }
@@ -281,6 +292,9 @@ void Game::run() {
             pause.draw(window);
             break;
 
+        case GameState::Selector:
+            selector.draw(window);
+            break;
         case GameState::GameOver:
             break;
         }
