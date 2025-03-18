@@ -16,7 +16,6 @@ public:
 	EntityManager();
 
 	TextureManager textureManager;
-
 	std::shared_ptr<Player> player;
 	std::vector<std::shared_ptr<Player>> playerVector;
 	std::vector<std::shared_ptr<Enemy>> enemyVector;

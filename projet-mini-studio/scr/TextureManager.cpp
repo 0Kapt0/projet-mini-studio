@@ -2,5 +2,7 @@
 
 TextureManager::TextureManager() {
 	//loadFromFile
-	checkpointTexture.loadFromFile("assets/checkpoint/tv.png");
+	checkpointTexture.loadFromFile("assets/animation/checkpoint/tv.png");
+	playerTexture.loadFromFile("assets/animation/player/movement.png");
+
 }

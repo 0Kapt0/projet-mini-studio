@@ -7,6 +7,8 @@ using namespace sf;
 
 class TextureManager {
 public:
+	Texture playerTexture;
+	Texture playetAttackTexture;
 	Texture checkpointTexture;
 
 	TextureManager();
@@ -14,7 +16,6 @@ public:
 	Texture getPlayerTexture();
 	Texture getEnemyTexture();
 	Texture getBossTexture();
-
 };
 
 

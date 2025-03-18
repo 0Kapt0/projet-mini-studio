@@ -18,6 +18,8 @@ public:
 
 	Entity(const Vector2f& size, const Color& color);
 
+	Entity(Texture& tex);
+
 	~Entity();
 
 	Sprite& getSprite();

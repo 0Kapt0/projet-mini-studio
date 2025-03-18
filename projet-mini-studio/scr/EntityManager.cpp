@@ -6,8 +6,9 @@ EntityManager::EntityManager() {
 
 void EntityManager::createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
 	if (type == "Player") {
-		std::shared_ptr<Player> _player = std::make_shared<Player>(size, color, map);
-		_player->getSprite().setPosition(position);
+		std::shared_ptr<Player> _player = std::make_shared<Player>(textureManager.playerTexture, map);
+		//_player->getSprite().setPosition(position);
+		_player->setTexture(textureManager.playerTexture, 0, 0, 0, 0.1f);
 		player = _player;
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
@@ -93,6 +94,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	collisions();
 	player->update(dt);
 	player->handleInput(event, window, dt);
+	player->animate(dt);
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
 	}

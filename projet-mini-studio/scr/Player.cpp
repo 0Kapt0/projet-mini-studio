@@ -1,12 +1,13 @@
 ﻿#include "../include/Player.hpp"
 
-Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
+Player::Player(Texture& tex, Map& map)
+    : Entity(tex), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
    
-    speed = 200;
+    speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
+    playerView.setSize(1920, 1080);
 
 }
 
@@ -78,6 +79,7 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    std::cout << getSprite().getGlobalBounds().width << std::endl;
     invincibilityAfterHit(dt);
     handleGrapplePull(dt);
     handleMovement(dt);
@@ -388,9 +390,9 @@ void Player::handleBoundingBoxCollision(float dt)
             newX = (static_cast<int>((getSprite().getGlobalBounds().left
                 + getSpriteConst().getGlobalBounds().width) / 64)) * 64
                 + 64
-                - getTexture().getSize().x / 2;
+                - /*getTexture().getSize().x / 2*/getSprite().getTextureRect().getSize().x / 2;
 
-            getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
+            //getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -402,9 +404,9 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
             newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64
-                + getTexture().getSize().x / 2;
+                + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
 
-            getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
+            //getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -419,13 +421,11 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2,
                 newY + getSpriteConst().getGlobalBounds().height))
         {
-            newY = (static_cast<int>((getSprite().getGlobalBounds().top
-                + getSpriteConst().getGlobalBounds().height) / 64)) * 64
-                + 64
-                - getTexture().getSize().y / 2;
+            newY = (static_cast<int>((getSprite().getGlobalBounds().top)));
+            cout << getSpriteConst().getGlobalBounds().height << endl;
 
             jumpNum = 0;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1f);
+            //getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
             onGround = true;
@@ -438,9 +438,9 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
         {
             newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64
-                + getTexture().getSize().y / 2;
+                + /*getTexture().getSize().y / 2*/getSprite().getTextureRect().getSize().y / 2;
 
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1f);
+            //getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
         }
@@ -471,7 +471,7 @@ void Player::handleDashingCollision(float dt)
                 (getSprite().getGlobalBounds().left
                     + getSpriteConst().getGlobalBounds().width) / 64)) * 64
                 + 64
-                - getTexture().getSize().x / 2;
+                - /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
 
             getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
             dashDirection.x = 0.f;
@@ -492,7 +492,7 @@ void Player::handleDashingCollision(float dt)
         {
             newX = (static_cast<int>(
                 getSprite().getGlobalBounds().left / 64)) * 64
-                + getTexture().getSize().x / 2;
+                + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
 
             getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
             dashDirection.x = 0.f;
@@ -563,7 +563,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y + getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
+            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 64)) * 64 + 64 - /*getTexture().getSize().y / 2*/ getSprite().getTextureRect().getSize().y / 2;
             getSprite().setPosition(getSprite().getPosition().x, newPos.y - 0.1);
             velocity.y = 0;
             angularVelocity = 0;
@@ -577,7 +577,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y - getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y - getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
+            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + /*getTexture().getSize().y / 2*/ getSprite().getTextureRect().getSize().y / 2;
             getSprite().setPosition(getSprite().getPosition().x, newPos.y + 0.1);
             velocity.y = 0;
             angularVelocity = 0;
@@ -592,7 +592,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
+            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 64)) * 64 + 64 - /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
             getSprite().setPosition(newPos.x - 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
@@ -606,7 +606,7 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
+            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
             getSprite().setPosition(newPos.x + 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
@@ -694,80 +694,88 @@ void Player::oneUp(int value) {
 }
 
 void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
-    getSprite().setTexture(tex);
-    //sprite.setSize(Vector2f(frameWidth, frameHeight));
-    getSprite().setTextureRect(IntRect(0, 0, frameWidth, frameHeight));
-    //getSprite().setOrigin(frameWidth / 2, 0);
-    getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
-    totalFrames = _totalFrames;
-    frameTime = _frameTime;
 
     frames.clear();
     //FIRST ROW
-    //1
+    //0
     frameWidthResize = 125;
     frameHeightResize = 117;
     frameStartingX = 0;
     frameStartingY = 0;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //2
+    //1
     frameStartingX = 125;
     frameWidthResize = 155;
+    frameHeightResize = 117;
+    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
+    //2
+    frameStartingX = 282;
+    frameWidthResize = 119;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
     //3
-    frameStartingX = 308;
-    frameWidthResize = 125;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //4
     frameStartingX = 402;
     frameWidthResize = 155; //manque quelques pixels
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //5
+    ////4
     frameStartingX = 581;
     frameWidthResize = 125;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
     //SECOND ROW
-    //1
+    //5
     frameStartingX = 10;
     frameStartingY = 169;
     frameWidthResize = 48;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //2
+    //6
     frameStartingX = 86;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //3
+    //7
     frameStartingX = 170;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
     //THIRD ROW
+    //8
     frameStartingX = 91;
     frameStartingY = 327;
     frameHeightResize = 136;
     frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
 
-
-
-    /*for (int y = 0; y < 2; y++) {
-        if (y == 1) { 
-            totalFrames = 3;
-        }
-        else if (y == 2) { 
-            totalFrames = 2;
-        }
-        for (int i = 0; i < totalFrames; ++i) {
-            frames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
-        }
-    }*/
-
     getSprite().setTextureRect(frames[currentFrame]);
+    getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2); 
 }
 
 void Player::animate(float deltaTime) {
     elapsedTime += deltaTime;
     if (elapsedTime >= frameTime && !frames.empty()) {
         elapsedTime = 0.0f;
+        //UTILISER SET TEXTURE A CHAQUE NOUVELLE ANIMATION
+        /*if (Keyboard::isKeyPressed(Keyboard::D)) {
+            currentFrame = 0;
+            totalFrames = 3;
+            currentFrame = (currentFrame + 1) % totalFrames;
+            if (currentFrame > totalFrames) currentFrame = 0;
 
+                getSprite().setTextureRect(frames[currentFrame]);
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Q)) {
+            currentFrame = 0;
+            totalFrames = 3;
+            currentFrame = (currentFrame + 1) % totalFrames;
+            if (currentFrame > totalFrames) currentFrame = 0;
+
+            getSprite().setTextureRect(frames[currentFrame]);
+            getSprite().setRotation(180.f);
+        }*/
+        /*if (velocity.x == 0) {
+            startingFrame = 5;
+            currentFrame = 5;
+        }
+        if (velocity.x > 0) {
+            if (currentAnimation != RUNNING)
+                startRunning = true;
+            runningAnimation();
+        }
         currentFrame = (currentFrame + 1) % totalFrames;
-        if (currentFrame > totalFrames) currentFrame = 0;
+        if (currentFrame > totalFrames) currentFrame = startingFrame;*/
 
         getSprite().setTextureRect(frames[currentFrame]);
     }

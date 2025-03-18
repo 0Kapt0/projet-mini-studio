@@ -17,6 +17,12 @@ Entity::Entity(const Vector2f& size, const Color& color)
 	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 }
 
+Entity::Entity(Texture& tex) {
+	texture = tex;
+	sprite.setTexture(texture);
+	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+}
+
 Entity::~Entity()
 {
 }

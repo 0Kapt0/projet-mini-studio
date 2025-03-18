@@ -11,7 +11,7 @@ using namespace sf;
 
 class Player : public Entity {
 public:
-    Player(Map& map);
+    Player(Texture& tex, Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
     void update(float dt);
@@ -36,6 +36,11 @@ public:
     int frameStartingX = 0;
     int frameStartingY = 0;
     void animate(float deltaTime) override;
+    /*enum CurrentAnimation { STANDING, RUNNING, ATTACKING, JUMPING };
+    CurrentAnimation currentAnimation = STANDING;
+    void runningAnimation();
+    bool startRunning = false;
+    int startingFrame = 0;*/
 
 private:
     //fonction du update
