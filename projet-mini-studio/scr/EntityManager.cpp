@@ -36,24 +36,24 @@ void EntityManager::generateEnemies(Map& map) {
 	enemyVector.clear();
 
 	for (const auto& spawn : map.enemySpawns) {
-		sf::Vector2f position(spawn.x, spawn.y);
-		sf::Vector2f size(50, 50);
+		Vector2f position(spawn.x, spawn.y);
+		Vector2f size(50, 50);
 
-		sf::Color color;
+		Color color;
 		if (spawn.type == "EnemyFlying") {
-			color = sf::Color::Green;
+			color = Color::Green;
 		}
 		else if (spawn.type == "RangedEnemy") {
-			color = sf::Color::Yellow;
+			color = Color::Yellow;
 		}
 		else if (spawn.type == "BasicEnemy") {
-			color = sf::Color::Blue;
+			color = Color::Blue;
 		}
 		else if (spawn.type == "ChargingBoss") {
-			color = sf::Color(239, 12, 197);
+			color = Color(239, 12, 197);
 		}
 		else {
-			color = sf::Color::White;
+			color = Color::White;
 		}
 		createEntity(spawn.type, position, size, color, map);
 	}
