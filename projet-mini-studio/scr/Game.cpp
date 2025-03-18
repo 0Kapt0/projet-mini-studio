@@ -55,12 +55,13 @@ void Game::run() {
 
     EnemySelector enemySelector("assets/tileset/enemy_icons.png", 64);
 
-    background.loadTextures("assets/background/Forest1.png",
-        "assets/background/Forest2.png",
-        "assets/background/Forest3.png",
-        "assets/background/Forest4.png");
+    background.loadTextures("assets/background/city1.png",
+        "assets/background/city2.png",
+        "assets/background/city3.png",
+        "assets/background/city4.png",
+        "assets/background/city5.png");
 
-    foreground.loadTextures("assets/foreground/foret_foreground.png", "assets/foreground/Forest-light.png");
+    /*foreground.loadTextures("assets/foreground/foret_foreground.png", "assets/foreground/Forest-light.png");*/
     GameState currentState = GameState::Menu;
 
     // Instanciation des objets
@@ -129,13 +130,13 @@ void Game::run() {
 
             case GameState::Editor:
             {
+                // --- GESTION DES ÉVÉNEMENTS (pollEvent) ---
                 tileSelector.handleEvent(event, window);
+                enemySelector.handleEvent(event, window);
                 map.handleEvent(event, window);
-
                 mapDropdown.handleEvent(event, window);
 
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
-                {
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
                     string chosenFile = mapDropdown.getSelectedItem();
                     if (!chosenFile.empty()) {
                         map.loadMap(chosenFile);
@@ -143,104 +144,29 @@ void Game::run() {
                     }
                 }
 
-                if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
                 }
 
-                if (event.type == Event::KeyPressed &&
-                    event.key.code == Keyboard::G)
-                {
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
                     showGrid = !showGrid;
                 }
 
-				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z) {
+                // Undo / Redo
+                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z) {
                     bool ctrl = event.key.control;
                     bool shift = event.key.shift;
-                    if (ctrl && !shift) {
+                    if (ctrl && !shift)
                         map.undo();
-                    }
-                    else if (ctrl && shift) {
+                    else if (ctrl && shift)
                         map.redo();
-                    }
                 }
 
-                Vector2i mousePos = Mouse::getPosition(window);
-                Vector2f worldPos = window.mapPixelToCoords(mousePos);
-
-                float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
-                float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
-                Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
-
-                FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
-
-                bool leftPressed = Mouse::isButtonPressed(Mouse::Left);
-                bool rightPressed = Mouse::isButtonPressed(Mouse::Right);
-
-                if (!tileSelectorBounds.contains(worldPos)) {
-                    if (leftPressed) {
-                        int selectedTile = tileSelector.getSelectedTile();
-                        if (selectedTile != -1) {
-                            map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
-                        }
-                    }
-                    else if (rightPressed) {
-                        map.handleClick(window, mousePos.x, mousePos.y, 74);
-                    }
-                }
-
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-                    Vector2i mousePos = sf::Mouse::getPosition(window);
-                    Vector2f worldPos = window.mapPixelToCoords(mousePos);
-
-                    float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
-                    float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
-                    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
-                    FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
-
-                    FloatRect enemySelectorBounds(0, 0, 256, 64);
-
-                    if (!tileSelectorBounds.contains(worldPos)) {
-                        if (mousePos.x >= 0 && mousePos.x < 256 &&
-                            mousePos.y >= 0 && mousePos.y < 64)
-                        {
-
-                        }
-                        else {
-                            int selectedTile = tileSelector.getSelectedTile();
-                            EnemyType eType = enemySelector.getSelectedEnemy();
-
-                            if (eType != EnemyType::None) {
-                                string typeStr;
-                                switch (eType) {
-                                case EnemyType::Flying:        typeStr = "EnemyFlying"; break;
-                                case EnemyType::Ranged:        typeStr = "RangedEnemy"; break;
-                                case EnemyType::Basic:         typeStr = "BasicEnemy"; break;
-                                case EnemyType::ChargingBoss:  typeStr = "ChargingBoss"; break;
-                                default:                       typeStr = "EnemyFlying"; break;
-                                }
-                                entityManager.createEntity(typeStr, worldPos,
-                                    Vector2f(50, 50),
-                                    Color::White, map);
-                                spawn.type = typeStr;
-                                spawn.x = worldPos.x;
-                                spawn.y = worldPos.y;
-                                map.enemySpawns.push_back(spawn);
-
-                            }
-                            else if (selectedTile != -1) {
-                                map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
-                            }
-                            else {
-                            }
-                        }
-                    }
-                }
-
-                if (event.type == Event::MouseButtonReleased) {
-                    if (event.mouseButton.button == Mouse::Left ||
-                        event.mouseButton.button == Mouse::Right)
+                // Finaliser le drag des tuiles lors du relâchement de la souris
+                if (event.type == sf::Event::MouseButtonReleased) {
+                    if (event.mouseButton.button == sf::Mouse::Left ||
+                        event.mouseButton.button == sf::Mouse::Right)
                     {
                         if (!map.currentDragChanges.empty()) {
                             map.pushAction(map.currentDragChanges);
@@ -249,8 +175,80 @@ void Game::run() {
                     }
                 }
 
+                // --- Placement unique lors d'un clic ---
+                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    // Convertir la position avec la vue de la carte
+                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos, map.getCameraView());
+                    // Snap à la grille
+                    int tileX = static_cast<int>(worldPos.x) / Map::TILE_SIZE;
+                    int tileY = static_cast<int>(worldPos.y) / Map::TILE_SIZE;
+                    worldPos.x = tileX * Map::TILE_SIZE;
+                    worldPos.y = tileY * Map::TILE_SIZE;
+
+                    // Définir des zones pour éviter que le clic ne touche les palettes
+                    sf::FloatRect tileSelectorBounds(0.f, 0.f, tileSelector.getTilesetWidth() * tileSelector.getTileSize(),
+                        tileSelector.getTilesetHeight() * tileSelector.getTileSize());
+                    sf::FloatRect enemySelectorBounds(0.f, 0.f, 256.f, 64.f);  // À adapter selon votre configuration
+
+                    if (!tileSelectorBounds.contains((float)mousePos.x, (float)mousePos.y) &&
+                        !enemySelectorBounds.contains((float)mousePos.x, (float)mousePos.y))
+                    {
+                        // Si un ennemi est sélectionné, placer un ennemi (unique)
+                        EnemyType eType = enemySelector.getSelectedEnemy();
+                        if (eType != EnemyType::None) {
+                            string typeStr;
+                            switch (eType) {
+                            case EnemyType::Flying:        typeStr = "EnemyFlying"; break;
+                            case EnemyType::Ranged:        typeStr = "RangedEnemy"; break;
+                            case EnemyType::Basic:         typeStr = "BasicEnemy";  break;
+                            case EnemyType::ChargingBoss:  typeStr = "ChargingBoss"; break;
+                            default:                       typeStr = "EnemyFlying"; break;
+                            }
+                            // Vous pouvez directement enregistrer le spawn sans créer l'entité ici,
+                            // ou créer l'entité si vous le souhaitez pour la prévisualisation.
+                            EnemySpawn spawn;
+                            spawn.type = typeStr;
+                            spawn.x = worldPos.x;
+                            spawn.y = worldPos.y;
+                            map.enemySpawns.push_back(spawn);
+                        }
+                        else {
+                            // Sinon, placement d'une tuile (unique)
+                            int selectedTile = tileSelector.getSelectedTile();
+                            if (selectedTile != -1) {
+                                map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                            }
+                        }
+                    }
+                }
+
+                // --- Drag pour les tuiles (peindre/effacer en continu) ---
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos, map.getCameraView());
+                    bool leftHeld = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+                    bool rightHeld = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+
+                    // Si aucun ennemi n'est sélectionné, on fait du drag sur les tuiles
+                    if (enemySelector.getSelectedEnemy() == EnemyType::None) {
+                        if (leftHeld) {
+                            int selectedTile = tileSelector.getSelectedTile();
+                            if (selectedTile != -1) {
+                                map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                            }
+                        }
+                        else if (rightHeld) {
+                            map.handleClick(window, mousePos.x, mousePos.y, 74);
+                        }
+                    }
+                }
+
                 break;
             }
+
+
+
 
 
             case GameState::Pause:
@@ -317,6 +315,7 @@ void Game::run() {
             }
 
             entityManager.drawEntities(window);
+            map.drawEnemySpawns(window);
 
 			map.drawCam(window);
             tileSelector.draw(window);

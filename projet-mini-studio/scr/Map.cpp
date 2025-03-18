@@ -290,6 +290,43 @@ void Map::drawCam(RenderWindow& window) {
     window.setView(cameraView);
 }
 
+void Map::drawEnemySpawns(sf::RenderWindow& window) {
+    // Chargez une texture statique pour les icônes ennemies (charge une seule fois)
+    static sf::Texture enemyIconsTexture;
+    static bool loaded = false;
+    if (!loaded) {
+        if (!enemyIconsTexture.loadFromFile("assets/tileset/enemy_icons.png")) {
+            std::cerr << "Erreur lors du chargement de enemy_icons.png" << std::endl;
+        }
+        loaded = true;
+    }
+
+    int iconSize = TILE_SIZE; // On suppose que l'icône est de la même taille qu'une tuile (par ex. 64)
+
+    // Parcours de chaque spawn et dessin dans la vue active (caméra)
+    for (const auto& spawn : enemySpawns) {
+        sf::Sprite sprite;
+        sprite.setTexture(enemyIconsTexture);
+
+        // Choix du rectangle de texture selon le type enregistré
+        if (spawn.type == "EnemyFlying")
+            sprite.setTextureRect(sf::IntRect(0, 0, iconSize, iconSize));
+        else if (spawn.type == "RangedEnemy")
+            sprite.setTextureRect(sf::IntRect(iconSize, 0, iconSize, iconSize));
+        else if (spawn.type == "BasicEnemy")
+            sprite.setTextureRect(sf::IntRect(2 * iconSize, 0, iconSize, iconSize));
+        else if (spawn.type == "ChargingBoss")
+            sprite.setTextureRect(sf::IntRect(3 * iconSize, 0, iconSize, iconSize));
+        else
+            sprite.setTextureRect(sf::IntRect(0, 0, iconSize, iconSize));
+
+        // Positionner l'icône à la position enregistrée
+        sprite.setPosition(spawn.x, spawn.y);
+        window.draw(sprite);
+    }
+}
+
+
 bool Map::isSlopeTile(int tileX, int tileY) const {
     if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH || tileY >= MAP_HEIGHT)
         return false;

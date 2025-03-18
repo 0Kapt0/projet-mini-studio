@@ -4,41 +4,44 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
-#include <unordered_map>
 
+// Votre enum, par exemple :
 enum class EnemyType {
-	None,
+    None,
     Flying,
     Ranged,
     Basic,
     ChargingBoss,
-    // etc.
+    // ...
 };
 
 class EnemySelector {
 public:
     EnemySelector(const std::string& texturePath, int iconSize);
 
-    // Gère le clic souris pour sélectionner un type d’ennemi
+    // Gère le clic (comme le TileSelector)
     void handleEvent(sf::Event event, sf::RenderWindow& window);
 
-    // Dessine la palette d’ennemis (fixe, en haut à gauche)
+    // Dessine la palette (comme TileSelector)
     void draw(sf::RenderWindow& window);
 
-    // Renvoie le type d’ennemi sélectionné (ou "None" si rien)
-    EnemyType getSelectedEnemy() const { return m_selectedEnemy; }
+    // Récupère l'ennemi sélectionné
+    EnemyType getSelectedEnemy() const;
 
 private:
     sf::Texture m_texture;
-    std::vector<sf::Sprite> m_enemyIcons;
+    std::vector<sf::Sprite> m_sprites;  // Toutes les icônes
     int m_iconSize;
 
-    // L’ordre des icônes correspond aux indices [0..n-1]
-    // On peut faire un mapping index->EnemyType
-    std::vector<EnemyType> m_enemyTypes;
-
-    EnemyType m_selectedEnemy;
+    // Indice choisi
     int m_selectedIndex;
+
+    // Type d’ennemi choisi
+    EnemyType m_selectedEnemy;
+
+    // Un tableau qui mappe l'index -> EnemyType (comme tile index -> tile ID).
+    // L’ordre dans m_sprites et m_enemyTypes doit correspondre
+    std::vector<EnemyType> m_enemyTypes;
 };
 
 #endif

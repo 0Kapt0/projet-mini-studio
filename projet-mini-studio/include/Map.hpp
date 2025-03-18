@@ -40,6 +40,7 @@ public:
     void handleEvent(Event event, RenderWindow& window);
     void draw(RenderWindow& window);
     void drawGrid(RenderWindow& window);
+    void drawEnemySpawns(RenderWindow& window);
     void drawCam(RenderWindow& window);
     void generateTiles();
 
@@ -59,6 +60,7 @@ public:
     const vector<vector<int>>& getMap() const { return map; }
 
     vector<EnemySpawn> enemySpawns;
+    const View& getCameraView() const { return cameraView; }
 
     static const int MAP_WIDTH = 300;
     static const int MAP_HEIGHT = 33;
