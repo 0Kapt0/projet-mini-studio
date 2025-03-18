@@ -4,30 +4,30 @@ EntityManager::EntityManager() {
 
 }
 
-void EntityManager::createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
+void EntityManager::createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
 	if (type == "Player") {
-		std::shared_ptr<Player> _player = std::make_shared<Player>(size, color, map);
+		shared_ptr<Player> _player = make_shared<Player>(size, color, map);
 		_player->getSprite().setPosition(position);
 		player = _player;
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
-		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
+		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
 		eFlying->getSprite().setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(size, color, map);
+		shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(size, color, map);
 		eRanged->getSprite().setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(size, color, map);
+		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(size, color, map);
+		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
 	}
@@ -38,6 +38,33 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
 		std::cout << textureManager.checkpointTexture.getSize().x / 4 << std::endl;
+	}
+}
+
+void EntityManager::generateEnemies(Map& map) {
+	enemyVector.clear();
+
+	for (const auto& spawn : map.enemySpawns) {
+		Vector2f position(spawn.x, spawn.y);
+		Vector2f size(50, 50);
+
+		Color color;
+		if (spawn.type == "EnemyFlying") {
+			color = Color::Green;
+		}
+		else if (spawn.type == "RangedEnemy") {
+			color = Color::Yellow;
+		}
+		else if (spawn.type == "BasicEnemy") {
+			color = Color::Blue;
+		}
+		else if (spawn.type == "ChargingBoss") {
+			color = Color(239, 12, 197);
+		}
+		else {
+			color = Color::White;
+		}
+		createEntity(spawn.type, position, size, color, map);
 	}
 }
 

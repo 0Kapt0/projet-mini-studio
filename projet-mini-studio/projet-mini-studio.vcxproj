@@ -26,6 +26,7 @@
     <ClInclude Include="include\DropDown.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\EnemyFlying.hpp" />
+    <ClInclude Include="include\EnemySelector.hpp" />
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\EntityManager.hpp" />
     <ClInclude Include="include\Foreground.hpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="scr\Checkpoint.cpp" />
     <ClCompile Include="scr\Enemy.cpp" />
     <ClCompile Include="scr\EnemyFlying.cpp" />
+    <ClCompile Include="scr\EnemySelector.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
     <ClCompile Include="scr\EntityManager.cpp" />
     <ClCompile Include="scr\Foreground.cpp" />

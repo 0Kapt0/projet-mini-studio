@@ -95,12 +95,7 @@ void Player::updateCamera()
 
     cameraPosition.x = playerPosition.x;
 
-    if (playerPosition.y > 670) {
-        cameraPosition.y = 670;
-    }
-    else {
-        cameraPosition.y = playerPosition.y;
-    }
+	cameraPosition.y = 540;
 
     playerView.setCenter(cameraPosition);
 }
