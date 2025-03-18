@@ -34,7 +34,10 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 	if (type == "Checkpoint") {
 		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
 		testCheckpoint->getSprite().setPosition(position);
+		testCheckpoint->setTexture(textureManager.checkpointTexture, textureManager.checkpointTexture.getSize().x / 4, 
+			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
+		std::cout << textureManager.checkpointTexture.getSize().x / 4 << std::endl;
 	}
 }
 
@@ -46,9 +49,10 @@ void EntityManager::destroyEntity() {
 
 void EntityManager::collisions() {
 	for (auto& enemy : enemyVector) {
-		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->attacking && !enemy->invincible) {
+		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->isAttacking() && !enemy->invincible) {
 			//DEGATS
 			enemy->toBeDeleted = true;
+			player->killCount++;
 		}
 		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
 				player->invincible = true;
@@ -69,12 +73,24 @@ void EntityManager::collisions() {
 					other->activated = false;
 				}
 			}
-			checkpoint->activated = true;
+			checkpoint->activate();
 		}
 	}
 }
 
 void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/ RenderWindow& window) {
+	if (player->hp > player->getMaxHp()) {
+		player->hp = player->getMaxHp();
+	}
+	if (player->getMaxHp() < player->hpCeiling) {
+		if (player->killCount == 3) {
+			player->oneUp(1);
+			player->killCount = 0;
+		}
+	}
+	else {
+		player->setMaxHp(player->hpCeiling);
+	}
 	collisions();
 	player->update(dt);
 	player->handleInput(event, window, dt);
@@ -82,11 +98,24 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 		enemy->update(dt, *player, window);
 	}
 	for (auto& checkpoint : checkpointVector) {
-		checkpoint->update();
+		checkpoint->animate(dt);
 	}
-	if (Keyboard::isKeyPressed(Keyboard::R)) {
+	/*if (Keyboard::isKeyPressed(Keyboard::R)) {
 		save.reset("assets/checkpoint/player.txt", checkpointVector);
 	}
+	timer += dt;
+	if (Keyboard::isKeyPressed(Keyboard::K) && timer > 1.f) {
+		save.playerDied("assets/checkpoint/player.txt", player);
+		timer = 0;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::L) && timer > 1.f) {
+		player->hp += 1;
+		timer = 0;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::M) && timer > 1.f) {
+		player->oneUp(1);
+		timer = 0;
+	}*/
 }
 
 void EntityManager::drawEntities(RenderWindow& window) {

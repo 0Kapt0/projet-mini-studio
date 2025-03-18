@@ -76,3 +76,10 @@ void Entity::setPosX(float newPosX) {
 void Entity::setPosY(float newPosY) {
 	getSprite().setPosition(getPosX(), newPosY);
 }
+
+void Entity::setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) {
+
+}
+void Entity::animate(float deltaTime) {
+
+}

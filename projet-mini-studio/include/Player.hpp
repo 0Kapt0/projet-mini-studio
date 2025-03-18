@@ -14,16 +14,21 @@ public:
     Player(Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
-    Texture heartTexure;
-    Texture heartemptyTexure;
-    Sprite heart1;
-    Sprite heartempty;
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
-    bool attacking = false;
+    bool isAttacking();
+    int getMaxHp();
+    void setMaxHp(int newMaxHp);
+    void oneUp(int value);
+
+    int hpCeiling = 3;
+    int killCount = 0;
+    bool doubleJumpUnlocked = true;
+    bool dashUnlocked = true;
+    bool grappleUnlocked = true;
 
 private:
     //fonction du update
@@ -48,7 +53,14 @@ private:
     Vector2f velocity;
     int jumpNum = 0;
 
-    // ouvement
+    //Health
+    Texture heartTexure;
+    Texture heartemptyTexure;
+    Sprite heart1;
+    Sprite heartempty;
+    int maxHp = 3;
+
+    //Mouvement
     bool canJump = true;
     bool dashMomentum = false;
 
@@ -76,6 +88,7 @@ private:
 
     //Attaque
     bool canAttack = true;
+    bool attacking = false;
     Texture attackTexture;
     Sprite attackSprite;
     string attackDirection = "right";

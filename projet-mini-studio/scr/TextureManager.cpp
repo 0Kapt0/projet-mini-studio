@@ -2,4 +2,5 @@
 
 TextureManager::TextureManager() {
 	//loadFromFile
+	checkpointTexture.loadFromFile("assets/checkpoint/tv.png");
 }
