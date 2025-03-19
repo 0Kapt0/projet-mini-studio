@@ -7,9 +7,11 @@
 #include "../include/EnemyFlying.hpp"
 #include "../include/RangedEnemy.hpp"
 #include "../include/BasicEnemy.hpp"
+#include "../include/Map.hpp"
 #include "Checkpoint.hpp"
 
 using namespace sf;
+using namespace std;
 
 class EntityManager {
 public:
@@ -25,12 +27,14 @@ public:
 
 	Save save;
 
-	void createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
+	void createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
 	void destroyEntity();
 	void collisions();
 
 	void updateEntities(Event& event, float dt, /* Player& player1,*/ RenderWindow& window);
 	void drawEntities(RenderWindow& window);
+
+	void generateEnemies(Map& map);
 };
 
 

@@ -7,10 +7,10 @@ class Foreground {
 private:
     sf::Texture textures[2];
     sf::Sprite sprites[2];
-    float speeds[2] = { 0.15f, 0.20f};
-    float spriteWidth = 1920.0f;
-    float spriteHeight = 1080.0f;
-    float offsetX[2] = { 0, 0};
+    float speeds[2] = { 0.f};
+    float spriteWidth = 31470.0f;
+    float spriteHeight = 2160.0f;
+    float offsetX[2] = { 0};
 
 public:
     Foreground();

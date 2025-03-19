@@ -4,7 +4,7 @@ EntityManager::EntityManager() {
 
 }
 
-void EntityManager::createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
+void EntityManager::createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
 	if (type == "Player") {
 		std::shared_ptr<Player> _player = std::make_shared<Player>(textureManager.playerTexture, map);
 		//_player->getSprite().setPosition(position);
@@ -23,12 +23,12 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(size, color, map);
+		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(size, color, map);
+		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
 	}
@@ -37,6 +37,33 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		testCheckpoint->getSprite().setPosition(position);
 		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
+	}
+}
+
+void EntityManager::generateEnemies(Map& map) {
+	enemyVector.clear();
+
+	for (const auto& spawn : map.enemySpawns) {
+		Vector2f position(spawn.x, spawn.y);
+		Vector2f size(50, 50);
+
+		Color color;
+		if (spawn.type == "EnemyFlying") {
+			color = Color::Green;
+		}
+		else if (spawn.type == "RangedEnemy") {
+			color = Color::Yellow;
+		}
+		else if (spawn.type == "BasicEnemy") {
+			color = Color::Blue;
+		}
+		else if (spawn.type == "ChargingBoss") {
+			color = Color(239, 12, 197);
+		}
+		else {
+			color = Color::White;
+		}
+		createEntity(spawn.type, position, size, color, map);
 	}
 }
 

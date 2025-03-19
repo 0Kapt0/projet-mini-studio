@@ -96,12 +96,7 @@ void Player::updateCamera()
 
     cameraPosition.x = playerPosition.x;
 
-    if (playerPosition.y > 670) {
-        cameraPosition.y = 670;
-    }
-    else {
-        cameraPosition.y = playerPosition.y;
-    }
+	cameraPosition.y = 540;
 
     playerView.setCenter(cameraPosition);
 }
@@ -142,11 +137,14 @@ void Player::handleMovement(float dt)
 
 void Player::handleNormalMovement(float dt)
 {
+    float axisX = Joystick::getAxisPosition(0, Joystick::X);
+    cout << axisX << endl;
+
     dashTimer += dt;
     if (dashTimer >= dashCooldown && onGround)
         canDash = true;
 
-    if (!Keyboard::isKeyPressed(Keyboard::Space) && jumpNum < 2)
+    if ((!Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && jumpNum < 2)
     {
         canJump = true;
     }
@@ -161,7 +159,7 @@ void Player::handleNormalMovement(float dt)
         velocity.y = 0.f;
     }
 
-    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D)) {
+    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D) || axisX > -50 && axisX < 50) {
         if (dashMomentum) {
             if (lastInputDirection == 'L') {
                 velocity.x += 14.8f;
@@ -179,25 +177,26 @@ void Player::handleNormalMovement(float dt)
         }
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::Q))
+    if (Keyboard::isKeyPressed(Keyboard::Q) || axisX < -50)
     {
         velocity.x = -speed;
         lastInputDirection = 'L';
         dashMomentum = false;
     }
-    else if (Keyboard::isKeyPressed(Keyboard::D))
+    else if (Keyboard::isKeyPressed(Keyboard::D) || axisX > 50)
     {
         velocity.x = speed;
         lastInputDirection = 'R';
         dashMomentum = false;
     }
-
-    if (Keyboard::isKeyPressed(Keyboard::Space) && canJump)
+    float jumpCooldownTime = 0.4f;
+    if ((Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && canJump && jumpCooldownClock.getElapsedTime().asSeconds() >= jumpCooldownTime)
     {
         onGround = false;
         velocity.y = -speed;
         jumpNum++;
         canJump = false;
+        jumpCooldownClock.restart();
     }
 
     if (Keyboard::isKeyPressed(Keyboard::S) && getSprite().getPosition().y < 1100.f)
@@ -248,8 +247,10 @@ void Player::handleNormalMovement(float dt)
     {
         grappleStuck = false;
     }
+    float axisZ = Joystick::getAxisPosition(0, Joystick::Z);
 
-    if (Keyboard::isKeyPressed(Keyboard::LShift) && canDash)
+    if ((Keyboard::isKeyPressed(Keyboard::LShift) || axisZ > 50) && canDash)
+
     {
         dashing = true;
         canDash = false;
@@ -312,7 +313,8 @@ void Player::updateGrapplePosition()
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
-    if (/*Mouse::isButtonPressed(Mouse::Left)*/ Keyboard::isKeyPressed(Keyboard::F)) {
+    float axisZ = Joystick::getAxisPosition(0, Joystick::Z);
+    if (/*Mouse::isButtonPressed(Mouse::Left)*/ Keyboard::isKeyPressed(Keyboard::F) || axisZ < -50) {
         leftButtonHold = true;
         if (grapple.isStuck()) 
         {
@@ -338,7 +340,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     {
         leftButtonHold = false;
     }
-    if (Mouse::isButtonPressed(Mouse::Right))
+    if ((Mouse::isButtonPressed(Mouse::Right) || Joystick::isButtonPressed(0, 5)))
     {
         if (grapple.isActive())
         {
@@ -636,7 +638,7 @@ void Player::draw(RenderWindow& window)
 }
 
 void Player::handleAttack(float dt) {
-    if (Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ && canAttack) {
+    if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/|| Joystick::isButtonPressed(0, 2)) && canAttack) {
         attacking = true;
         canAttack = false;
         attackTimer = 0;
