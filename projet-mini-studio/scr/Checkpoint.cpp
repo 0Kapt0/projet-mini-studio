@@ -24,9 +24,7 @@ void Checkpoint::activate() {
 
 void Checkpoint::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
 	getSprite().setTexture(tex);
-	//sprite.setSize(Vector2f(frameWidth, frameHeight));
 	getSprite().setTextureRect(IntRect(0, 0, frameWidth, frameHeight));
-	//getSprite().setOrigin(frameWidth / 2, 0);
 	getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
 
 	frames.clear();
@@ -47,18 +45,8 @@ void Checkpoint::animate(float deltaTime) {
 			if (currentFrame < totalFrames - 1) {
 				currentFrame++;
 			}
-			/*else {
-				cout << "Animation terminée, blocage sur la dernière frame." << std::endl;
-				return;
-			}*/
-
-			//getSprite().setTextureRect(frames[currentFrame]);
 		}
 	}
-	//if (activated && !animating) {
-	//	std::cout << "yoooo" << std::endl;
-	//	currentFrame = totalFrames - 1; //la dernière
-	//}
 	if (!activated) {
 		currentFrame = 0;
 	}

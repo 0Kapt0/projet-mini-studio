@@ -35,8 +35,7 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 	if (type == "Checkpoint") {
 		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
 		testCheckpoint->getSprite().setPosition(position);
-		testCheckpoint->setTexture(textureManager.checkpointTexture, textureManager.checkpointTexture.getSize().x / 4, 
-			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
+		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
 	}
 }

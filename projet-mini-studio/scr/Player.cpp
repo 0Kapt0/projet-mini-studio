@@ -79,7 +79,6 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
-    std::cout << getSprite().getGlobalBounds().width << std::endl;
     invincibilityAfterHit(dt);
     handleGrapplePull(dt);
     handleMovement(dt);
@@ -422,7 +421,6 @@ void Player::handleBoundingBoxCollision(float dt)
                 newY + getSpriteConst().getGlobalBounds().height))
         {
             newY = (static_cast<int>((getSprite().getGlobalBounds().top)));
-            cout << getSpriteConst().getGlobalBounds().height << endl;
 
             jumpNum = 0;
             //getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1f);
@@ -632,7 +630,7 @@ void Player::draw(RenderWindow& window)
         }
     }
     window.draw(getSprite());
-    if (attacking)
+    if (attackHitboxActive)
         window.draw(attackSprite);
     grapple.draw(window);
 }
@@ -654,12 +652,22 @@ void Player::handleAttack(float dt) {
     //attackSprite.setPosition(getSprite().getPosition());
     if (attacking) {
         attackDuration += dt;
-        if (attackDuration >= 0.2) {
+        if (attackDuration < 0.3) getSprite().setTextureRect(attackingFrames[0]);
+        if (attackDuration >= 0.3 && attackDuration < 0.4) {
+            attackHitboxActive = true;
+            getSprite().setTextureRect(attackingFrames[1]);
+        }
+        if (attackDuration >= 0.4 && attackDuration < 0.6) {
+            getSprite().setTextureRect(attackingFrames[2]);
+            attackHitboxActive = false;
+        }
+        if (attackDuration >= 0.5) {
             attacking = false;
             attackDuration = 0;
         }
+        getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
     }
-    if (attackDirection == "left") {
+    /*if (attackDirection == "left") {
         attackSprite.setPosition(getSprite().getPosition().x - getWidth() / 2
             - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
             getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
@@ -668,6 +676,16 @@ void Player::handleAttack(float dt) {
     if (attackDirection == "right") {
         attackSprite.setPosition(getSprite().getPosition().x + getWidth() / 2,
             getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        lastAttackPosition = attackSprite.getPosition();
+    }*/
+    if (attackDirection == "left") {
+        attackSprite.setPosition(getSprite().getPosition().x - attackSprite.getGlobalBounds().width, getSprite().getPosition().y);
+        attackSprite.setScale(-1.f, 1.f);
+        lastAttackPosition = attackSprite.getPosition();
+    }
+    if (attackDirection == "right") {
+        attackSprite.setPosition(getSprite().getPosition().x + attackSprite.getGlobalBounds().width, getSprite().getPosition().y);
+        attackSprite.setScale(1.f, 1.f);
         lastAttackPosition = attackSprite.getPosition();
     }
 }
@@ -678,7 +696,7 @@ Sprite Player::getAttackHitBox() {
 }
 
 bool Player::isAttacking() {
-    return attacking;
+    return attackHitboxActive;
 }
 
 int Player::getMaxHp() {
@@ -696,49 +714,47 @@ void Player::oneUp(int value) {
 void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
 
     frames.clear();
-    //FIRST ROW
-    //0
-    frameWidthResize = 125;
-    frameHeightResize = 117;
+    standingFrames.clear();
+    runningFrames.clear();
+    jumpingFrames.clear();
+    attackingFrames.clear();
+    //RUNNING
+    frameWidthResize = 157; // -1 par rapport aux values de base pck décalage
+    frameHeightResize = 119;
     frameStartingX = 0;
     frameStartingY = 0;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //1
-    frameStartingX = 125;
-    frameWidthResize = 155;
-    frameHeightResize = 117;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //2
-    frameStartingX = 282;
-    frameWidthResize = 119;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //3
-    frameStartingX = 402;
-    frameWidthResize = 155; //manque quelques pixels
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    ////4
-    frameStartingX = 581;
-    frameWidthResize = 125;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //SECOND ROW
-    //5
-    frameStartingX = 10;
-    frameStartingY = 169;
-    frameWidthResize = 48;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //6
-    frameStartingX = 86;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //7
-    frameStartingX = 170;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-    //THIRD ROW
-    //8
-    frameStartingX = 91;
-    frameStartingY = 327;
-    frameHeightResize = 136;
-    frames.emplace_back(frameStartingX, frameStartingY, frameWidthResize, frameHeightResize);
-
+    totalFrames = 4;
+    for (int i = 0; i < totalFrames; i++) {
+        runningFrames.emplace_back(i * frameWidthResize, 0, frameWidthResize, frameHeightResize);
+    }
+    //STANDING
+    frameWidthResize = 49;
+    frameHeightResize = 119;
+    totalFrames = 3;
+    for (int i = 0; i < totalFrames; i++) {
+        standingFrames.emplace_back(i* frameWidthResize, 119, frameWidthResize, frameHeightResize);
+    }
+    //JUMPING
+    frameWidthResize = 46;
+    frameHeightResize = 139;
+    totalFrames = 1;
+    for (int i = 0; i < totalFrames; i++) {
+        jumpingFrames.emplace_back(i * frameWidthResize, 238, frameWidthResize, frameHeightResize);
+    }
+    //ATTACKING
+    frameWidthResize = 167;
+    frameHeightResize = 159;
+    totalFrames = 3;
+    for (int i = 0; i < totalFrames; i++) {
+        attackingFrames.emplace_back(i * frameWidthResize, 377, frameWidthResize, frameHeightResize);
+    }
+    //ATTACK HITBOX
+    attackTexture = tex;
+    attackSprite.setTexture(attackTexture);
+    attackSprite.setTextureRect(IntRect(0, 536, frameWidthResize, frameHeightResize));
+    attackSprite.setOrigin(attackSprite.getTextureRect().getSize().x / 2, attackSprite.getTextureRect().getSize().y / 2);
+    attackSprite.setScale(0.75f, 0.75f);
+    frames = standingFrames;
     getSprite().setTextureRect(frames[currentFrame]);
     getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2); 
 }
@@ -747,36 +763,45 @@ void Player::animate(float deltaTime) {
     elapsedTime += deltaTime;
     if (elapsedTime >= frameTime && !frames.empty()) {
         elapsedTime = 0.0f;
-        //UTILISER SET TEXTURE A CHAQUE NOUVELLE ANIMATION
-        /*if (Keyboard::isKeyPressed(Keyboard::D)) {
-            currentFrame = 0;
-            totalFrames = 3;
-            currentFrame = (currentFrame + 1) % totalFrames;
-            if (currentFrame > totalFrames) currentFrame = 0;
-
-                getSprite().setTextureRect(frames[currentFrame]);
-        }
-        if (Keyboard::isKeyPressed(Keyboard::Q)) {
-            currentFrame = 0;
-            totalFrames = 3;
-            currentFrame = (currentFrame + 1) % totalFrames;
-            if (currentFrame > totalFrames) currentFrame = 0;
-
-            getSprite().setTextureRect(frames[currentFrame]);
-            getSprite().setRotation(180.f);
-        }*/
-        /*if (velocity.x == 0) {
-            startingFrame = 5;
-            currentFrame = 5;
-        }
         if (velocity.x > 0) {
-            if (currentAnimation != RUNNING)
-                startRunning = true;
-            runningAnimation();
+            if (frames != runningFrames || getSprite().getScale() != Vector2f(1.f, 1.f)) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = runningFrames;
+            totalFrames = 4;
+            if (!attacking) getSprite().setScale(1.f, 1.f);
         }
-        currentFrame = (currentFrame + 1) % totalFrames;
-        if (currentFrame > totalFrames) currentFrame = startingFrame;*/
-
-        getSprite().setTextureRect(frames[currentFrame]);
+        else if (velocity.x < 0) {
+            if (frames != runningFrames || getSprite().getScale() != Vector2f(-1.f, 1.f)) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = runningFrames;
+            totalFrames = 4;
+            if (!attacking) getSprite().setScale(-1.f, 1.f);
+        }
+        else {
+            if (frames != standingFrames) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = standingFrames;
+            totalFrames = 3;
+        }
+        if (!onGround || dashing || dashMomentum) {
+            frames[0] = runningFrames[0];
+            frames.erase(frames.begin() + 1, frames.end());
+            totalFrames = 1;
+        }
+        if (velocity.y < 0) {
+            if (frames != jumpingFrames) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = jumpingFrames;
+            totalFrames = 1;
+        }
+        if (!attacking) {
+            currentFrame = (currentFrame + 1) % totalFrames;
+            getSprite().setTextureRect(frames[currentFrame]);
+            getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+        }
     }
 }

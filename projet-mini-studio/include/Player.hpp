@@ -36,11 +36,12 @@ public:
     int frameStartingX = 0;
     int frameStartingY = 0;
     void animate(float deltaTime) override;
-    /*enum CurrentAnimation { STANDING, RUNNING, ATTACKING, JUMPING };
-    CurrentAnimation currentAnimation = STANDING;
-    void runningAnimation();
-    bool startRunning = false;
-    int startingFrame = 0;*/
+    std::vector<IntRect> standingFrames;
+    std::vector<IntRect> runningFrames;
+    std::vector<IntRect> jumpingFrames;
+    std::vector<IntRect> attackingFrames;
+    void attackFrameSwap();
+    IntRect formerFrame0;
 
 private:
     //fonction du update
@@ -101,6 +102,7 @@ private:
     //Attaque
     bool canAttack = true;
     bool attacking = false;
+    bool attackHitboxActive = false;
     Texture attackTexture;
     Sprite attackSprite;
     string attackDirection = "right";
