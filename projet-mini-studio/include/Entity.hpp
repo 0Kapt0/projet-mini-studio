@@ -13,7 +13,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 public:
-	int hp;
+	int hp = 3;
 	Entity();
 
 	Entity(const Vector2f& size, const Color& color);

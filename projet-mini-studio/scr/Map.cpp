@@ -72,6 +72,8 @@ string intToEnemyType(int value) {
     case 2: return "RangedEnemy";
     case 3: return "BasicEnemy";
     case 4: return "ChargingBoss";
+    case 5: return "Checkpoint";
+    case 6: return "HeartItem";
     default: return "";
     }
 }

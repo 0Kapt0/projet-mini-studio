@@ -8,6 +8,14 @@ Player::Player(Texture& tex, Map& map)
     velocity = Vector2f(0, 0);
     this->map = map;
     playerView.setSize(1920, 1080);
+    if (!heartTexure.loadFromFile("assets/ui/heart.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heart1.setTexture(heartTexure);
+    if (!heartemptyTexure.loadFromFile("assets/ui/heartempty.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heartempty.setTexture(heartemptyTexure);
 
 }
 
@@ -138,7 +146,7 @@ void Player::handleMovement(float dt)
 void Player::handleNormalMovement(float dt)
 {
     float axisX = Joystick::getAxisPosition(0, Joystick::X);
-    cout << axisX << endl;
+    //cout << axisX << endl;
 
     dashTimer += dt;
     if (dashTimer >= dashCooldown && onGround)

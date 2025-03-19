@@ -38,6 +38,11 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
 	}
+	if (type == "HeartItem") {
+		std::shared_ptr<HeartItem> heartItem = std::make_shared<HeartItem>(textureManager.heartTexture);
+		heartItem->getSprite().setPosition(position);
+		itemVector.push_back(heartItem);
+	}
 }
 
 void EntityManager::generateEnemies(Map& map) {
@@ -71,18 +76,27 @@ void EntityManager::destroyEntity() {
 	enemyVector.erase(remove_if(enemyVector.begin(), enemyVector.end(),
 			[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
 		enemyVector.end());
+	itemVector.erase(remove_if(itemVector.begin(), itemVector.end(),
+		[](const shared_ptr<Item>& item) { return item->toBeDeleted; }),
+		itemVector.end());
 }
 
 void EntityManager::collisions() {
 	for (auto& enemy : enemyVector) {
 		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->isAttacking() && !enemy->invincible) {
 			//DEGATS
-			enemy->toBeDeleted = true;
-			player->killCount++;
+			enemy->hp--;
+			if (enemy->hp <= 0) {
+				enemy->toBeDeleted = true;
+				player->killCount++;
+			}
+			else {
+				enemy->invincible = true;
+			}
 		}
 		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
-				player->invincible = true;
-			//std::cout << "DAMAGE" << std::endl;
+			player->invincible = true;
+			player->hp--;
 		}
 	}
 	for (auto& checkpoint : checkpointVector) {
@@ -102,6 +116,16 @@ void EntityManager::collisions() {
 			checkpoint->activate();
 		}
 	}
+	if (!itemVector.empty()) {
+		for (auto& item : itemVector) {
+			if (player->getSprite().getGlobalBounds().intersects(item->getSprite().getGlobalBounds())) {
+				if (item->type == "HeartItem" && player->hp < player->getMaxHp()) {
+					player->hp++;
+					item->toBeDeleted = true;
+				}
+			}
+		}
+	}
 }
 
 void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/ RenderWindow& window) {
@@ -117,12 +141,19 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	else {
 		player->setMaxHp(player->hpCeiling);
 	}
+	if (player->hp <= 0) {
+		player->hp = 0;
+	}
 	collisions();
 	player->update(dt);
 	player->handleInput(event, window, dt);
 	player->animate(dt);
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
+		/*if (enemy->hp <= 0) {
+			enemy->toBeDeleted;
+			player->killCount++;
+		}*/
 	}
 	for (auto& checkpoint : checkpointVector) {
 		checkpoint->animate(dt);
@@ -151,6 +182,9 @@ void EntityManager::drawEntities(RenderWindow& window) {
 	}
 	for (auto& checkpoint : checkpointVector) {
 		checkpoint->draw(window);
+	}
+	for (auto& item : itemVector) {
+		item->draw(window);
 	}
 	player->draw(window);
 }

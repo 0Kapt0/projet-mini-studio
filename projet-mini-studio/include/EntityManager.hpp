@@ -9,6 +9,7 @@
 #include "../include/BasicEnemy.hpp"
 #include "../include/Map.hpp"
 #include "Checkpoint.hpp"
+#include "HeartItem.hpp"
 
 using namespace sf;
 using namespace std;
@@ -22,6 +23,7 @@ public:
 	std::vector<std::shared_ptr<Player>> playerVector;
 	std::vector<std::shared_ptr<Enemy>> enemyVector;
 	std::vector<std::shared_ptr<Checkpoint>> checkpointVector;
+	std::vector<std::shared_ptr<Item>> itemVector;
 
 	float timer = 0;
 

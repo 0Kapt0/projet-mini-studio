@@ -32,6 +32,7 @@
     <ClInclude Include="include\Foreground.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Grapple.hpp" />
+    <ClInclude Include="include\HeartItem.hpp" />
     <ClInclude Include="include\Map.hpp" />
     <ClInclude Include="include\Menu.hpp" />
     <ClInclude Include="include\Pause.hpp" />
@@ -57,6 +58,7 @@
     <ClCompile Include="scr\Foreground.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
     <ClCompile Include="scr\Game.cpp" />
+    <ClCompile Include="scr\HeartItem.cpp" />
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\Map.cpp" />
     <ClCompile Include="scr\Menu.cpp" />
