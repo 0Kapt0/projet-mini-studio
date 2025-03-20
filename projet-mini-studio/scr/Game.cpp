@@ -16,9 +16,83 @@
 #include "../include/EnemySelector.hpp"
 
 #include <iostream>
+#include <string>
+#include <array>
 
 using namespace sf;
 using namespace std;
+
+struct LevelAssets {
+    array<string, 6> backgroundTextures;
+    array<string, 2> foregroundTextures;
+    string mapTileset;
+    string tileSelectorTileset;
+};
+
+// Exemple d'association entre le fichier de niveau et les assets correspondants
+map<string, LevelAssets> levelAssetsMap = {
+    {"assets/map/Level1.txt", {
+        { "assets/background/Forest1.png",
+          "assets/background/Forest2.png",
+          "assets/background/Forest3.png",
+          "assets/background/Forest4.png",
+          "assets/background/Forest5.png",
+          "assets/background/Forest6.png" },
+        { "assets/foreground/foret_foreground.png",
+          "assets/foreground/Forest-light.png" },
+        "assets/tileset/tileset_green_vFinal.png",
+        "assets/tileset/tileset_green_vFinal.png"
+    }},
+    {"assets/map/Level2.txt", {
+        { "assets/background/BG1.png",
+          "assets/background/BG2.png",
+          "assets/background/BG3.png",
+          "assets/background/BG4.png",
+          "assets/background/BG5.png",
+          "assets/background/BG6.png" },
+        { "assets/foreground/foreground_city.png",
+          "assets/foreground/level2_foreground2.png" },
+        "assets/tileset/tilesetTownV1.png",
+        "assets/tileset/tilesetTownV1.png"
+    }}
+};
+
+void setLevel(const string& levelFile,
+    Background& background,
+    Foreground& foreground,
+    Map& map,
+    TileSelector& tileSelector) {
+    if (levelAssetsMap.find(levelFile) != levelAssetsMap.end()) {
+        LevelAssets assets = levelAssetsMap[levelFile];
+
+        if (!background.loadTextures(assets.backgroundTextures[0],
+            assets.backgroundTextures[1],
+            assets.backgroundTextures[2],
+            assets.backgroundTextures[3],
+            assets.backgroundTextures[4],
+            assets.backgroundTextures[5])) {
+            std::cerr << "Erreur de chargement du background pour " << levelFile << endl;
+        }
+
+        if (!foreground.loadTextures(assets.foregroundTextures[0],
+            assets.foregroundTextures[1])) {
+            std::cerr << "Erreur de chargement du foreground pour " << levelFile << endl;
+        }
+
+        map.setTileset(assets.mapTileset);
+        map.generateTiles();
+
+        tileSelector.setTileset(assets.tileSelectorTileset);
+
+        map.loadMap(levelFile);
+        map.generateTiles();
+
+        std::cout << "Niveau " << levelFile << " chargé avec succès." << endl;
+    }
+    else {
+        std::cerr << "Niveau inconnu: " << levelFile << endl;
+    }
+}
 
 enum class GameState {
     Menu,
@@ -39,42 +113,39 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
+    Background background;
+    Foreground foreground;
+
     if (!font.loadFromFile("assets/fonts/arial.ttf")) {
         cerr << "Erreur chargement de la police.\n";
     }
 
     vector<string> mapFiles = {
-        "assets/map/Lobby.txt",
         "assets/map/Level1.txt",
-        "assets/map/Level2.txt"
+        "assets/map/Level2.txt",
+        "assets/map/Level3.txt"
     };
 
     DropDown mapDropdown(font, mapFiles,
         Vector2f(1600.f, 80.f),
         Vector2f(250.f, 30.f));
 
+    string currentLevelFile = "assets/map/Level1.txt";
     EnemySelector enemySelector("assets/tileset/enemy_icons.png", 64);
+    Map map("assets/tileset/tilesetTownV1.png", "assets/map/Lobby.txt");
+    TileSelector tileSelector("assets/tileset/tilesetTownV1.png", 64);
+    setLevel("assets/map/Level1.txt", background, foreground, map, tileSelector);
 
-    background.loadTextures("assets/background/city1.png",
-        "assets/background/city2.png",
-        "assets/background/city3.png",
-        "assets/background/city4.png",
-        "assets/background/city5.png");
+    EntityManager entityManager;
+    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
 
-    /*foreground.loadTextures("assets/foreground/foret_foreground.png", "assets/foreground/Forest-light.png");*/
+    bool collisionMode = false;
+    Clock clock;
+
     GameState currentState = GameState::Menu;
-
-    // Instanciation des objets
-    /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
-    Map map("assets/tileset/tileset_green_vFinal.png", "assets/map/Lobby.txt");
     Menu menu;
     Settings settings;
     Pause pause;
-    TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
-    EntityManager entityManager;
-    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
-    bool collisionMode = false;
-    Clock clock;
 
     while (window.isOpen()) {
         Event event;
@@ -107,8 +178,6 @@ void Game::run() {
                 break;
 
             case GameState::Playing:
-                /*map.loadMap("assets/map/Lobby.txt");
-                map.generateTiles();*/
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
                     enemiesGenerated = true;
@@ -131,8 +200,9 @@ void Game::run() {
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
                     string chosenFile = mapDropdown.getSelectedItem();
                     if (!chosenFile.empty()) {
-                        map.loadMap(chosenFile);
-                        map.generateTiles();
+                        map.saveMap(currentLevelFile);
+                        currentLevelFile = chosenFile;
+                        setLevel(currentLevelFile, background, foreground, map, tileSelector);
                     }
                 }
 
@@ -312,6 +382,6 @@ void Game::run() {
 
     // Sauvegarde de la carte en quittant l'éditeur
     if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
-        map.saveMap("assets/map/Lobby.txt");
+        map.saveMap(currentLevelFile);
     }
 }
