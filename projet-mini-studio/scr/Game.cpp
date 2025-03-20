@@ -32,7 +32,6 @@ struct LevelAssets {
     array<float, 6> backgroundSpeeds;
 };
 
-// Exemple d'association entre le fichier de niveau et les assets correspondants
 map<string, LevelAssets> levelAssetsMap = {
     {"assets/map/Level1.txt", {
         { "assets/background/Forest1.png",
@@ -154,15 +153,7 @@ void Game::run() {
     Selector selector;
     Settings settings;
     Pause pause;
-	SoundManager soundManager;
-    TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
-    EntityManager entityManager;
 	SoundManager& soundManager = SoundManager::getInstance();
-    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
-    entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
-    entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
-    entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
-    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
