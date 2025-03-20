@@ -25,6 +25,7 @@ private:
 	View oldView;
     EnemySpawn spawn;
 
+
     PlacementMode currentPlacementMode = PlacementMode::Tiles;
 public:
     void run();

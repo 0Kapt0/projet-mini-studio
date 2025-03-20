@@ -2,6 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< HEAD
       <FullPath>C:\Users\elovisa\source\repos\0Kapt0\projet-mini-studio\x64\Release\projet-mini-studio.exe</FullPath>
@@ -18,6 +19,9 @@
 >>>>>>> Stashed changes
 >>>>>>> Stashed changes
 >>>>>>> Stashed changes
+=======
+      <FullPath>C:\Users\Lorenzo\Source\Repos\0Kapt0\projet-mini-studio\x64\Release\projet-mini-studio.exe</FullPath>
+>>>>>>> d0ace325d5777b8bdf430ce8eafbf25725bbe586
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

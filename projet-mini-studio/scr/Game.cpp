@@ -32,7 +32,6 @@ struct LevelAssets {
     array<float, 6> backgroundSpeeds;
 };
 
-// Exemple d'association entre le fichier de niveau et les assets correspondants
 map<string, LevelAssets> levelAssetsMap = {
     {"assets/map/Level1.txt", {
         { "assets/background/Forest1.png",
@@ -154,7 +153,7 @@ void Game::run() {
     Selector selector;
     Settings settings;
     Pause pause;
-	SoundManager soundManager;
+	SoundManager& soundManager = SoundManager::getInstance();
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
@@ -180,7 +179,8 @@ void Game::run() {
     soundManager.loadSound("RobotDeathSound", "assets/sfx/RobotDeathSound.mp3");
     soundManager.loadSound("RunningSound", "assets/sfx/RunningSound.mp3");
     soundManager.loadSound("TakingHitSound", "assets/sfx/TakingHitSound.mp3");
-    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");  
+    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");
+    soundManager.loadSound("MainTitle", "assets/sfx/MainTitle.mp3");
 
     bool collisionMode = false;
     Clock clock;

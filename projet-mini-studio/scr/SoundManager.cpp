@@ -1,10 +1,6 @@
 #include "../include/SoundManager.hpp"
 #include <iostream>
 
-SoundManager::SoundManager() {}
-
-SoundManager::~SoundManager() {}
-
 bool SoundManager::loadSound(const string& name, const string& filename) {
     SoundBuffer buffer;
     if (!buffer.loadFromFile(filename)) {
