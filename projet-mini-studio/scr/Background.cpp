@@ -19,8 +19,13 @@ bool Background::loadTextures(const std::string& layer1,
             return false;
         }
 
+        // On répète la texture pour le scrolling
         textures[i].setRepeated(true);
+
+        // Affectation au sprite
         sprites[i].setTexture(textures[i]);
+
+        // Mise à l'échelle (si nécessaire)
         sprites[i].setScale(0.5f, 0.5f);
     }
 
@@ -29,26 +34,36 @@ bool Background::loadTextures(const std::string& layer1,
 
 void Background::update(float cameraX, bool followCamera) {
     for (int i = 0; i < 6; ++i) {
-        // Si on veut suivre la caméra, on calcule le décalage en fonction de cameraX
-        // Sinon, on fixe la position à zéro (ou toute autre position statique souhaitée)
-        float posX = followCamera ? (cameraX - 960.f) : 0.f;  // Ajustez si nécessaire
 
-        // On place le sprite verticalement (attention : dans votre code original 
-        // vous aviez un "cameraX * 0, 1080" ce qui place le sprite à 1080px en Y.)
-        // Si c'est l'effet voulu, on peut conserver "1080" :
-        sprites[i].setPosition(posX, 1080.f);
+        // --- 1) Calcul de la position en X ---
 
-        // Même chose pour le scrolling horizontal. S'il doit suivre la caméra, 
-        // on calcule l'offset, sinon on peut fixer offset = 0.
-        float offset = 0.f;
-        if (followCamera) {
-            offset = fmod(cameraX * speeds[i], spriteWidth);
-            if (offset > 0) offset -= spriteWidth;
-        }
+        float rawPosX = (followCamera ? (cameraX - 960.f) : 0.f);
+        // Pour éviter le subpixel rendering, on arrondit la position sur un entier
+        int posX = static_cast<int>(std::floor(rawPosX));
 
-        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0,
-            static_cast<int>(spriteWidth),
-            static_cast<int>(spriteHeight)));
+        // On fixe la position verticale ; ici vous utilisez 1080.f d'après le code original.
+        // Ajustez si nécessaire (par ex. 0.f si vous voulez le background tout en haut).
+        sprites[i].setPosition(static_cast<float>(posX), 1080.f);
+
+        // --- 2) Calcul du scrolling dans la texture ---
+        // Si on ne suit pas la caméra, offset = 0
+        float rawOffset = (followCamera ? cameraX * speeds[i] : 0.f);
+
+        // On cast en entier pour forcer l'alignement, puis modulo la largeur de la texture
+        int offsetInt = static_cast<int>(std::floor(rawOffset)) % static_cast<int>(spriteWidth);
+
+        // Dans le cas où offsetInt est positif, on le réajuste
+        if (offsetInt > 0) offsetInt -= static_cast<int>(spriteWidth);
+
+        // --- 3) On applique ce rect à la texture du sprite ---
+        // Notez qu’on utilise spriteWidth / spriteHeight en tant que largeur/hauteur initiales
+        // de la texture (vous pouvez adapter si votre texture ne correspond pas exactement à ces valeurs)
+        sprites[i].setTextureRect(
+            sf::IntRect(offsetInt,               // décalage horizontal
+                0,                       // décalage vertical
+                static_cast<int>(spriteWidth),   // largeur
+                static_cast<int>(spriteHeight))   // hauteur
+        );
     }
 }
 
@@ -57,7 +72,6 @@ void Background::setSpeeds(const std::array<float, 6>& newSpeeds) {
         speeds[i] = newSpeeds[i];
     }
 }
-
 
 void Background::draw(sf::RenderWindow& window) {
     for (int i = 0; i < 6; ++i) {

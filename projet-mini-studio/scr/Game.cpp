@@ -45,7 +45,7 @@ map<string, LevelAssets> levelAssetsMap = {
           "assets/foreground/Forest-light.png" },
         "assets/tileset/tileset_green_vFinal.png",
         "assets/tileset/tileset_green_vFinal.png",
-        {1.875f, 1.875f, 1.875f, 1.875f, 1.875f, 1.875f}
+        {1.89f, 1.89f, 1.89f, 1.89f, 1.89f, 1.89f}
     }},
     {"assets/map/Level2.txt", {
         { "assets/background/BG1.png",
