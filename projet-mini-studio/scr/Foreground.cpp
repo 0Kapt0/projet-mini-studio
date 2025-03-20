@@ -27,10 +27,10 @@ void Foreground::update(float cameraX) {
     for (int i = 0; i < 2; ++i) {
         sprites[i].setPosition(0,0);
 
-        float offset = fmod(cameraX * speeds[i] * 2.0f, 31470);
-        if (offset > 0) offset -= 31470;
+        float offset = fmod(cameraX * speeds[i] * 2.0f, 32715);
+        if (offset > 0) offset -= 32715;
 
-        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 31470, 2160));
+        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 32715, 4320));
     }
 }
 

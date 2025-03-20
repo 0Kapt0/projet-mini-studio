@@ -15,12 +15,12 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1,2,3,4,5,6,7,8,9,10,11,12 };
+    collisionTiles = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,33,34,35 };
 
-    slopeInfo[50] = SlopeType::SlopeUp;
-    slopeInfo[65] = SlopeType::SlopeUp;
+    slopeInfo[25] = SlopeType::SlopeUp;
+    slopeInfo[42] = SlopeType::SlopeUp;
 
-    slopeInfo[51] = SlopeType::SlopeDown;
+    slopeInfo[16] = SlopeType::SlopeDown;
     slopeInfo[68] = SlopeType::SlopeDown;
 
     loadMap(mapPath);
@@ -227,6 +227,9 @@ void Map::handleEnemyPlacement(RenderWindow& window, int x, int y, EnemyType ene
         case EnemyType::Ranged:       typeStr = "RangedEnemy"; break;
         case EnemyType::Basic:        typeStr = "BasicEnemy";  break;
         case EnemyType::ChargingBoss: typeStr = "ChargingBoss"; break;
+        case EnemyType::FlyingBoss:   typeStr = "FlyingBoss"; break;
+        case EnemyType::Checkpoint:   typeStr = "Checkpoint"; break;
+        case EnemyType::HeartItem:    typeStr = "HeartItem"; break;
         default:                      typeStr = "EnemyFlying"; break;
         }
         EnemySpawn spawn;
@@ -497,4 +500,12 @@ void Map::drawGrid(RenderWindow& window) {
         };
         window.draw(xAxis, 2, Lines);
     }
+}
+
+void Map::setTileset(const std::string& newTilesetPath) {
+    if (!tilesetTexture.loadFromFile(newTilesetPath)) {
+        std::cerr << "Erreur lors du chargement du nouveau tileset: " << newTilesetPath << std::endl;
+        return;
+    }
+    generateTiles();
 }

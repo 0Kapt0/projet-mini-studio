@@ -71,6 +71,9 @@ void EntityManager::generateEnemies(Map& map) {
 		else if (spawn.type == "ChargingBoss") {
 			color = Color(239, 12, 197);
 		}
+		else if (spawn.type == "FlyingBoss") {
+			color = Color(239, 12, 197);
+		}
 		else {
 			color = Color::White;
 		}
@@ -80,16 +83,18 @@ void EntityManager::generateEnemies(Map& map) {
 
 void EntityManager::destroyEntity() {
 	enemyVector.erase(remove_if(enemyVector.begin(), enemyVector.end(),
-			[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
+		[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
 		enemyVector.end());
 	itemVector.erase(remove_if(itemVector.begin(), itemVector.end(),
 		[](const shared_ptr<Item>& item) { return item->toBeDeleted; }),
 		itemVector.end());
 }
 
-void EntityManager::collisions() {
+void EntityManager::collisions(float dt) {
 	for (auto& enemy : enemyVector) {
-		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->isAttacking() && !enemy->invincible) {
+		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) ||
+			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
+			enemy->pushBack(*player);
 			//DEGATS
 			enemy->hp--;
 			if (enemy->hp <= 0) {
@@ -100,14 +105,14 @@ void EntityManager::collisions() {
 				enemy->invincible = true;
 			}
 		}
-		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
+		if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
 			player->invincible = true;
 			player->hp--;
 		}
 	}
 	for (auto& checkpoint : checkpointVector) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
-			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight()/2 + checkpoint->getHeight()/2);
+			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
 			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
 				if (obj->activated) {
@@ -150,7 +155,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	if (player->hp <= 0) {
 		player->hp = 0;
 	}
-	collisions();
+	collisions(dt);
 	player->update(dt);
 	player->handleInput(event, window, dt);
 	player->animate(dt);

@@ -18,6 +18,12 @@ public:
     virtual ~Enemy();
     virtual void update(float dt, Player& player, RenderWindow& window);
     virtual void isColliding(int x, int y, float dt);
+    void applySmoothPushback(float deltaTime, Player& player);
+    void pushBack(Player& player);
+    bool isPushingBack = false;
+    Clock pushbackClock;
+    Vector2f pushbackDirection;
+    float pushbackStrength;
 };
 
 #endif

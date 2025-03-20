@@ -96,3 +96,36 @@ void Enemy::isColliding(int x, int y, float dt)
         }
     }
 }
+
+void Enemy::applySmoothPushback(float deltaTime, Player& player) {
+    if (!isPushingBack) return;
+
+    float elapsed = pushbackClock.getElapsedTime().asSeconds();
+    float pushDuration = 0.5f;
+    float factor = 1.0f - (elapsed / pushDuration);
+
+    if (factor <= 0) {
+        isPushingBack = false;
+        return;
+    }
+
+    Vector2f pushStep = pushbackDirection * (pushbackStrength * factor * deltaTime);
+    getSprite().setPosition(getSprite().getPosition() - pushStep);
+}
+
+void Enemy::pushBack(Player& player) {
+    Vector2f bossPos = getSprite().getPosition();
+    Vector2f playerPos = player.getSprite().getPosition();
+    Vector2f offSet = { 0, 0 };
+    bossPos = bossPos + offSet;
+    pushbackDirection = playerPos - bossPos;
+
+    float length = sqrt(pushbackDirection.x * pushbackDirection.x + pushbackDirection.y * pushbackDirection.y);
+    if (length != 0) {
+        pushbackDirection /= length;
+    }
+
+    pushbackStrength = 500.0f;
+    isPushingBack = true;
+    pushbackClock.restart();
+}
