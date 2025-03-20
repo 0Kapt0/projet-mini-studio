@@ -1,5 +1,18 @@
 ﻿#include "../include/Player.hpp"
 
+float getRightJoystickAngle(unsigned int joystickId) {
+    float x = sf::Joystick::getAxisPosition(joystickId, sf::Joystick::U); // Axe X du joystick droit
+    float y = sf::Joystick::getAxisPosition(joystickId, sf::Joystick::V); // Axe Y du joystick droit
+
+    // Calculer l'angle en radians
+    float angle = std::atan2(y, x);
+
+    // Convertir l'angle en degrés
+    float angleDegrees = angle * 180 / 3.14159265f;
+
+    return angleDegrees;
+}
+
 Player::Player(Texture& tex, Map& map)
     : Entity(tex), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
@@ -175,20 +188,26 @@ void Player::handleNormalMovement(float dt)
         velocity.y = 0.f;
     }
 
-    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D) || axisX > -50 && axisX < 50) {
-        if (dashMomentum) {
-            if (lastInputDirection == 'L') {
+    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D) || axisX > -50 && axisX < 50) 
+    {
+        if (dashMomentum) 
+        {
+            if (lastInputDirection == 'L') 
+            {
                 velocity.x += 14.8f;
             }
-            if (lastInputDirection == 'R') {
+            if (lastInputDirection == 'R') 
+            {
                 velocity.x -= 14.8f;
             }
-            if (velocity.x > -50 && velocity.x < 50) {
+            if (velocity.x > -50 && velocity.x < 50) 
+            {
                 velocity.x = 0;
                 dashMomentum = false;
             }
         }
-        else {
+        else
+        {
             velocity.x = 0;
         }
     }
@@ -234,9 +253,9 @@ void Player::handleNormalMovement(float dt)
         angularVelocity += gravityEffect * dt;
         angularVelocity *= DAMPING;
 
-        if (Keyboard::isKeyPressed(Keyboard::Q) && angularVelocity > -2.0f)
+        if ((Keyboard::isKeyPressed(Keyboard::Q) || axisX < -50) && angularVelocity > -2.0f)
             angularVelocity -= swingAcceleration * dt;
-        if (Keyboard::isKeyPressed(Keyboard::D) && angularVelocity < 2.0f)
+        if ((Keyboard::isKeyPressed(Keyboard::D) || axisX > 50) && angularVelocity < 2.0f)
             angularVelocity += swingAcceleration * dt;
 
         angle += angularVelocity * dt;
@@ -345,12 +364,26 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
         else
         {
             Vector2f startPosition = getSprite().getPosition();
-            Vector2i mousePosition = Mouse::getPosition(window);
-            Vector2f worldPosition = window.mapPixelToCoords(mousePosition, playerView);
-            Vector2f direction = worldPosition - startPosition;
-            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-            direction /= length;
-            grapple.launch(startPosition, direction);
+            Vector2f worldPosition;
+            if (Joystick::isConnected(0))
+            {
+                float axisR = Joystick::getAxisPosition(0, Joystick::U);
+                float axisU = Joystick::getAxisPosition(0, Joystick::V);
+                Vector2f direction = Vector2f(axisR, axisU);
+                float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                direction /= length;
+                grapple.launch(startPosition, direction);
+            }
+            else
+            {
+                Vector2i mousePosition = Mouse::getPosition(window);
+                Vector2f worldPosition = window.mapPixelToCoords(mousePosition, playerView);
+                Vector2f direction = worldPosition - startPosition;
+                float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                direction /= length;
+                grapple.launch(startPosition, direction);
+            }
+
         }
     }
     else
@@ -389,7 +422,7 @@ void Player::isColliding(int x, int y, float dt)
 
 void Player::handleBoundingBoxCollision(float dt)
 {
-    if (velocity == sf::Vector2f(0, 0)) 
+    if (velocity == sf::Vector2f(0, 0))
     {
         return;
     }
@@ -626,17 +659,17 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 void Player::draw(RenderWindow& window)
 {
     window.setView(playerView);
-    //heart1
-    for (int i = 1; i < maxHp + 1; i++) {
-        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
-        heartempty.setScale(0.1, 0.1f);
-        window.draw(heartempty);
-        if (hp >= i) {
-            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
-            heart1.setScale(0.1, 0.1f);
-            window.draw(heart1);
-        }
-    }
+    ////heart1
+    //for (int i = 1; i < maxHp + 1; i++) {
+    //    heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+    //    heartempty.setScale(0.1, 0.1f);
+    //    window.draw(heartempty);
+    //    if (hp >= i) {
+    //        heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+    //        heart1.setScale(0.1, 0.1f);
+    //        window.draw(heart1);
+    //    }
+    //}
 
     /*RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
     HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
@@ -647,6 +680,19 @@ void Player::draw(RenderWindow& window)
     if (attackHitboxActive)
         window.draw(attackSprite);
     grapple.draw(window);
+}
+void Player::drawHearts(RenderWindow& window)
+{
+    for (int i = 1; i < maxHp + 1; i++) {
+        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+        heartempty.setScale(0.1, 0.1f);
+        window.draw(heartempty);
+        if (hp >= i) {
+            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+            heart1.setScale(0.1, 0.1f);
+            window.draw(heart1);
+        }
+    }
 }
 
 void Player::handleAttack(float dt) {

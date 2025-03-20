@@ -30,6 +30,7 @@ struct LevelAssets {
     array<string, 2> foregroundTextures;
     string mapTileset;
     string tileSelectorTileset;
+    array<float, 6> backgroundSpeeds;
 };
 
 // Exemple d'association entre le fichier de niveau et les assets correspondants
@@ -44,7 +45,8 @@ map<string, LevelAssets> levelAssetsMap = {
         { "assets/foreground/foret_foreground.png",
           "assets/foreground/Forest-light.png" },
         "assets/tileset/tileset_green_vFinal.png",
-        "assets/tileset/tileset_green_vFinal.png"
+        "assets/tileset/tileset_green_vFinal.png",
+        {1.89f, 1.89f, 1.89f, 1.89f, 1.89f, 1.89f}
     }},
     {"assets/map/Level2.txt", {
         { "assets/background/BG1.png",
@@ -56,7 +58,8 @@ map<string, LevelAssets> levelAssetsMap = {
         { "assets/foreground/foreground_city.png",
           "assets/foreground/level2_foreground2.png" },
         "assets/tileset/tilesetTownV1.png",
-        "assets/tileset/tilesetTownV1.png"
+        "assets/tileset/tilesetTownV1.png",
+        {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
     }}
 };
 
@@ -64,7 +67,8 @@ void setLevel(const string& levelFile,
     Background& background,
     Foreground& foreground,
     Map& map,
-    TileSelector& tileSelector) {
+    TileSelector& tileSelector)
+{
     if (levelAssetsMap.find(levelFile) != levelAssetsMap.end()) {
         LevelAssets assets = levelAssetsMap[levelFile];
 
@@ -73,9 +77,12 @@ void setLevel(const string& levelFile,
             assets.backgroundTextures[2],
             assets.backgroundTextures[3],
             assets.backgroundTextures[4],
-            assets.backgroundTextures[5])) {
+            assets.backgroundTextures[5]))
+        {
             std::cerr << "Erreur de chargement du background pour " << levelFile << endl;
         }
+
+        background.setSpeeds(assets.backgroundSpeeds);
 
         if (!foreground.loadTextures(assets.foregroundTextures[0],
             assets.foregroundTextures[1])) {
@@ -84,7 +91,6 @@ void setLevel(const string& levelFile,
 
         map.setTileset(assets.mapTileset);
         map.generateTiles();
-
         tileSelector.setTileset(assets.tileSelectorTileset);
 
         map.loadMap(levelFile);
@@ -392,7 +398,7 @@ void Game::run() {
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
             float cameraX = entityManager.player->getSprite().getPosition().x;
-            background.update(cameraX);
+            background.update(cameraX, true);
             foreground.update(cameraX);
         }
 
@@ -406,6 +412,7 @@ void Game::run() {
             map.draw(window);;
             entityManager.drawEntities(window);
             foreground.draw(window);
+            entityManager.player->drawHearts(window);
             break;
         case GameState::Settings:
             settings.draw(window);

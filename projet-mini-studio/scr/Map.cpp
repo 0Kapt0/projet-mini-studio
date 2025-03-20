@@ -227,6 +227,9 @@ void Map::handleEnemyPlacement(RenderWindow& window, int x, int y, EnemyType ene
         case EnemyType::Ranged:       typeStr = "RangedEnemy"; break;
         case EnemyType::Basic:        typeStr = "BasicEnemy";  break;
         case EnemyType::ChargingBoss: typeStr = "ChargingBoss"; break;
+        case EnemyType::FlyingBoss:   typeStr = "FlyingBoss"; break;
+        case EnemyType::Checkpoint:   typeStr = "Checkpoint"; break;
+        case EnemyType::HeartItem:    typeStr = "HeartItem"; break;
         default:                      typeStr = "EnemyFlying"; break;
         }
         EnemySpawn spawn;

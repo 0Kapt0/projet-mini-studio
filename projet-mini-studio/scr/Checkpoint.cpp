@@ -35,6 +35,7 @@ void Checkpoint::setTexture(Texture& tex, int frameWidth, int frameHeight, int _
 	totalFrames = _totalFrames;
 	frameTime = _frameTime;
 	getSprite().setTextureRect(frames[currentFrame]);
+	getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
 }
 void Checkpoint::animate(float deltaTime) {
 	if (activated && animating) {
@@ -57,7 +58,7 @@ Save::Save() {
 
 }
 
-void Save::saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& player, std::shared_ptr<Checkpoint>& checkpoint){
+void Save::saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& player, std::shared_ptr<Checkpoint>& checkpoint) {
 	getLine.clear();
 	getLine.push_back(std::to_string(checkpoint->respawnPoint.x));
 	getLine.push_back(std::to_string(checkpoint->respawnPoint.y));

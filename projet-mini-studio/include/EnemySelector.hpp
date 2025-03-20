@@ -14,6 +14,9 @@ enum class EnemyType {
     Ranged,
     Basic,
     ChargingBoss,
+    FlyingBoss,
+    Checkpoint,
+    HeartItem,
 };
 
 class EnemySelector {

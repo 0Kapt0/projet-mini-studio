@@ -18,6 +18,7 @@ public:
     ~Player();
     void update(float dt);
     void draw(RenderWindow& window);
+    void drawHearts(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
     void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
