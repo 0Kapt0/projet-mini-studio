@@ -119,6 +119,11 @@ void Game::run() {
                         currentState = GameState::Settings;
                     }
                 }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.menuSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        window.close();
+                    }
+                }
                 break;
 
             case GameState::Playing:
@@ -224,6 +229,11 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Playing;
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.returnSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Menu;
                     }
                 }
                 break;

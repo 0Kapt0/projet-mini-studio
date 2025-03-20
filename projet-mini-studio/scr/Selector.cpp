@@ -6,19 +6,25 @@ using namespace sf;
 using namespace std;
 
 Selector::Selector() {
+    levelunlocked = 1;
     if (!backgroundTexture.loadFromFile("assets/selector/background.png")) {
-        cerr << "Erreur lors du chargement de la texture de fond." << endl;
     }
     if (!level1Button.loadFromFile("assets/selector/level1.png")) {
-        cerr << "Erreur lors du chargement de playtexture." << endl;
     }
     level1Sprite.setTexture(level1Button);
+    if (!returnTexture.loadFromFile("assets/selector/return.png")) {
+    }
+    returnSprite.setTexture(returnTexture);
     if (!level2Button.loadFromFile("assets/selector/level2.png")) {
-        cerr << "Erreur lors du chargement de editmodetexture." << endl;
     }
     level2Sprite.setTexture(level2Button);
+    if (!level2lockButton.loadFromFile("assets/selector/level2lock.png")) {
+    }
+    level2lockSprite.setTexture(level2lockButton);
+    if (!level3lockButton.loadFromFile("assets/selector/level3lock.png")) {
+    }
+    level3lockSprite.setTexture(level3lockButton);
     if (!level3Button.loadFromFile("assets/selector/level3.png")) {
-        cerr << "Erreur lors du chargement de settingstexture." << endl;
     }
     level3Sprite.setTexture(level3Button);
 }
@@ -30,18 +36,27 @@ Selector::~Selector() {
 void Selector::draw(RenderWindow& window) {
     //background
     Sprite backgroundSprite(backgroundTexture);
-    backgroundSprite.setScale(2.4f, 2.4f);
     window.draw(backgroundSprite);
-    //play
-    level1Sprite.setScale(0.4f, 0.4f);
-    level1Sprite.setPosition(460.0f, 400.0f);
+    //level1
+    level1Sprite.setPosition(550.0f, 300.0f);
     window.draw(level1Sprite);
-    //edit
-    level2Sprite.setScale(0.4f, 0.4f);
-    level2Sprite.setPosition(960.0f, 400.0f);
+    //level2
+    level2Sprite.setPosition(550.0f, 500.0f);
     window.draw(level2Sprite);
-    //settings
-    level3Sprite.setScale(0.4f, 0.4f);
-    level3Sprite.setPosition(960.0f, 700.0f);
+    //level2lock
+    if (levelunlocked < 2 ) {
+        level2lockSprite.setPosition(550.0f, 500.0f);
+        window.draw(level2lockSprite);
+    }
+    //level3
+    level3Sprite.setPosition(550.0f, 700.0f);
     window.draw(level3Sprite);
+    //level3lock
+    if (levelunlocked < 3) {
+        level3lockSprite.setPosition(550.0f, 700.0f);
+        window.draw(level3lockSprite);
+    }
+    //return
+    returnSprite.setPosition(50.0f, 1000.0f);
+    window.draw(returnSprite);
 }

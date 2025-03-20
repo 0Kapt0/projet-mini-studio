@@ -26,15 +26,15 @@ Pause::~Pause() {
 void Pause::draw(RenderWindow& window) {
     //background
     Sprite backgroundSprite(backgroundTexture);
-    backgroundSprite.setScale(2.7f, 2.9f);
+    backgroundSprite.setScale(0.5f, 0.5f);
     backgroundSprite.setPosition(0.0f, 0.0f);
     window.draw(backgroundSprite);
     //play
-    playSpritePause.setScale(0.4f, 0.4f);
-    playSpritePause.setPosition(460.0f, 400.0f);
+    playSpritePause.setScale(2.0f, 2.0f);
+    playSpritePause.setPosition(160.0f, 400.0f);
     window.draw(playSpritePause);
     //menu
-    menuSpritePause.setScale(0.4f, 0.4f);
-    menuSpritePause.setPosition(1060.0f, 400.0f);
+    menuSpritePause.setScale(2.0f, 2.0f);
+    menuSpritePause.setPosition(160.0f, 600.0f);
     window.draw(menuSpritePause);
 }

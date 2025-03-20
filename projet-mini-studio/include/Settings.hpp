@@ -8,6 +8,14 @@ using namespace std;
 
 class Settings {
 public:
+	Texture returnTexture;
+	Sprite returnSprite;
+	Texture setsoundsTexture;
+	Sprite setsoundsSprite;
+	Texture setmusicsTexture;
+	Sprite setmusicsSprite;
+	Texture setframesTexture;
+	Sprite setframesSprite;
 	Texture backgroundTextureSettings;
 	Settings();
 	~Settings();
