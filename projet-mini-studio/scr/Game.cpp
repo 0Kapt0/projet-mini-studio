@@ -79,25 +79,32 @@ void Game::run() {
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
     entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
     entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
+    entityManager.createEntity("FlyingBoss", Vector2f(900, 300), Vector2f(100, 100), Color(0, 12, 197), map);
+
 
     bool collisionMode = false;
     Clock clock;
 
     while (window.isOpen()) {
+        window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
 
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event)) 
+        {
             if (event.type == Event::Closed)
                 window.close();
 
             //Gestion des événements en fonction de l'état actuel
-            switch (currentState) {
+            switch (currentState)
+            {
             case GameState::Menu:
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
+                {
+                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
+                    {
                         currentState = GameState::Editor;
                     }
                 }
@@ -223,7 +230,7 @@ void Game::run() {
 
             player.handleInput(event, window, deltaTime);
             rangedEnemy.update(deltaTime);
-			basicEnemy.update(deltaTime, player);
+            basicEnemy.update(deltaTime, player);
             flyingEnemy.update(deltaTime, player);*/
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
@@ -232,8 +239,6 @@ void Game::run() {
             foreground.update(cameraX);
             /*chargingBoss.behavior(deltaTime, player, window);*/
         }
-
-        window.clear();
 
         switch (currentState) {
         case GameState::Menu:
@@ -244,7 +249,7 @@ void Game::run() {
             background.draw(window);
             map.draw(window);;
             /*player.draw(window);
-			basicEnemy.draw(window);
+            basicEnemy.draw(window);
             rangedEnemy.draw(window);
             rangedEnemy.drawProjectiles(window);
             flyingEnemy.draw(window);*/

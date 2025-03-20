@@ -11,24 +11,29 @@ void EntityManager::createEntity(std::string type, Vector2f position, const Vect
 		player = _player;
 	}
 	if (type == "EnemyFlying") {
-		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
+		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
 		eFlying->getSprite().setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(size, color, map);
+		std::shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(size, color, map);
 		eRanged->getSprite().setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(size, color, map);
+		std::shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(size, color, map);
+		std::shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
+	}
+	if (type == "FlyingBoss") {
+		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
+		flyingBoss->getSprite().setPosition(position);
+		enemyVector.push_back(flyingBoss);
 	}
 }
 
@@ -46,7 +51,6 @@ void EntityManager::collisions() {
 		}
 		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
 			player->invincible = true;
-			std::cout << "DAMAGE" << std::endl;
 		}
 	}
 }
