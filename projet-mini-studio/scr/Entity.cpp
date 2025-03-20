@@ -17,6 +17,12 @@ Entity::Entity(const Vector2f& size, const Color& color)
 	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 }
 
+Entity::Entity(Texture& tex) {
+	texture = tex;
+	sprite.setTexture(texture);
+	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+}
+
 Entity::~Entity()
 {
 }
@@ -27,15 +33,15 @@ Sprite& Entity::getSprite()
 }
 
 float Entity::getHeight() {
-    return getSprite().getLocalBounds().height * getSprite().getScale().y;
+	return getSprite().getLocalBounds().height * getSprite().getScale().y;
 }
 float Entity::getWidth() {
-    return getSprite().getLocalBounds().width * getSprite().getScale().x;
+	return getSprite().getLocalBounds().width * getSprite().getScale().x;
 }
 
 Texture& Entity::getTexture()
 {
-    return texture;
+	return texture;
 }
 
 const Sprite& Entity::getSpriteConst() const
@@ -55,7 +61,7 @@ void Entity::draw(RenderWindow& window)
 void Entity::invincibilityAfterHit(float dt) {
 	if (invincible) {
 		invincibilityTimer += dt;
-		getSprite().setColor(Color::Black);
+		getSprite().setColor(Color::Red);
 	}
 	if (invincibilityTimer > 1) {
 		getSprite().setColor(Color::White);

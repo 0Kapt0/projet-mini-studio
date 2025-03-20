@@ -12,6 +12,7 @@ ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) :
 
 
 void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
+	//applySmoothPushback(dt, player);
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));
@@ -46,11 +47,9 @@ void ChargingBoss::chase(Player& player, float dt) {
 	getSprite().setColor(Color(239, 12, 197));
 	if (target.x < getSprite().getPosition().x) {
 		velocity.x = -speed;
-		dashDirection = "left";
 	}
 	else { 
 		velocity.x = speed;
-		dashDirection = "right";
 	}
 	getSprite().move(velocity * dt);
 }

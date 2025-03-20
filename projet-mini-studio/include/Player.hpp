@@ -12,13 +12,14 @@ using namespace sf;
 class Player : public Entity {
 public:
     Clock jumpCooldownClock;
-    Player(Map& map);
+    //Player(Map& map);
+    Player(Texture& tex, Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
-	void isSwingColliding(Vector2f& newPos, float dt);
+    void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
     bool isAttacking();
     int getMaxHp();
@@ -30,6 +31,25 @@ public:
     bool doubleJumpUnlocked = true;
     bool dashUnlocked = true;
     bool grappleUnlocked = true;
+
+    void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
+    int frameWidthResize = 0;
+    int frameHeightResize = 0;
+    int frameStartingX = 0;
+    int frameStartingY = 0;
+    void animate(float deltaTime) override;
+    std::vector<IntRect> standingFrames;
+    std::vector<IntRect> runningFrames;
+    std::vector<IntRect> jumpingFrames;
+    bool jumped = false;
+    std::vector<IntRect> attackingFrames;
+    std::vector<IntRect> attackHitboxFrames;
+    std::vector<IntRect> fallingFrames;
+
+    void attackFrameSwap();
+    IntRect formerFrame0;
+
+    CircleShape hurtbox;
 
 private:
     //fonction du update
@@ -90,13 +110,13 @@ private:
     //Attaque
     bool canAttack = true;
     bool attacking = false;
-    Texture attackTexture;
+    bool attackHitboxActive = false;
     Sprite attackSprite;
     string attackDirection = "right";
     float attackDuration = 0;
-    float attackCooldown = 1;
+    float attackCooldown = 0;
     float attackTimer = 0;
-	bool onGround = true;
+    bool onGround = true;
     Vector2f lastAttackPosition;
 };
 

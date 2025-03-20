@@ -4,64 +4,112 @@ EntityManager::EntityManager() {
 
 }
 
-void EntityManager::createEntity(std::string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
+void EntityManager::createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map) {
 	if (type == "Player") {
-		std::shared_ptr<Player> _player = std::make_shared<Player>(size, color, map);
-		_player->getSprite().setPosition(position);
+		std::shared_ptr<Player> _player = std::make_shared<Player>(textureManager.playerTexture, map);
+		//_player->getSprite().setPosition(position);
+		_player->setTexture(textureManager.playerTexture, 0, 0, 0, 0.1f);
 		player = _player;
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
-		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
+		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
 		eFlying->getSprite().setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(size, color, map);
+		std::shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(size, color, map);
 		eRanged->getSprite().setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		std::shared_ptr<BasicEnemy> eBasic = std::make_shared<BasicEnemy>(size, color, map);
+		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		std::shared_ptr<ChargingBoss> chargingBoss = std::make_shared<ChargingBoss>(size, color, map);
+		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
 		chargingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(chargingBoss);
 	}
 	if (type == "Checkpoint") {
 		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
 		testCheckpoint->getSprite().setPosition(position);
-		testCheckpoint->setTexture(textureManager.checkpointTexture, textureManager.checkpointTexture.getSize().x / 4, 
-			textureManager.checkpointTexture.getSize().y, 4, 0.1f);
+		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
-		std::cout << textureManager.checkpointTexture.getSize().x / 4 << std::endl;
+	}
+	if (type == "HeartItem") {
+		std::shared_ptr<HeartItem> heartItem = std::make_shared<HeartItem>(textureManager.heartTexture);
+		heartItem->getSprite().setPosition(position);
+		itemVector.push_back(heartItem);
+	}
+
+	if (type == "FlyingBoss") {
+		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
+		flyingBoss->getSprite().setPosition(position);
+		enemyVector.push_back(flyingBoss);
+	}
+}
+
+void EntityManager::generateEnemies(Map& map) {
+	enemyVector.clear();
+
+	for (const auto& spawn : map.enemySpawns) {
+		Vector2f position(spawn.x, spawn.y);
+		Vector2f size(50, 50);
+
+		Color color;
+		if (spawn.type == "EnemyFlying") {
+			color = Color::Green;
+		}
+		else if (spawn.type == "RangedEnemy") {
+			color = Color::Yellow;
+		}
+		else if (spawn.type == "BasicEnemy") {
+			color = Color::Blue;
+		}
+		else if (spawn.type == "ChargingBoss") {
+			color = Color(239, 12, 197);
+		}
+		else {
+			color = Color::White;
+		}
+		createEntity(spawn.type, position, size, color, map);
 	}
 }
 
 void EntityManager::destroyEntity() {
 	enemyVector.erase(remove_if(enemyVector.begin(), enemyVector.end(),
-			[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
+		[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
 		enemyVector.end());
+	itemVector.erase(remove_if(itemVector.begin(), itemVector.end(),
+		[](const shared_ptr<Item>& item) { return item->toBeDeleted; }),
+		itemVector.end());
 }
 
-void EntityManager::collisions() {
+void EntityManager::collisions(float dt) {
 	for (auto& enemy : enemyVector) {
-		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->isAttacking() && !enemy->invincible) {
+		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) || 
+			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
+			enemy->pushBack(*player);
 			//DEGATS
-			enemy->toBeDeleted = true;
-			player->killCount++;
+			enemy->hp--;
+			if (enemy->hp <= 0) {
+				enemy->toBeDeleted = true;
+				player->killCount++;
+			}
+			else {
+				enemy->invincible = true;
+			}
 		}
-		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
-				player->invincible = true;
-			//std::cout << "DAMAGE" << std::endl;
+		if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
+			player->invincible = true;
+			player->hp--;
 		}
 	}
 	for (auto& checkpoint : checkpointVector) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
-			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight()/2 + checkpoint->getHeight()/2);
+			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() / 2 + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
 			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
 				if (obj->activated) {
@@ -74,6 +122,16 @@ void EntityManager::collisions() {
 				}
 			}
 			checkpoint->activate();
+		}
+	}
+	if (!itemVector.empty()) {
+		for (auto& item : itemVector) {
+			if (player->getSprite().getGlobalBounds().intersects(item->getSprite().getGlobalBounds())) {
+				if (item->type == "HeartItem" && player->hp < player->getMaxHp()) {
+					player->hp++;
+					item->toBeDeleted = true;
+				}
+			}
 		}
 	}
 }
@@ -91,11 +149,19 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	else {
 		player->setMaxHp(player->hpCeiling);
 	}
-	collisions();
+	if (player->hp <= 0) {
+		player->hp = 0;
+	}
+	collisions(dt);
 	player->update(dt);
 	player->handleInput(event, window, dt);
+	player->animate(dt);
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
+		/*if (enemy->hp <= 0) {
+			enemy->toBeDeleted;
+			player->killCount++;
+		}*/
 	}
 	for (auto& checkpoint : checkpointVector) {
 		checkpoint->animate(dt);
@@ -124,6 +190,9 @@ void EntityManager::drawEntities(RenderWindow& window) {
 	}
 	for (auto& checkpoint : checkpointVector) {
 		checkpoint->draw(window);
+	}
+	for (auto& item : itemVector) {
+		item->draw(window);
 	}
 	player->draw(window);
 }

@@ -41,6 +41,7 @@ bool RangedEnemy::isPlayerInRadius(const Vector2f& playerPosition, float radius)
 //}
 
 void RangedEnemy::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    applySmoothPushback(dt, player);
     invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
@@ -80,7 +81,7 @@ void RangedEnemy::update(/*float dt, const Player& player*/float dt, Player& pla
         projectile.move(0, 300 * dt);
     }
 
-    Enemy::update(dt, player, window); // Call base class update to handle common enemy behavior
+    Enemy::update(dt, player, window);
 
     if (getSprite().getPosition().y > 800)
     {

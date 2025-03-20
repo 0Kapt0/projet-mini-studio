@@ -1,12 +1,27 @@
 ﻿#include "../include/Player.hpp"
 
-Player::Player(Map& map)
-    : Entity(), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
+Player::Player(Texture& tex, Map& map)
+    : Entity(tex), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
-   
-    speed = 200;
+
+    attackSprite.setTexture(tex);
+    speed = 450;
     velocity = Vector2f(0, 0);
     this->map = map;
+    playerView.setSize(1920, 1080);
+    if (!heartTexure.loadFromFile("assets/ui/heart.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heart1.setTexture(heartTexure);
+    if (!heartemptyTexure.loadFromFile("assets/ui/heartempty.png")) {
+        cerr << "Erreur lors du chargement du coeur." << endl;
+    }
+    heartempty.setTexture(heartemptyTexure);
+
+    hurtbox.setRadius(50);
+    hurtbox.setFillColor(Color::Transparent);
+    hurtbox.setOutlineColor(Color::Red);
+    hurtbox.setOutlineThickness(1.f);
 
 }
 
@@ -17,11 +32,11 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
     velocity = Vector2f(0, 0);
     this->map = map;
     playerView.setSize(1920, 1080);
-    attackTexture.create(size.x * 1.5f, size.y * 1.5f);
+    //attackTexture.create(size.x * 1.5f, size.y * 1.5f);
     Image image;
     image.create(size.x * 1.5f, size.y * 1.5f, Color::Blue);
-    attackTexture.update(image);
-    attackSprite.setTexture(attackTexture);
+    /*attackTexture.update(image);
+    attackSprite.setTexture(attackTexture);*/
     if (!heartTexure.loadFromFile("assets/ui/heart.png")) {
         cerr << "Erreur lors du chargement du coeur." << endl;
     }
@@ -78,6 +93,8 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    grappleMove = false;
+    hurtbox.setPosition(getSprite().getPosition().x - hurtbox.getRadius(), getSprite().getPosition().y - hurtbox.getRadius());
     invincibilityAfterHit(dt);
     handleGrapplePull(dt);
     handleMovement(dt);
@@ -95,12 +112,7 @@ void Player::updateCamera()
 
     cameraPosition.x = playerPosition.x;
 
-    if (playerPosition.y > 670) {
-        cameraPosition.y = 670;
-    }
-    else {
-        cameraPosition.y = playerPosition.y;
-    }
+	cameraPosition.y = 1620;
 
     playerView.setCenter(cameraPosition);
 }
@@ -142,7 +154,7 @@ void Player::handleMovement(float dt)
 void Player::handleNormalMovement(float dt)
 {
     float axisX = Joystick::getAxisPosition(0, Joystick::X);
-    cout << axisX << endl;
+    //cout << axisX << endl;
 
     dashTimer += dt;
     if (dashTimer >= dashCooldown && onGround)
@@ -155,7 +167,7 @@ void Player::handleNormalMovement(float dt)
 
     velocity.y += 14.8f;
 
-    if (getSprite().getPosition().y > 1100.f)
+    if (getSprite().getPosition().y > 2200.f)
     {
         canJump = true;
         onGround = true;
@@ -196,6 +208,7 @@ void Player::handleNormalMovement(float dt)
     float jumpCooldownTime = 0.4f;
     if ((Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && canJump && jumpCooldownClock.getElapsedTime().asSeconds() >= jumpCooldownTime)
     {
+        jumped = true;
         onGround = false;
         velocity.y = -speed;
         jumpNum++;
@@ -318,9 +331,9 @@ void Player::updateGrapplePosition()
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
     float axisZ = Joystick::getAxisPosition(0, Joystick::Z);
-    if (/*Mouse::isButtonPressed(Mouse::Left)*/ Keyboard::isKeyPressed(Keyboard::F) || axisZ < -50) {
+    if (Mouse::isButtonPressed(Mouse::Right) || axisZ < -50) {
         leftButtonHold = true;
-        if (grapple.isStuck()) 
+        if (grapple.isStuck() && grapple.isActive())
         {
             Vector2f stuckPosition = grapple.getStuckPosition();
             Vector2f playerPosition = getSprite().getPosition();
@@ -329,7 +342,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             direction /= grappleLength;
             velocity = direction * speed;
         }
-        else 
+        else
         {
             Vector2f startPosition = getSprite().getPosition();
             Vector2i mousePosition = Mouse::getPosition(window);
@@ -340,11 +353,11 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
             grapple.launch(startPosition, direction);
         }
     }
-    else 
+    else
     {
         leftButtonHold = false;
     }
-    if ((Mouse::isButtonPressed(Mouse::Right) || Joystick::isButtonPressed(0, 5)))
+    if ((Keyboard::isKeyPressed(Keyboard::F) || Joystick::isButtonPressed(0, 5)))
     {
         if (grapple.isActive())
         {
@@ -376,7 +389,8 @@ void Player::isColliding(int x, int y, float dt)
 
 void Player::handleBoundingBoxCollision(float dt)
 {
-    if (velocity == sf::Vector2f(0, 0)) {
+    if (velocity == sf::Vector2f(0, 0)) 
+    {
         return;
     }
 
@@ -395,9 +409,8 @@ void Player::handleBoundingBoxCollision(float dt)
             newX = (static_cast<int>((getSprite().getGlobalBounds().left
                 + getSpriteConst().getGlobalBounds().width) / 64)) * 64
                 + 64
-                - getTexture().getSize().x / 2;
+                - getSprite().getTextureRect().getSize().x / 2;
 
-            getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -409,9 +422,8 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
             newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64
-                + getTexture().getSize().x / 2;
+                + getSprite().getTextureRect().getSize().x / 2;
 
-            getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -426,13 +438,9 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2,
                 newY + getSpriteConst().getGlobalBounds().height))
         {
-            newY = (static_cast<int>((getSprite().getGlobalBounds().top
-                + getSpriteConst().getGlobalBounds().height) / 64)) * 64
-                + 64
-                - getTexture().getSize().y / 2;
+            newY = (static_cast<int>((getSprite().getGlobalBounds().top)));
 
             jumpNum = 0;
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
             onGround = true;
@@ -445,9 +453,8 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
         {
             newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64
-                + getTexture().getSize().y / 2;
+                + getSprite().getTextureRect().getSize().y / 2;
 
-            getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
         }
@@ -478,7 +485,7 @@ void Player::handleDashingCollision(float dt)
                 (getSprite().getGlobalBounds().left
                     + getSpriteConst().getGlobalBounds().width) / 64)) * 64
                 + 64
-                - getTexture().getSize().x / 2;
+                - /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
 
             getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
             dashDirection.x = 0.f;
@@ -499,7 +506,7 @@ void Player::handleDashingCollision(float dt)
         {
             newX = (static_cast<int>(
                 getSprite().getGlobalBounds().left / 64)) * 64
-                + getTexture().getSize().x / 2;
+                + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
 
             getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
             dashDirection.x = 0.f;
@@ -570,8 +577,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y + getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
-            getSprite().setPosition(getSprite().getPosition().x, newPos.y - 0.1);
             velocity.y = 0;
             angularVelocity = 0;
             newPos.y = getSprite().getPosition().y;
@@ -584,8 +589,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y - getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y - getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
-            getSprite().setPosition(getSprite().getPosition().x, newPos.y + 0.1);
             velocity.y = 0;
             angularVelocity = 0;
             newPos.y = getSprite().getPosition().y;
@@ -599,8 +602,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
-            getSprite().setPosition(newPos.x - 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
             angularVelocity = 0;
@@ -613,8 +614,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
-            getSprite().setPosition(newPos.x + 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
             angularVelocity = 0;
@@ -638,22 +637,23 @@ void Player::draw(RenderWindow& window)
             window.draw(heart1);
         }
     }
+
+    /*RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
+    HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
+    HB.setFillColor(Color::Magenta);
+    window.draw(HB);*/
+
     window.draw(getSprite());
-    if (attacking)
+    if (attackHitboxActive)
         window.draw(attackSprite);
     grapple.draw(window);
 }
 
 void Player::handleAttack(float dt) {
-    if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/|| Joystick::isButtonPressed(0, 2)) && canAttack) {
+    if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ || Joystick::isButtonPressed(0, 2)) && canAttack) {
         attacking = true;
         canAttack = false;
         attackTimer = 0;
-
-        switch (lastInputDirection) {
-        case('L'): attackDirection = "left"; break;
-        case('R'): attackDirection = "right"; break;
-        }
     }
     attackTimer += dt;
     if (attackTimer >= attackCooldown) canAttack = true;
@@ -661,20 +661,36 @@ void Player::handleAttack(float dt) {
     //attackSprite.setPosition(getSprite().getPosition());
     if (attacking) {
         attackDuration += dt;
-        if (attackDuration >= 0.2) {
+        if (attackDuration < 0.3) {
+            getSprite().setTextureRect(attackingFrames[0]);
+            switch (lastInputDirection) {
+            case('L'): attackDirection = "left"; break;
+            case('R'): attackDirection = "right"; break;
+            }
+        }
+        if (attackDuration >= 0.3 && attackDuration < 0.4) {
+
+            attackHitboxActive = true;
+            getSprite().setTextureRect(attackingFrames[1]);
+        }
+        if (attackDuration >= 0.4 && attackDuration < 0.6) {
+            getSprite().setTextureRect(attackingFrames[2]);
+            attackHitboxActive = false;
+        }
+        if (attackDuration >= 0.5) {
             attacking = false;
             attackDuration = 0;
         }
+        getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
     }
     if (attackDirection == "left") {
-        attackSprite.setPosition(getSprite().getPosition().x - getWidth() / 2
-            - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
-            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        attackSprite.setPosition(getSprite().getPosition().x - attackSprite.getGlobalBounds().width, getSprite().getPosition().y);
+        attackSprite.setScale(-1.f, 1.f);
         lastAttackPosition = attackSprite.getPosition();
     }
     if (attackDirection == "right") {
-        attackSprite.setPosition(getSprite().getPosition().x + getWidth() / 2,
-            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
+        attackSprite.setPosition(getSprite().getPosition().x + attackSprite.getGlobalBounds().width, getSprite().getPosition().y);
+        attackSprite.setScale(1.f, 1.f);
         lastAttackPosition = attackSprite.getPosition();
     }
 }
@@ -685,7 +701,7 @@ Sprite Player::getAttackHitBox() {
 }
 
 bool Player::isAttacking() {
-    return attacking;
+    return attackHitboxActive;
 }
 
 int Player::getMaxHp() {
@@ -698,4 +714,121 @@ void Player::setMaxHp(int newMaxHp) {
 void Player::oneUp(int value) {
     maxHp += value;
     hp += value;
+}
+
+void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float _frameTime) {
+
+    frames.clear();
+    standingFrames.clear();
+    runningFrames.clear();
+    jumpingFrames.clear();
+    attackingFrames.clear();
+    //RUNNING
+    frameWidthResize = 157; // -1 par rapport aux values de base pck décalage
+    frameHeightResize = 119;
+    frameStartingX = 0;
+    frameStartingY = 0;
+    totalFrames = 4;
+    for (int i = 0; i < totalFrames; i++) {
+        runningFrames.emplace_back(i * frameWidthResize, 0, frameWidthResize, frameHeightResize);
+    }
+    //STANDING
+    frameWidthResize = 49;
+    frameHeightResize = 119;
+    totalFrames = 3;
+    for (int i = 0; i < totalFrames; i++) {
+        standingFrames.emplace_back(i * frameWidthResize, 119, frameWidthResize, frameHeightResize);
+    }
+    //JUMPING
+    frameWidthResize = 46;
+    frameHeightResize = 139;
+    totalFrames = 2;
+    for (int i = 0; i < totalFrames; i++) {
+        jumpingFrames.emplace_back(i * frameWidthResize, 238, frameWidthResize, frameHeightResize);  // METTRE i POUR FULL ANIMATION
+    }
+    //ATTACKING
+    frameWidthResize = 157;
+    frameHeightResize = 119;
+    totalFrames = 3;
+    for (int i = 0; i < totalFrames; i++) {
+        attackingFrames.emplace_back(i * frameWidthResize, 377, frameWidthResize, frameHeightResize);
+    }
+    //ATTACK HITBOX
+    totalFrames = 2;
+    for (int i = 0; i < totalFrames; i++) {
+        attackHitboxFrames.emplace_back(i * frameWidthResize, 496, frameWidthResize, frameHeightResize);
+    }
+    attackSprite.setTextureRect(attackHitboxFrames[0]);
+    attackSprite.setOrigin(attackSprite.getTextureRect().getSize().x / 2, attackSprite.getTextureRect().getSize().y / 2);
+    //FALLING
+    frameWidthResize = 97;
+    frameHeightResize = 119;
+    totalFrames = 2;
+    for (int i = 0; i < totalFrames; i++) {
+        fallingFrames.emplace_back(i * frameWidthResize, 615, frameWidthResize, frameHeightResize);
+    }
+    fallingFrames.emplace_back(fallingFrames[0]);
+    fallingFrames.emplace_back(fallingFrames[1]);
+
+    frames = standingFrames;
+    getSprite().setTextureRect(frames[currentFrame]);
+    getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+}
+
+void Player::animate(float deltaTime) {
+    elapsedTime += deltaTime;
+    if (lastInputDirection == 'L') {
+        getSprite().setScale(-1.f, 1.f);
+    }
+    if (lastInputDirection == 'R') {
+        getSprite().setScale(1.f, 1.f);
+    }
+    if (elapsedTime >= frameTime && !frames.empty()) {
+        elapsedTime = 0.0f;
+        if (velocity.x > 0 && velocity.y <= 0) {
+            if (frames != runningFrames || getSprite().getScale() != Vector2f(1.f, 1.f)) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = runningFrames;
+            totalFrames = 4;
+            //if (!attacking) getSprite().setScale(1.f, 1.f);
+        }
+        else if (velocity.x < 0 && velocity.y <= 0) {
+            if (frames != runningFrames || getSprite().getScale() != Vector2f(-1.f, 1.f)) {
+                currentFrame = 0; //reset l'animation
+            }
+            frames = runningFrames;
+            totalFrames = 4;
+            //if (!attacking) getSprite().setScale(-1.f, 1.f);
+        }
+        else {
+            frames = standingFrames;
+            totalFrames = 3;
+        }
+        if (!onGround || dashing || dashMomentum) {
+            frames[0] = runningFrames[0];
+            frames.erase(frames.begin() + 1, frames.end());
+            totalFrames = 1;
+        }
+        if (velocity.y < 0) {
+            frames = jumpingFrames;
+            totalFrames = 1;
+            if (jumped) {
+                frames.erase(frames.begin() + 1, frames.end());
+                jumped = false;
+            }
+            else {
+                frames.erase(frames.begin(), frames.begin() + 1);
+            }
+        }
+        if (velocity.y > 0) {
+            frames = fallingFrames;
+            totalFrames = 2;
+        }
+        if (!attacking) {
+            currentFrame = (currentFrame + 1) % totalFrames;
+            getSprite().setTextureRect(frames[currentFrame]);
+            getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+        }
+    }
 }
