@@ -13,14 +13,20 @@ private:
 	Texture texture;
 	Sprite sprite;
 public:
-	int hp;
+	int hp = 3;
 	Entity();
 
 	Entity(const Vector2f& size, const Color& color);
 
+	Entity(Texture& tex);
+
 	~Entity();
 
 	Sprite& getSprite();
+	float getPosX();
+	float getPosY();
+	void setPosX(float newPosX);
+	void setPosY(float newPosY);
 	float getHeight();
 	float getWidth();
 	bool collided = false;
@@ -38,6 +44,14 @@ public:
 	const Sprite& getSpriteConst() const;
 
 	virtual void draw(RenderWindow& window);
+
+	vector<IntRect> frames;
+	int currentFrame = 0;
+	float elapsedTime = 0.0f;
+	float frameTime = 0.1f;
+	int totalFrames = 0;
+	virtual void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration);
+	virtual void animate(float deltaTime);
 };
 
 #endif

@@ -5,7 +5,7 @@
 Foreground::Foreground() {}
 
 bool Foreground::loadTextures(const std::string& layer1, const std::string& layer2) {
-    std::string layers[2] = { layer1, layer2 };
+    std::string layers[2] = { layer1, layer2};
 
     for (int i = 0; i < 2; ++i) {
         if (!textures[i].loadFromFile(layers[i])) {
@@ -17,7 +17,7 @@ bool Foreground::loadTextures(const std::string& layer1, const std::string& laye
 
         sprites[i].setTexture(textures[i]);
 
-        sprites[i].setScale(1920.0f / textures[i].getSize().x + 0.4f, 1080.0f / textures[i].getSize().y + 0.4f);
+        sprites[i].setScale(0.5f, 0.5f);
     }
 
     return true;
@@ -25,12 +25,12 @@ bool Foreground::loadTextures(const std::string& layer1, const std::string& laye
 
 void Foreground::update(float cameraX) {
     for (int i = 0; i < 2; ++i) {
-        sprites[i].setPosition(cameraX - 960, -300);
+        sprites[i].setPosition(0,0);
 
-        float offset = fmod(cameraX * speeds[i] * 2.0f, 1920);
-        if (offset > 0) offset -= 1920;
+        float offset = fmod(cameraX * speeds[i] * 2.0f, 32715);
+        if (offset > 0) offset -= 32715;
 
-        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 1920, 1080));
+        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 32715, 4320));
     }
 }
 

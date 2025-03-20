@@ -3,6 +3,7 @@
 #include "../include/Map.hpp"
 #include "../include/Menu.hpp"
 #include "../include/Pause.hpp"
+#include "../include/Selector.hpp"
 #include "../include/Player.hpp"
 #include "../include/Enemy.hpp"
 #include "../include/RangedEnemy.hpp"
@@ -13,11 +14,93 @@
 #include "../include/Background.hpp"
 #include "../include/EntityManager.hpp"
 #include "../include/DropDown.hpp"
+#include "../include/EnemySelector.hpp"
+#include "../include/SoundManager.hpp"
 
 #include <iostream>
+#include <string>
+#include <array>
 
 using namespace sf;
 using namespace std;
+
+struct LevelAssets {
+    array<string, 6> backgroundTextures;
+    array<string, 2> foregroundTextures;
+    string mapTileset;
+    string tileSelectorTileset;
+    array<float, 6> backgroundSpeeds;
+};
+
+// Exemple d'association entre le fichier de niveau et les assets correspondants
+map<string, LevelAssets> levelAssetsMap = {
+    {"assets/map/Level1.txt", {
+        { "assets/background/Forest1.png",
+          "assets/background/Forest2.png",
+          "assets/background/Forest3.png",
+          "assets/background/Forest4.png",
+          "assets/background/Forest5.png",
+          "assets/background/Forest6.png" },
+        { "assets/foreground/foret_foreground.png",
+          "assets/foreground/Forest-light.png" },
+        "assets/tileset/tileset_green_vFinal.png",
+        "assets/tileset/tileset_green_vFinal.png",
+        {1.89f, 1.89f, 1.89f, 1.89f, 1.89f, 1.89f}
+    }},
+    {"assets/map/Level2.txt", {
+        { "assets/background/BG1.png",
+          "assets/background/BG2.png",
+          "assets/background/BG3.png",
+          "assets/background/BG4.png",
+          "assets/background/BG5.png",
+          "assets/background/BG6.png" },
+        { "assets/foreground/foreground_city.png",
+          "assets/foreground/level2_foreground2.png" },
+        "assets/tileset/tilesetTownV1.png",
+        "assets/tileset/tilesetTownV1.png",
+        {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
+    }}
+};
+
+void setLevel(const string& levelFile,
+    Background& background,
+    Foreground& foreground,
+    Map& map,
+    TileSelector& tileSelector)
+{
+    if (levelAssetsMap.find(levelFile) != levelAssetsMap.end()) {
+        LevelAssets assets = levelAssetsMap[levelFile];
+
+        if (!background.loadTextures(assets.backgroundTextures[0],
+            assets.backgroundTextures[1],
+            assets.backgroundTextures[2],
+            assets.backgroundTextures[3],
+            assets.backgroundTextures[4],
+            assets.backgroundTextures[5]))
+        {
+            std::cerr << "Erreur de chargement du background pour " << levelFile << endl;
+        }
+
+        background.setSpeeds(assets.backgroundSpeeds);
+
+        if (!foreground.loadTextures(assets.foregroundTextures[0],
+            assets.foregroundTextures[1])) {
+            std::cerr << "Erreur de chargement du foreground pour " << levelFile << endl;
+        }
+
+        map.setTileset(assets.mapTileset);
+        map.generateTiles();
+        tileSelector.setTileset(assets.tileSelectorTileset);
+
+        map.loadMap(levelFile);
+        map.generateTiles();
+
+        std::cout << "Niveau " << levelFile << " chargé avec succès." << endl;
+    }
+    else {
+        std::cerr << "Niveau inconnu: " << levelFile << endl;
+    }
+}
 
 enum class GameState {
     Menu,
@@ -25,6 +108,8 @@ enum class GameState {
     Editor,
     Pause,
     Settings,
+    Selector,
+    Cutscene,
     GameOver
 };
 
@@ -38,72 +123,103 @@ void Game::run() {
     RenderWindow window(VideoMode(1920, 1080), "Map Editor");
     window.setFramerateLimit(60);
 
+    Background background;
+    Foreground foreground;
+
     if (!font.loadFromFile("assets/fonts/arial.ttf")) {
         cerr << "Erreur chargement de la police.\n";
     }
 
-    vector<std::string> mapFiles = {
-        "assets/map/Lobby.txt",
+    vector<string> mapFiles = {
         "assets/map/Level1.txt",
-        "assets/map/Level2.txt"
+        "assets/map/Level2.txt",
+        "assets/map/Level3.txt"
     };
 
     DropDown mapDropdown(font, mapFiles,
-        Vector2f(1600.f, 80.f),   //position à l'écran
-        Vector2f(250.f, 30.f)); //taille (largeur, hauteu
+        Vector2f(1600.f, 80.f),
+        Vector2f(250.f, 30.f));
 
-    background.loadTextures("assets/background/layer1.png",
-        "assets/background/layer2.png",
-        "assets/background/layer3.png",
-        "assets/background/layer4.png");
+    string currentLevelFile = "assets/map/Level1.txt";
+    EnemySelector enemySelector("assets/tileset/enemy_icons.png", 64);
+    Map map("assets/tileset/tilesetTownV1.png", "assets/map/Lobby.txt");
+    TileSelector tileSelector("assets/tileset/tilesetTownV1.png", 64);
+    setLevel("assets/map/Level1.txt", background, foreground, map, tileSelector);
 
-    foreground.loadTextures("assets/foreground/layer1.png",
-        "assets/foreground/layer2.png");
+    EntityManager entityManager;
+    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
+
     GameState currentState = GameState::Menu;
-
-    // Instanciation des objets
-    /*Map level1("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");*/
-    Map map("assets/tileset/tileset_green.png", "assets/map/Lobby.txt");
     Menu menu;
+    Selector selector;
     Settings settings;
     Pause pause;
-    TileSelector tileSelector("assets/tileset/tileset_green.png", 64);
-    /*Player player(Vector2f(50, 50), Color::Red, map);
-    RangedEnemy rangedEnemy(Vector2f(50, 50), Color::Yellow, map);
-    EnemyFlying flyingEnemy(Vector2f(50, 50), Color::Green, map);
-	BasicEnemy basicEnemy(Vector2f(50, 50), Color::Blue,map);
-    ChargingBoss chargingBoss(Vector2f(100, 100), Color(239, 12, 197), map);*/
+	SoundManager soundManager;
+    TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
     EntityManager entityManager;
+	SoundManager& soundManager = SoundManager::getInstance();
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
     entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
     entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
     entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
 
+    // Instanciation des sons
+	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
+    soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
+    soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
+    soundManager.loadSound("BossDash1", "assets/sfx/BossDash1.mp3");
+    soundManager.loadSound("BossSound1", "assets/sfx/BossSound1.mp3");
+    soundManager.loadSound("CapsuleOppening", "assets/sfx/CapsuleOppening.mp3");
+    soundManager.loadSound("Checkpoint", "assets/sfx/Checkpoint.mp3");
+    soundManager.loadSound("CinematicBoss1", "assets/sfx/CinematicBoss1.mp3");
+    soundManager.loadSound("CounterAttack", "assets/sfx/CounterAttack.mp3");
+    soundManager.loadSound("DamageSound", "assets/sfx/DamageSound.mp3");
+    soundManager.loadSound("Dash", "assets/sfx/Dash.mp3");
+    soundManager.loadSound("EnemyWalking", "assets/sfx/EnemyWalking.mp3");
+    soundManager.loadSound("FlyingRobotSound", "assets/sfx/FlyingRobotSound.mp3");
+    soundManager.loadSound("ForestWindSound", "assets/sfx/ForestWindSound.mp3");
+    soundManager.loadSound("GrapleShootSound", "assets/sfx/GrapleShootSound.mp3");
+    soundManager.loadSound("ItemColectedSound", "assets/sfx/ItemColectedSound.mp3");
+    soundManager.loadSound("JumpingSound", "assets/sfx/JumpingSound.mp3");
+    soundManager.loadSound("MeleeAttackSound", "assets/sfx/MeleeAttackSound.mp3");
+    soundManager.loadSound("RespawnSound", "assets/sfx/RespawnSound.mp3");
+    soundManager.loadSound("RobotDeathSound", "assets/sfx/RobotDeathSound.mp3");
+    soundManager.loadSound("RunningSound", "assets/sfx/RunningSound.mp3");
+    soundManager.loadSound("TakingHitSound", "assets/sfx/TakingHitSound.mp3");
+    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");
+    soundManager.loadSound("MainTitle", "assets/sfx/MainTitle.mp3");
+
     bool collisionMode = false;
     Clock clock;
 
     while (window.isOpen()) {
+        window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
 
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event)) 
+        {
             if (event.type == Event::Closed)
                 window.close();
 
             //Gestion des événements en fonction de l'état actuel
-            switch (currentState) {
+            switch (currentState)
+            {
             case GameState::Menu:
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
+                {
+                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
+                    {
                         currentState = GameState::Editor;
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
-                        currentState = GameState::Playing;
+                        currentState = GameState::Selector;
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -111,11 +227,19 @@ void Game::run() {
                         currentState = GameState::Settings;
                     }
                 }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (menu.menuSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        window.close();
+                    }
+                }
                 break;
 
             case GameState::Playing:
-                /*map.loadMap("assets/map/Lobby.txt");
-                map.generateTiles();*/
+                if (!enemiesGenerated) {
+                    entityManager.generateEnemies(map);
+                    enemiesGenerated = true;
+                }
+
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
@@ -126,16 +250,16 @@ void Game::run() {
             case GameState::Editor:
             {
                 tileSelector.handleEvent(event, window);
+                enemySelector.handleEvent(event, window);
                 map.handleEvent(event, window);
-
                 mapDropdown.handleEvent(event, window);
 
-                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter)
-                {
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
                     string chosenFile = mapDropdown.getSelectedItem();
                     if (!chosenFile.empty()) {
-                        map.loadMap(chosenFile);
-                        map.generateTiles();
+                        map.saveMap(currentLevelFile);
+                        currentLevelFile = chosenFile;
+                        setLevel(currentLevelFile, background, foreground, map, tileSelector);
                     }
                 }
 
@@ -144,46 +268,17 @@ void Game::run() {
                     currentState = GameState::Pause;
                 }
 
-                if (event.type == Event::KeyPressed &&
-                    event.key.code == Keyboard::G)
-                {
+                if (event.type == Event::KeyPressed && event.key.code == Keyboard::G) {
                     showGrid = !showGrid;
                 }
 
-				//Gestion des raccourcis Undo/Redo ctrl + z et ctrl + shift + z
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::Z) {
                     bool ctrl = event.key.control;
                     bool shift = event.key.shift;
-                    if (ctrl && !shift) {
+                    if (ctrl && !shift)
                         map.undo();
-                    }
-                    else if (ctrl && shift) {
+                    else if (ctrl && shift)
                         map.redo();
-                    }
-                }
-
-                Vector2i mousePos = Mouse::getPosition(window);
-                Vector2f worldPos = window.mapPixelToCoords(mousePos);
-
-                float tilesetWidth = tileSelector.getTilesetWidth() * tileSelector.getTileSize();
-                float tilesetHeight = tileSelector.getTilesetHeight() * tileSelector.getTileSize();
-                Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
-
-                FloatRect tileSelectorBounds(viewPos.x, viewPos.y, tilesetWidth, tilesetHeight);
-
-                bool leftPressed = Mouse::isButtonPressed(Mouse::Left);
-                bool rightPressed = Mouse::isButtonPressed(Mouse::Right);
-
-                if (!tileSelectorBounds.contains(worldPos)) {
-                    if (leftPressed) {
-                        int selectedTile = tileSelector.getSelectedTile();
-                        if (selectedTile != -1) {
-                            map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
-                        }
-                    }
-                    else if (rightPressed) {
-                        map.handleClick(window, mousePos.x, mousePos.y, 74);
-                    }
                 }
 
                 if (event.type == Event::MouseButtonReleased) {
@@ -197,9 +292,78 @@ void Game::run() {
                     }
                 }
 
+                if (event.type == Event::KeyPressed) {
+                    if (event.key.code == Keyboard::E) {
+                        currentPlacementMode = PlacementMode::Enemies;
+                    }
+                    else if (event.key.code == Keyboard::T) {
+                        currentPlacementMode = PlacementMode::Tiles;
+                    }
+                }
+
+                if (event.type == Event::MouseButtonPressed) {
+                    if (event.mouseButton.button == Mouse::Left) {
+                        Vector2i mousePos = Mouse::getPosition(window);
+                        FloatRect tileSelectorBounds(0.f, 0.f,
+                            tileSelector.getTilesetWidth() * tileSelector.getTileSize(),
+                            tileSelector.getTilesetHeight() * tileSelector.getTileSize());
+                        FloatRect enemySelectorBounds(1500.f, 0.f, 256.f, 64.f);
+
+                        if (!tileSelectorBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)) &&
+                            !enemySelectorBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
+                        {
+                            if (currentPlacementMode == PlacementMode::Enemies) {
+                                EnemyType eType = enemySelector.getSelectedEnemy();
+                                if (eType != EnemyType::None) {
+                                    map.handleEnemyPlacement(window, mousePos.x, mousePos.y, eType);
+                                }
+                            }
+                            else if (currentPlacementMode == PlacementMode::Tiles) {
+                                int selectedTile = tileSelector.getSelectedTile();
+                                if (selectedTile != -1) {
+                                    map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                                }
+                            }
+                        }
+                    }
+                    else if (event.mouseButton.button == Mouse::Right) {
+                        Vector2i mousePos = Mouse::getPosition(window);
+                        FloatRect tileSelectorBounds(0.f, 0.f,
+                            tileSelector.getTilesetWidth() * tileSelector.getTileSize(),
+                            tileSelector.getTilesetHeight() * tileSelector.getTileSize());
+                        FloatRect enemySelectorBounds(1500.f, 0.f, 256.f, 64.f);
+                        if (!tileSelectorBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)) &&
+                            !enemySelectorBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
+                        {
+                            if (currentPlacementMode == PlacementMode::Enemies) {
+                                map.handleEnemyRemoval(window, mousePos.x, mousePos.y);
+                            }
+                            else if (currentPlacementMode == PlacementMode::Tiles) {
+                                map.handleClick(window, mousePos.x, mousePos.y, 74);
+                            }
+                        }
+                    }
+                }
+
+                {
+                    Vector2i mousePos = Mouse::getPosition(window);
+                    bool leftHeld = Mouse::isButtonPressed(Mouse::Left);
+                    bool rightHeld = Mouse::isButtonPressed(Mouse::Right);
+                    if (currentPlacementMode == PlacementMode::Tiles) {
+                        if (leftHeld) {
+                            int selectedTile = tileSelector.getSelectedTile();
+                            if (selectedTile != -1) {
+                                map.handleClick(window, mousePos.x, mousePos.y, selectedTile);
+                            }
+                        }
+                        else if (rightHeld) {
+                            map.handleClick(window, mousePos.x, mousePos.y, 74);
+                        }
+                    }
+                }
+
                 break;
             }
-
 
             case GameState::Pause:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -212,28 +376,31 @@ void Game::run() {
 
                 }
                 break;
-
+            case GameState::Selector:
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Playing;
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.returnSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        currentState = GameState::Menu;
+                    }
+                }
+                break;
+            
             case GameState::GameOver:
                 break;
             }
         }
 
         if (currentState == GameState::Playing) {
-            /*player.update(deltaTime);
-
-            player.handleInput(event, window, deltaTime);
-            rangedEnemy.update(deltaTime);
-			basicEnemy.update(deltaTime, player);
-            flyingEnemy.update(deltaTime, player);*/
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
             float cameraX = entityManager.player->getSprite().getPosition().x;
-            background.update(cameraX);
+            background.update(cameraX, true);
             foreground.update(cameraX);
-            /*chargingBoss.behavior(deltaTime, player, window);*/
         }
-
-        window.clear();
 
         switch (currentState) {
         case GameState::Menu:
@@ -243,29 +410,26 @@ void Game::run() {
         case GameState::Playing:
             background.draw(window);
             map.draw(window);;
-            /*player.draw(window);
-			basicEnemy.draw(window);
-            rangedEnemy.draw(window);
-            rangedEnemy.drawProjectiles(window);
-            flyingEnemy.draw(window);*/
             entityManager.drawEntities(window);
             foreground.draw(window);
-            /*chargingBoss.draw(window);*/
-
+            entityManager.player->drawHearts(window);
             break;
         case GameState::Settings:
             settings.draw(window);
             break;
         case GameState::Editor:
             background.draw(window);
+            foreground.draw(window);
             map.draw(window);
             if (showGrid) {
                 map.drawGrid(window);
             }
+            map.drawEnemySpawns(window);
 
 			map.drawCam(window);
             tileSelector.draw(window);
-            foreground.draw(window);
+            enemySelector.draw(window);
+            
 
             oldView = window.getView();
             window.setView(window.getDefaultView());
@@ -277,6 +441,9 @@ void Game::run() {
             pause.draw(window);
             break;
 
+        case GameState::Selector:
+            selector.draw(window);
+            break;
         case GameState::GameOver:
             break;
         }
@@ -286,6 +453,6 @@ void Game::run() {
 
     // Sauvegarde de la carte en quittant l'éditeur
     if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
-        map.saveMap("assets/map/Lobby.txt");
+        map.saveMap(currentLevelFile);
     }
 }

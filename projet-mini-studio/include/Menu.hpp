@@ -15,6 +15,7 @@ public :
 	Texture settingsButton;
 	Sprite settingSprite;
 	Texture menuButton;
+	Sprite menuSprite;
 	Texture backgroundTexture;
 	Menu();
 	~Menu();
