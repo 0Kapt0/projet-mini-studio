@@ -18,6 +18,14 @@ Enemy::Enemy(const Vector2f& size, const Color& color, Map& map) : Entity(size, 
 	velocity = Vector2f(0, 0);
 }
 
+Enemy::Enemy(Texture& texture, Map& map)
+    : Entity(texture), map(map)
+{
+    this->map = map;
+    speed = 200;
+    velocity = Vector2f(0, 0);
+}
+
 Enemy::~Enemy()
 {
 }
@@ -128,4 +136,22 @@ void Enemy::pushBack(Player& player) {
     pushbackStrength = 500.0f;
     isPushingBack = true;
     pushbackClock.restart();
+}
+
+void Enemy::setTexture(Texture& tex, int frameWidth, int frameHeight, int _totalFrames, float frameDuration) {
+    getSprite().setTexture(tex);
+    getSprite().setTextureRect(IntRect(0, 0, frameWidth, frameHeight));
+
+    frames.clear();
+    for (int i = 0; i < _totalFrames; ++i) {
+        frames.emplace_back(i * frameWidth, 0, frameWidth, frameHeight);
+    }
+
+    totalFrames = _totalFrames;
+    frameTime = frameDuration;
+    getSprite().setTextureRect(frames[currentFrame]);
+    getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
+}
+void Enemy::animate(float deltaTime) {
+
 }

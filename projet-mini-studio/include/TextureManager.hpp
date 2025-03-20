@@ -10,6 +10,7 @@ public:
 	Texture playerTexture;
 	Texture checkpointTexture;
 	Texture heartTexture;
+	Texture chargingBossTexture;
 
 	TextureManager();
 };

@@ -195,6 +195,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
+                enemiesGenerated = false;
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
                 {
                     if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 

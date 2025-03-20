@@ -399,8 +399,8 @@ void Map::drawEnemySpawns(RenderWindow& window) {
             sprite.setTextureRect(IntRect(iconSize, 0, iconSize, iconSize));
         else if (spawn.type == "BasicEnemy")
             sprite.setTextureRect(IntRect(2 * iconSize, 0, iconSize, iconSize));
-        else if (spawn.type == "ChargingBoss")
-            sprite.setTextureRect(IntRect(3 * iconSize, 0, iconSize, iconSize));
+        else if (spawn.type == "ChargingBoss") {}
+            //sprite.setTextureRect(IntRect(3 * iconSize, 0, iconSize, iconSize));
         else
             sprite.setTextureRect(IntRect(0, 0, iconSize, iconSize));
 

@@ -13,38 +13,40 @@ ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) :
 
 void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
 	//applySmoothPushback(dt, player);
+	//std::cout << dashTimer << std::endl;
+	std::cout << currentState;
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));
 	switch (currentState) {
-	case CHASING :
-		//std::cout << "chasing\n";
-		chase(player, dt);
-		if (distancePlayer < window.getSize().x * 0.3f && player.getSprite().getPosition().y + player.getHeight() > getSprite().getPosition().y) {
-			currentState = CHARGING;
-			dashTiming = dashTimingVector[rand() % dashTimingVector.size()];
-		}
-		break;
-	case CHARGING :
-		//std::cout << "CHARGING\n";
-		charge(dt);
-		break;
+		case CHASING:
+			//std::cout << "chasing\n";
+			chase(player, dt);
+			if (distancePlayer < window.getSize().x * 0.2f && player.getSprite().getPosition().y + player.getHeight() > getSprite().getPosition().y) {
+				currentState = CHARGING;
+				dashTiming = dashTimingVector[rand() % dashTimingVector.size()];
+			}
+			break;
+		case CHARGING:
+			//std::cout << "CHARGING\n";
+			charge(dt);
+			break;
 
-	case DASHING :
-		//std::cout << "DAAAASHING\n";
-		dash(dt);
-		break;
+		case DASHING:
+			//std::cout << "DAAAASHING\n";
+			dash(dt);
+			break;
 
-	case STUNNED :
-		//std::cout << "stunned\n";
-		stunned(dt);
-		break;
-		
+		case STUNNED:
+			//std::cout << "stunned\n";
+			stunned(dt);
+			break;
+
 	}
+	std::cout << currentState << std::endl;
 }
 
 void ChargingBoss::chase(Player& player, float dt) {
-	getSprite().setColor(Color(239, 12, 197));
 	if (target.x < getSprite().getPosition().x) {
 		velocity.x = -speed;
 	}
@@ -52,6 +54,7 @@ void ChargingBoss::chase(Player& player, float dt) {
 		velocity.x = speed;
 	}
 	getSprite().move(velocity * dt);
+	getSprite().setTextureRect(frames[0]);
 }
 
 void ChargingBoss::charge(float dt) {
@@ -62,30 +65,28 @@ void ChargingBoss::charge(float dt) {
 	}
 	else {
 		velocity.x = 0;
-		getSprite().setColor(Color::Red);
 	}
 	getSprite().move(velocity * dt);
 	if (chargingTimer > dashTiming + 0.25f) {
-		getSprite().setColor(Color(239, 12, 197));
 		chargingTimer = 0;
 		currentState = DASHING;
 	}
+	getSprite().setTextureRect(frames[1]);
 }
 
 void ChargingBoss::dash(float dt) {
 	if (dashDirection == "left") {
-		velocity.x = -speed * 5.f;
+		velocity.x = -speed * 1.f;
 	}
 	if (dashDirection == "right") {
-		velocity.x = speed * 5.f;
+		velocity.x = speed * 1.f;
 	}
 	//getSprite().move(velocity * dt);
 	dashTimer += dt;
 	if (dashTimer > 0.5f) {
 		velocity.x = 0;
-		getSprite().setColor(Color::Blue);
 	}
-	if (dashTimer > 1.f) {
+	if (dashTimer > 5.f) {
 		dashTimer = 0;
 		currentState = CHASING;
 	}
@@ -103,6 +104,8 @@ void ChargingBoss::dash(float dt) {
 		velocity.y = speed;
 	}
 	getSprite().move(velocity* dt);
+
+	getSprite().setTextureRect(frames[2]);
 }
 
 void ChargingBoss::stunned(float dt) {
@@ -121,6 +124,8 @@ void ChargingBoss::stunned(float dt) {
 		currentState = CHASING;
 	}
 	getSprite().move(velocity* dt);
+
+	getSprite().setTextureRect(frames[3]);
 }
 
 //void ChargingBoss::draw(RenderWindow& window) {

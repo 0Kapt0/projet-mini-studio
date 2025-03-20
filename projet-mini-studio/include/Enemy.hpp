@@ -15,6 +15,7 @@ protected:
 public:
     Enemy(Map& map);
     Enemy(const Vector2f& size, const Color& color, Map& map);
+    Enemy(Texture& texture, Map& map);
     virtual ~Enemy();
     virtual void update(float dt, Player& player, RenderWindow& window);
     virtual void isColliding(int x, int y, float dt);
@@ -24,6 +25,10 @@ public:
     Clock pushbackClock;
     Vector2f pushbackDirection;
     float pushbackStrength;
+
+
+    void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
+    void animate(float deltaTime) override;
 };
 
 #endif

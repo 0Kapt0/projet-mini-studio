@@ -28,13 +28,16 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
+		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(map);
 		chargingBoss->getSprite().setPosition(position);
+		chargingBoss->setTexture(textureManager.chargingBossTexture, 342, 195, 4, 0.1f);
+		chargingBoss->getSprite().setPosition(chargingBoss->getSprite().getPosition().x/* - chargingBoss->getSprite().getTextureRect().getSize().x*/,
+			chargingBoss->getSprite().getPosition().y - chargingBoss->getSprite().getTextureRect().getSize().y);
 		enemyVector.push_back(chargingBoss);
 	}
 	if (type == "Checkpoint") {
 		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
-		testCheckpoint->getSprite().setPosition(position);
+		//testCheckpoint->getSprite().setPosition(position);
 		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
 	}
@@ -53,6 +56,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 
 void EntityManager::generateEnemies(Map& map) {
 	enemyVector.clear();
+	itemVector.clear();
 
 	for (const auto& spawn : map.enemySpawns) {
 		Vector2f position(spawn.x, spawn.y);
@@ -69,7 +73,7 @@ void EntityManager::generateEnemies(Map& map) {
 			color = Color::Blue;
 		}
 		else if (spawn.type == "ChargingBoss") {
-			color = Color(239, 12, 197);
+			//color = Color(239, 12, 197);
 		}
 		else if (spawn.type == "FlyingBoss") {
 			color = Color(239, 12, 197);
