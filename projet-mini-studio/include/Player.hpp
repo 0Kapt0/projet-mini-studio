@@ -19,7 +19,7 @@ public:
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
-	void isSwingColliding(Vector2f& newPos, float dt);
+    void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
     bool isAttacking();
     int getMaxHp();
@@ -41,9 +41,15 @@ public:
     std::vector<IntRect> standingFrames;
     std::vector<IntRect> runningFrames;
     std::vector<IntRect> jumpingFrames;
+    bool jumped = false;
     std::vector<IntRect> attackingFrames;
+    std::vector<IntRect> attackHitboxFrames;
+    std::vector<IntRect> fallingFrames;
+
     void attackFrameSwap();
     IntRect formerFrame0;
+
+    CircleShape hurtbox;
 
 private:
     //fonction du update
@@ -105,13 +111,12 @@ private:
     bool canAttack = true;
     bool attacking = false;
     bool attackHitboxActive = false;
-    Texture attackTexture;
     Sprite attackSprite;
     string attackDirection = "right";
     float attackDuration = 0;
-    float attackCooldown = 1;
+    float attackCooldown = 0;
     float attackTimer = 0;
-	bool onGround = true;
+    bool onGround = true;
     Vector2f lastAttackPosition;
 };
 

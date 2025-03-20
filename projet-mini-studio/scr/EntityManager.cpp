@@ -74,7 +74,7 @@ void EntityManager::generateEnemies(Map& map) {
 
 void EntityManager::destroyEntity() {
 	enemyVector.erase(remove_if(enemyVector.begin(), enemyVector.end(),
-			[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
+		[](const shared_ptr<Enemy>& enemy) { return enemy->toBeDeleted; }),
 		enemyVector.end());
 	itemVector.erase(remove_if(itemVector.begin(), itemVector.end(),
 		[](const shared_ptr<Item>& item) { return item->toBeDeleted; }),
@@ -94,14 +94,14 @@ void EntityManager::collisions() {
 				enemy->invincible = true;
 			}
 		}
-		if (player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
+		if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
 			player->invincible = true;
 			player->hp--;
 		}
 	}
 	for (auto& checkpoint : checkpointVector) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
-			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight()/2 + checkpoint->getHeight()/2);
+			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() / 2 + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
 			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
 				if (obj->activated) {
