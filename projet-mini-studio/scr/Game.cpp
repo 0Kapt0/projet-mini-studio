@@ -140,21 +140,11 @@ void Game::run() {
     EntityManager entityManager;
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
 
-    bool collisionMode = false;
-    Clock clock;
-
     GameState currentState = GameState::Menu;
     Menu menu;
     Settings settings;
     Pause pause;
-    TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
-    EntityManager entityManager;
 	SoundManager soundManager;
-    entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
-    entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
-    entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
-    entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
-    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
