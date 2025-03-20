@@ -1,5 +1,7 @@
 ﻿#include "../include/Player.hpp"
 
+SoundManager& soundManager = SoundManager::getInstance();
+
 Player::Player(Texture& tex, Map& map)
     : Entity(tex), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
@@ -44,7 +46,6 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
 Player::~Player()
 {
 }
-
 
 Vector2f findTangentPoint(const Vector2f& center, float radius, const Vector2f& point) {
     float dx = point.x - center.x;
@@ -128,7 +129,6 @@ void Player::handleGrapplePull(float dt)
     }
 }
 
-
 void Player::handleMovement(float dt)
 {
     if (grappleMove) return;
@@ -143,11 +143,9 @@ void Player::handleMovement(float dt)
     }
 }
 
-
 void Player::handleNormalMovement(float dt)
 {
     float axisX = Joystick::getAxisPosition(0, Joystick::X);
-    //cout << axisX << endl;
 
     dashTimer += dt;
     if (dashTimer >= dashCooldown && onGround)
@@ -201,6 +199,7 @@ void Player::handleNormalMovement(float dt)
     float jumpCooldownTime = 0.4f;
     if ((Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && canJump && jumpCooldownClock.getElapsedTime().asSeconds() >= jumpCooldownTime)
     {
+		soundManager.playSound("JumpingSound");
         onGround = false;
         velocity.y = -speed;
         jumpNum++;
@@ -261,6 +260,7 @@ void Player::handleNormalMovement(float dt)
     if ((Keyboard::isKeyPressed(Keyboard::LShift) || axisZ > 50) && canDash)
 
     {
+		soundManager.playSound("Dash");
         dashing = true;
         canDash = false;
         dashTimer = 0.f;
@@ -280,6 +280,7 @@ void Player::handleNormalMovement(float dt)
 
 void Player::handleDashingMovement(float dt)
 {
+
     dashDuration += dt;
     if (dashDuration >= 0.1f)
     {
@@ -294,9 +295,6 @@ void Player::handleDashingMovement(float dt)
         dt * 3.f);
 
     getSprite().move(dashDirection.x * dt, 0.f);
-
-    /*velocity.x = 0.f;
-    velocity.y = 0.f;*/
 }
 
 void Player::handleCollisions(float dt)
@@ -318,7 +316,6 @@ void Player::updateGrapplePosition()
         grapple.updateStartPosition(getSprite().getPosition());
     }
 }
-
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
@@ -353,6 +350,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     {
         if (grapple.isActive())
         {
+			soundManager.playSound("GrapleShootSound");
             grapple.setActive(false);
             grapple.setStuck(false);
         }
@@ -377,7 +375,6 @@ void Player::isColliding(int x, int y, float dt)
         iterations++;
     }
 }
-
 
 void Player::handleBoundingBoxCollision(float dt)
 {
@@ -408,12 +405,9 @@ void Player::handleBoundingBoxCollision(float dt)
     }
     else if (velocity.x < 0)
     {
-        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
+        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
-            newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64
-                + getSprite().getTextureRect().getSize().x / 2;
+            newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getSprite().getTextureRect().getSize().x / 2;
 
             velocity.x = 0.f;
             jumpNum = 1;
@@ -554,10 +548,6 @@ bool Player::handleSlopeCollisionOnce()
     return false;
 }
 
-
-
-
-
 void Player::isSwingColliding(Vector2f& newPos, float dt)
 {
     Vector2f swingVelocity = newPos - getSprite().getPosition();
@@ -642,6 +632,7 @@ void Player::draw(RenderWindow& window)
 
 void Player::handleAttack(float dt) {
     if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/|| Joystick::isButtonPressed(0, 2)) && canAttack) {
+		soundManager.playSound("MeleeAttackSound");
         attacking = true;
         canAttack = false;
         attackTimer = 0;
@@ -654,7 +645,6 @@ void Player::handleAttack(float dt) {
     attackTimer += dt;
     if (attackTimer >= attackCooldown) canAttack = true;
 
-    //attackSprite.setPosition(getSprite().getPosition());
     if (attacking) {
         attackDuration += dt;
         if (attackDuration < 0.3) getSprite().setTextureRect(attackingFrames[0]);
@@ -672,17 +662,6 @@ void Player::handleAttack(float dt) {
         }
         getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
     }
-    /*if (attackDirection == "left") {
-        attackSprite.setPosition(getSprite().getPosition().x - getWidth() / 2
-            - (attackSprite.getLocalBounds().width * attackSprite.getScale().x),
-            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
-        lastAttackPosition = attackSprite.getPosition();
-    }
-    if (attackDirection == "right") {
-        attackSprite.setPosition(getSprite().getPosition().x + getWidth() / 2,
-            getSprite().getPosition().y - (attackSprite.getLocalBounds().width * attackSprite.getScale().x) / 2);
-        lastAttackPosition = attackSprite.getPosition();
-    }*/
     if (attackDirection == "left") {
         attackSprite.setPosition(getSprite().getPosition().x - attackSprite.getGlobalBounds().width, getSprite().getPosition().y);
         attackSprite.setScale(-1.f, 1.f);

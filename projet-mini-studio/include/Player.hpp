@@ -6,12 +6,14 @@
 #include "Rigidbody2D.hpp"
 #include "Grapple.hpp"
 #include "Entity.hpp"
+#include "../include/SoundManager.hpp"
 
 using namespace sf;
 
 class Player : public Entity {
 public:
     Clock jumpCooldownClock;
+	//SoundManager soundManager;
     //Player(Map& map);
     Player(Texture& tex, Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);

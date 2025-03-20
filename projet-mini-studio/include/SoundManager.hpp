@@ -10,8 +10,10 @@ using namespace sf;
 
 class SoundManager {
 public:
-    SoundManager();
-    ~SoundManager();
+    static SoundManager& getInstance() {
+        static SoundManager instance;
+        return instance;
+    }
 
     bool loadSound(const string& name, const string& filename);
     void playSound(const string& name);
@@ -20,6 +22,12 @@ public:
     void setLoop(const string& name, bool loop);
 
 private:
+    SoundManager() {}
+    ~SoundManager() {}
+
+    SoundManager(const SoundManager&) = delete;
+    SoundManager& operator=(const SoundManager&) = delete;
+
     map<string, SoundBuffer> soundBuffers;
     map<string, Sound> sounds;
 };

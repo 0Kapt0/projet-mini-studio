@@ -73,7 +73,7 @@ void Game::run() {
     Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
     EntityManager entityManager;
-	SoundManager soundManager;
+	SoundManager& soundManager = SoundManager::getInstance();
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
     entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
     entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
