@@ -1,6 +1,7 @@
 #include "../include/Game.hpp"
 #include "../include/Settings.hpp"
 #include "../include/Map.hpp"
+#include "../include/Cutscene.hpp"
 #include "../include/Menu.hpp"
 #include "../include/Pause.hpp"
 #include "../include/Selector.hpp"
@@ -142,7 +143,7 @@ void Game::run() {
 
     EntityManager entityManager;
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
-
+    Cutscene cutscene;
     GameState currentState = GameState::Menu;
     Menu menu;
     Selector selector;
@@ -185,7 +186,7 @@ void Game::run() {
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-
+        float cutscene2CooldownTime = 5.0f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -364,7 +365,9 @@ void Game::run() {
             case GameState::Selector:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
-                        currentState = GameState::Playing;
+                         cutsceneCooldown.restart();
+                        currentState = GameState::Cutscene;
+
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -373,7 +376,13 @@ void Game::run() {
                     }
                 }
                 break;
-            
+            case GameState::Cutscene:
+              
+                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                    currentState = GameState::Playing;
+                }
+                break;
+
             case GameState::GameOver:
                 break;
             }
@@ -427,6 +436,9 @@ void Game::run() {
 
         case GameState::Selector:
             selector.draw(window);
+            break;
+        case GameState::Cutscene:
+            cutscene.draw(window);
             break;
         case GameState::GameOver:
             break;
