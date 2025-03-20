@@ -381,7 +381,8 @@ void Player::isColliding(int x, int y, float dt)
 
 void Player::handleBoundingBoxCollision(float dt)
 {
-    if (velocity == sf::Vector2f(0, 0)) {
+    if (velocity == sf::Vector2f(0, 0)) 
+    {
         return;
     }
 
