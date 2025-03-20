@@ -104,7 +104,8 @@ void Game::run() {
     soundManager.loadSound("RobotDeathSound", "assets/sfx/RobotDeathSound.mp3");
     soundManager.loadSound("RunningSound", "assets/sfx/RunningSound.mp3");
     soundManager.loadSound("TakingHitSound", "assets/sfx/TakingHitSound.mp3");
-    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");  
+    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");
+    soundManager.loadSound("MainTitle", "assets/sfx/MainTitle.mp3");
 
     bool collisionMode = false;
     Clock clock;
