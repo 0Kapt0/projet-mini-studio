@@ -36,6 +36,7 @@ bool EnemyFlying::isPlayerInRadius(const Vector2f& playerPosition) {
 }
 
 void EnemyFlying::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    applySmoothPushback(dt, player);
     invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition();
 

@@ -638,10 +638,10 @@ void Player::draw(RenderWindow& window)
         }
     }
 
-    RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
+    /*RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
     HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
     HB.setFillColor(Color::Magenta);
-    window.draw(HB);
+    window.draw(HB);*/
 
     window.draw(getSprite());
     if (attackHitboxActive)

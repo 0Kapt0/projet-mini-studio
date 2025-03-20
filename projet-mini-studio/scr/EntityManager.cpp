@@ -87,9 +87,11 @@ void EntityManager::destroyEntity() {
 		itemVector.end());
 }
 
-void EntityManager::collisions() {
+void EntityManager::collisions(float dt) {
 	for (auto& enemy : enemyVector) {
-		if (player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && player->isAttacking() && !enemy->invincible) {
+		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) || 
+			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
+			enemy->pushBack(*player);
 			//DEGATS
 			enemy->hp--;
 			if (enemy->hp <= 0) {
@@ -150,7 +152,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	if (player->hp <= 0) {
 		player->hp = 0;
 	}
-	collisions();
+	collisions(dt);
 	player->update(dt);
 	player->handleInput(event, window, dt);
 	player->animate(dt);
