@@ -51,3 +51,7 @@ void SoundManager::setLoop(const string& name, bool loop) {
         cerr << "Sound not found: " << name << endl;
     }
 }
+
+bool SoundManager::addSoundEffect(const string& name, const string& filename) {
+    return loadSound(name, filename);
+}
