@@ -43,6 +43,7 @@ bool BasicEnemy::isTouchingPlayer(const Player& player) {
 }
 
 void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
     // Call the base class update method to handle gravity

@@ -11,19 +11,39 @@ using namespace sf;
 
 class Player : public Entity {
 public:
-    Player(Map& map);
+    Clock jumpCooldownClock;
+    //Player(Map& map);
+    Player(Texture& tex, Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
     ~Player();
-    Texture heartTexure;
-    Texture heartemptyTexure;
-    Sprite heart1;
-    Sprite heartempty;
     void update(float dt);
     void draw(RenderWindow& window);
     void handleInput(const Event& event, RenderWindow& window, float dt);
 	void isSwingColliding(Vector2f& newPos, float dt);
     Sprite getAttackHitBox();
-    bool attacking = false;
+    bool isAttacking();
+    int getMaxHp();
+    void setMaxHp(int newMaxHp);
+    void oneUp(int value);
+
+    int hpCeiling = 3;
+    int killCount = 0;
+    bool doubleJumpUnlocked = true;
+    bool dashUnlocked = true;
+    bool grappleUnlocked = true;
+
+    void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
+    int frameWidthResize = 0;
+    int frameHeightResize = 0;
+    int frameStartingX = 0;
+    int frameStartingY = 0;
+    void animate(float deltaTime) override;
+    std::vector<IntRect> standingFrames;
+    std::vector<IntRect> runningFrames;
+    std::vector<IntRect> jumpingFrames;
+    std::vector<IntRect> attackingFrames;
+    void attackFrameSwap();
+    IntRect formerFrame0;
 
 private:
     //fonction du update
@@ -48,7 +68,14 @@ private:
     Vector2f velocity;
     int jumpNum = 0;
 
-    // ouvement
+    //Health
+    Texture heartTexure;
+    Texture heartemptyTexure;
+    Sprite heart1;
+    Sprite heartempty;
+    int maxHp = 3;
+
+    //Mouvement
     bool canJump = true;
     bool dashMomentum = false;
 
@@ -76,6 +103,8 @@ private:
 
     //Attaque
     bool canAttack = true;
+    bool attacking = false;
+    bool attackHitboxActive = false;
     Texture attackTexture;
     Sprite attackSprite;
     string attackDirection = "right";

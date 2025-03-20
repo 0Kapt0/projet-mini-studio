@@ -8,8 +8,8 @@ EnemyFlying::EnemyFlying(Map& map)
     velocity = Vector2f(0, 0);
     detectionRadius = 200.0f; 
     // Example waypoints
-    waypoints.push_back(Vector2f(100, 500));
-    waypoints.push_back(Vector2f(700, 500));
+    waypoints.push_back(Vector2f(100, 600));
+    waypoints.push_back(Vector2f(700, 600));
 }
 
 EnemyFlying::EnemyFlying(const Vector2f& size, const Color& color, Map& map)
@@ -19,8 +19,8 @@ EnemyFlying::EnemyFlying(const Vector2f& size, const Color& color, Map& map)
     velocity = Vector2f(0, 0);
     detectionRadius = 200.0f; 
     // Example waypoints
-    waypoints.push_back(Vector2f(100, 100));
-    waypoints.push_back(Vector2f(700, 100));
+    waypoints.push_back(Vector2f(100, 600));
+    waypoints.push_back(Vector2f(700, 600));
 }
 
 EnemyFlying::~EnemyFlying()
