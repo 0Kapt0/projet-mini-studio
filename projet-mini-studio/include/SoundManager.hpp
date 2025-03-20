@@ -32,4 +32,4 @@ private:
     map<string, Sound> sounds;
 };
 
-#endif // SOUNDMANAGER_HPP
+#endif
