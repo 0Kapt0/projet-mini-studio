@@ -10,6 +10,7 @@
 #include "../include/Map.hpp"
 #include "Checkpoint.hpp"
 #include "HeartItem.hpp"
+#include "../include/FlyingBoss.hpp"
 
 using namespace sf;
 using namespace std;

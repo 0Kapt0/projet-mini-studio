@@ -13,12 +13,12 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
-		std::shared_ptr<EnemyFlying> eFlying = std::make_shared<EnemyFlying>(size, color, map);
+		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
 		eFlying->getSprite().setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = std::make_shared<RangedEnemy>(size, color, map);
+		std::shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(size, color, map);
 		eRanged->getSprite().setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
@@ -42,6 +42,12 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		std::shared_ptr<HeartItem> heartItem = std::make_shared<HeartItem>(textureManager.heartTexture);
 		heartItem->getSprite().setPosition(position);
 		itemVector.push_back(heartItem);
+	}
+
+	if (type == "FlyingBoss") {
+		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
+		flyingBoss->getSprite().setPosition(position);
+		enemyVector.push_back(flyingBoss);
 	}
 }
 

@@ -14,6 +14,7 @@
 #include "../include/EntityManager.hpp"
 #include "../include/DropDown.hpp"
 #include "../include/EnemySelector.hpp"
+#include "../include/SoundManager.hpp"
 
 #include <iostream>
 
@@ -72,25 +73,62 @@ void Game::run() {
     Pause pause;
     TileSelector tileSelector("assets/tileset/tileset_green_vFinal.png", 64);
     EntityManager entityManager;
+	SoundManager soundManager;
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
+    entityManager.createEntity("RangedEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Yellow, map);
+    entityManager.createEntity("EnemyFlying", Vector2f(0, 0), Vector2f(50, 50), Color::Green, map);
+    entityManager.createEntity("BasicEnemy", Vector2f(0, 0), Vector2f(50, 50), Color::Blue, map);
+    entityManager.createEntity("ChargingBoss", Vector2f(500, 800), Vector2f(100, 100), Color(239, 12, 197), map);
+
+    // Instanciation des sons
+	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
+    soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
+    soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
+    soundManager.loadSound("BossDash1", "assets/sfx/BossDash1.mp3");
+    soundManager.loadSound("BossSound1", "assets/sfx/BossSound1.mp3");
+    soundManager.loadSound("CapsuleOppening", "assets/sfx/CapsuleOppening.mp3");
+    soundManager.loadSound("Checkpoint", "assets/sfx/Checkpoint.mp3");
+    soundManager.loadSound("CinematicBoss1", "assets/sfx/CinematicBoss1.mp3");
+    soundManager.loadSound("CounterAttack", "assets/sfx/CounterAttack.mp3");
+    soundManager.loadSound("DamageSound", "assets/sfx/DamageSound.mp3");
+    soundManager.loadSound("Dash", "assets/sfx/Dash.mp3");
+    soundManager.loadSound("EnemyWalking", "assets/sfx/EnemyWalking.mp3");
+    soundManager.loadSound("FlyingRobotSound", "assets/sfx/FlyingRobotSound.mp3");
+    soundManager.loadSound("ForestWindSound", "assets/sfx/ForestWindSound.mp3");
+    soundManager.loadSound("GrapleShootSound", "assets/sfx/GrapleShootSound.mp3");
+    soundManager.loadSound("ItemColectedSound", "assets/sfx/ItemColectedSound.mp3");
+    soundManager.loadSound("JumpingSound", "assets/sfx/JumpingSound.mp3");
+    soundManager.loadSound("MeleeAttackSound", "assets/sfx/MeleeAttackSound.mp3");
+    soundManager.loadSound("RespawnSound", "assets/sfx/RespawnSound.mp3");
+    soundManager.loadSound("RobotDeathSound", "assets/sfx/RobotDeathSound.mp3");
+    soundManager.loadSound("RunningSound", "assets/sfx/RunningSound.mp3");
+    soundManager.loadSound("TakingHitSound", "assets/sfx/TakingHitSound.mp3");
+    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");  
+
     bool collisionMode = false;
     Clock clock;
 
     while (window.isOpen()) {
+        window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
 
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event)) 
+        {
             if (event.type == Event::Closed)
                 window.close();
 
             //Gestion des événements en fonction de l'état actuel
-            switch (currentState) {
+            switch (currentState)
+            {
             case GameState::Menu:
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
+                {
+                    if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
+                    {
                         currentState = GameState::Editor;
                     }
                 }
@@ -262,8 +300,6 @@ void Game::run() {
             background.update(cameraX);
             foreground.update(cameraX);
         }
-
-        window.clear();
 
         switch (currentState) {
         case GameState::Menu:

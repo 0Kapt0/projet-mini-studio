@@ -37,7 +37,7 @@ bool EnemyFlying::isPlayerInRadius(const Vector2f& playerPosition) {
 
 void EnemyFlying::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
     invincibilityAfterHit(dt);
-    Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
+    Vector2f playerPosition = player.getSpriteConst().getPosition();
 
     switch (state) {
     case PATROLLING:
@@ -78,7 +78,7 @@ void EnemyFlying::patrol(float dt) {
     Vector2f direction = target - position;
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-    if (length < 5.0f) { // If close to the target waypoint, move to the next
+    if (length < 5.0f) {
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.size();
         target = waypoints[currentWaypointIndex];
         direction = target - position;
@@ -120,11 +120,11 @@ void EnemyFlying::drawDetectionRadius(sf::RenderWindow& window) {
     Vector2f position = getSprite().getPosition();
     sf::CircleShape detectionCircle(detectionRadius);
     detectionCircle.setPosition(position - Vector2f(detectionRadius, detectionRadius));
-    detectionCircle.setFillColor(sf::Color(255, 0, 0, 100)); // Red with transparency
+    detectionCircle.setFillColor(sf::Color(255, 0, 0, 100));
     window.draw(detectionCircle);
 }
 
 void EnemyFlying::setWaypoints(const std::vector<Vector2f>& newWaypoints) {
     waypoints = newWaypoints;
-    currentWaypointIndex = 0; // Reset to start from the first waypoint
+    currentWaypointIndex = 0;
 }
