@@ -41,6 +41,7 @@
     <ClInclude Include="include\Projectile.hpp" />
     <ClInclude Include="include\RangedEnemy.hpp" />
     <ClInclude Include="include\Rigidbody2D.hpp" />
+    <ClInclude Include="include\Selector.hpp" />
     <ClInclude Include="include\Settings.hpp" />
     <ClInclude Include="include\SoundManager.hpp" />
     <ClInclude Include="include\TextureManager.hpp" />
@@ -71,6 +72,7 @@
     <ClCompile Include="scr\Projectile.cpp" />
     <ClCompile Include="scr\RangedEnemy.cpp" />
     <ClCompile Include="scr\Rigidbody2D.cpp" />
+    <ClCompile Include="scr\Selector.cpp" />
     <ClCompile Include="scr\Settings.cpp" />
     <ClCompile Include="scr\SoundManager.cpp" />
     <ClCompile Include="scr\TextureManager.cpp" />

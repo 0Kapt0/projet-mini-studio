@@ -30,6 +30,8 @@ public:
     void draw(RenderWindow& window);
     int getSelectedTile() const;
     void toggleCollision();
+    void setTileset(const std::string& newTilesetPath);
+
 
     const unordered_set<int>& getCollisionTiles() const;
 private:

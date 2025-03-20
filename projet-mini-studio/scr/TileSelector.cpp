@@ -98,3 +98,11 @@ int TileSelector::getSelectedTile() const {
 const unordered_set<int>& TileSelector::getCollisionTiles() const {
     return collisionTiles;
 }
+
+void TileSelector::setTileset(const std::string& newTilesetPath) {
+    if (!tilesetTexture.loadFromFile(newTilesetPath)) {
+        std::cerr << "Erreur lors du chargement du tileset du TileSelector: " << newTilesetPath << std::endl;
+        return;
+    }
+    // Rechargez ou mettez à jour vos sprites/rectangles pour le TileSelector ici
+}
