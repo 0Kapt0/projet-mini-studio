@@ -87,6 +87,7 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    grappleMove = false;
     invincibilityAfterHit(dt);
     handleGrapplePull(dt);
     handleMovement(dt);
@@ -322,9 +323,9 @@ void Player::updateGrapplePosition()
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
     float axisZ = Joystick::getAxisPosition(0, Joystick::Z);
-    if (/*Mouse::isButtonPressed(Mouse::Left)*/ Keyboard::isKeyPressed(Keyboard::F) || axisZ < -50) {
+    if (Mouse::isButtonPressed(Mouse::Right) || axisZ < -50) {
         leftButtonHold = true;
-        if (grapple.isStuck()) 
+        if (grapple.isStuck() && grapple.isActive())
         {
             Vector2f stuckPosition = grapple.getStuckPosition();
             Vector2f playerPosition = getSprite().getPosition();
@@ -348,7 +349,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     {
         leftButtonHold = false;
     }
-    if ((Mouse::isButtonPressed(Mouse::Right) || Joystick::isButtonPressed(0, 5)))
+    if ((Keyboard::isKeyPressed(Keyboard::F) || Joystick::isButtonPressed(0, 5)))
     {
         if (grapple.isActive())
         {
@@ -399,9 +400,8 @@ void Player::handleBoundingBoxCollision(float dt)
             newX = (static_cast<int>((getSprite().getGlobalBounds().left
                 + getSpriteConst().getGlobalBounds().width) / 64)) * 64
                 + 64
-                - /*getTexture().getSize().x / 2*/getSprite().getTextureRect().getSize().x / 2;
+                - getSprite().getTextureRect().getSize().x / 2;
 
-            //getSprite().setPosition(newX - 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -413,9 +413,8 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
             newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64
-                + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
+                + getSprite().getTextureRect().getSize().x / 2;
 
-            //getSprite().setPosition(newX + 0.1f, getSpriteConst().getPosition().y);
             velocity.x = 0.f;
             jumpNum = 1;
         }
@@ -433,7 +432,6 @@ void Player::handleBoundingBoxCollision(float dt)
             newY = (static_cast<int>((getSprite().getGlobalBounds().top)));
 
             jumpNum = 0;
-            //getSprite().setPosition(getSpriteConst().getPosition().x, newY - 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
             onGround = true;
@@ -446,9 +444,8 @@ void Player::handleBoundingBoxCollision(float dt)
             map.isColliding(getSpriteConst().getGlobalBounds().left + getSpriteConst().getGlobalBounds().width / 2, newY))
         {
             newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64
-                + /*getTexture().getSize().y / 2*/getSprite().getTextureRect().getSize().y / 2;
+                + getSprite().getTextureRect().getSize().y / 2;
 
-            //getSprite().setPosition(getSpriteConst().getPosition().x, newY + 0.1f);
             velocity.y = 0.f;
             dashDirection.y = 0.f;
         }
@@ -571,8 +568,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y + getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>((getSprite().getGlobalBounds().top + getSprite().getGlobalBounds().height) / 64)) * 64 + 64 - /*getTexture().getSize().y / 2*/ getSprite().getTextureRect().getSize().y / 2;
-            getSprite().setPosition(getSprite().getPosition().x, newPos.y - 0.1);
             velocity.y = 0;
             angularVelocity = 0;
             newPos.y = getSprite().getPosition().y;
@@ -585,8 +580,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(getSprite().getPosition().x + getSprite().getGlobalBounds().height / 2, newPos.y - getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(getSprite().getPosition().x, newPos.y - getSprite().getGlobalBounds().height / 2))
         {
-            newPos.y = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + /*getTexture().getSize().y / 2*/ getSprite().getTextureRect().getSize().y / 2;
-            getSprite().setPosition(getSprite().getPosition().x, newPos.y + 0.1);
             velocity.y = 0;
             angularVelocity = 0;
             newPos.y = getSprite().getPosition().y;
@@ -600,8 +593,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x + getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>((getSprite().getGlobalBounds().left + getSprite().getGlobalBounds().width) / 64)) * 64 + 64 - /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
-            getSprite().setPosition(newPos.x - 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
             angularVelocity = 0;
@@ -614,8 +605,6 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y + getSprite().getGlobalBounds().height / 2) ||
             map.isColliding(newPos.x - getSprite().getGlobalBounds().width / 2, getSprite().getPosition().y))
         {
-            newPos.x = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + /*getTexture().getSize().x / 2*/ getSprite().getTextureRect().getSize().x / 2;
-            getSprite().setPosition(newPos.x + 0.1, getSprite().getPosition().y);
             velocity.x = 0;
             jumpNum = 1;
             angularVelocity = 0;
@@ -639,6 +628,12 @@ void Player::draw(RenderWindow& window)
             window.draw(heart1);
         }
     }
+
+    RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
+    HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
+    HB.setFillColor(Color::Magenta);
+    window.draw(HB);
+
     window.draw(getSprite());
     if (attackHitboxActive)
         window.draw(attackSprite);
