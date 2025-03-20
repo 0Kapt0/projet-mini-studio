@@ -1,11 +1,11 @@
 #include "../include/TileSelector.hpp"
 #include <iostream>
 
-TileSelector::TileSelector(const string& tilesetPath, int tileSize)
-    : tileSize(tileSize), selectedTileIndex(-1) {
-
+TileSelector::TileSelector(const std::string& tilesetPath, int tileSize)
+    : tileSize(tileSize), selectedTileIndex(-1)
+{
     if (!tilesetTexture.loadFromFile(tilesetPath)) {
-        cerr << "Erreur lors du chargement du tileset." << endl;
+        cerr << "Erreur lors du chargement du tileset." << std::endl;
     }
 
     int tilesetWidth = tilesetTexture.getSize().x / tileSize;
@@ -13,37 +13,45 @@ TileSelector::TileSelector(const string& tilesetPath, int tileSize)
 
     for (int y = 0; y < tilesetHeight; ++y) {
         for (int x = 0; x < tilesetWidth; ++x) {
-            Sprite sprite;
+            sf::Sprite sprite;
             sprite.setTexture(tilesetTexture);
-            sprite.setTextureRect(IntRect(x * tileSize, y * tileSize, tileSize, tileSize));
-            sprite.setPosition(x * tileSize, y * tileSize);
+            sprite.setTextureRect(sf::IntRect(x * tileSize, y * tileSize, tileSize, tileSize));
+            sprite.setPosition(float(x * tileSize), float(y * tileSize));
             tiles.push_back(sprite);
         }
     }
 }
 
-void TileSelector::handleEvent(Event event, RenderWindow& window) {
+void TileSelector::handleEvent(Event event, RenderWindow& window)
+{
     if (event.type == Event::MouseButtonPressed) {
-        Vector2i mousePos = Mouse::getPosition(window);
+        if (event.mouseButton.button == Mouse::Left) {
+            Vector2i mousePos = Mouse::getPosition(window);
 
-        //Vérifier si on clique dans la zone de la palette
-        int tilesetWidth = tilesetTexture.getSize().x / tileSize;
-        int tilesetHeight = tilesetTexture.getSize().y / tileSize;
+            int tilesetWidth = tilesetTexture.getSize().x / tileSize;
+            int tilesetHeight = tilesetTexture.getSize().y / tileSize;
 
-        if (mousePos.x < tilesetWidth * tileSize && mousePos.y < tilesetHeight * tileSize) {
-            int tileX = mousePos.x / tileSize;
-            int tileY = mousePos.y / tileSize;
-            int index = tileY * tilesetWidth + tileX;
+            int paletteWidth = tilesetWidth * tileSize;
+            int paletteHeight = tilesetHeight * tileSize;
 
-            if (index >= 0 && index < tiles.size()) {
-                selectedTileIndex = index;
-                cout << "Tuile sélectionnée : " << selectedTileIndex << endl;
+            if (mousePos.x >= 0 && mousePos.x < paletteWidth &&
+                mousePos.y >= 0 && mousePos.y < paletteHeight)
+            {
+                int tileX = mousePos.x / tileSize;
+                int tileY = mousePos.y / tileSize;
+                int index = tileY * tilesetWidth + tileX;
+
+                if (index >= 0 && index < static_cast<int>(tiles.size())) {
+                    selectedTileIndex = index;
+                    std::cout << "Tuile choisie : " << selectedTileIndex << std::endl;
+                }
             }
         }
     }
 }
 
-void TileSelector::toggleCollision() {
+void TileSelector::toggleCollision()
+{
     if (selectedTileIndex != -1) {
         if (collisionTiles.count(selectedTileIndex))
             collisionTiles.erase(selectedTileIndex);
@@ -51,34 +59,50 @@ void TileSelector::toggleCollision() {
             collisionTiles.insert(selectedTileIndex);
     }
 }
-void TileSelector::draw(RenderWindow& window) {
-    Vector2f viewPos = window.getView().getCenter() - (window.getView().getSize() / 2.f);
+
+void TileSelector::draw(RenderWindow& window)
+{
+    View oldView = window.getView();
+
+    window.setView(window.getDefaultView());
+
     int tilesetWidth = tilesetTexture.getSize().x / tileSize;
-    for (size_t i = 0; i < tiles.size(); ++i) {
-        tiles[i].setPosition(viewPos.x + (i % tilesetWidth) * tileSize,
-            viewPos.y + (i / tilesetWidth) * tileSize);
+    for (size_t i = 0; i < tiles.size(); ++i)
+    {
+        float posX = float((i % tilesetWidth) * tileSize);
+        float posY = float((i / tilesetWidth) * tileSize);
+        tiles[i].setPosition(posX, posY);
         window.draw(tiles[i]);
     }
 
     if (selectedTileIndex != -1) {
         bool hasCollision = collisionTiles.count(selectedTileIndex);
 
+        float outlineX = float((selectedTileIndex % tilesetWidth) * tileSize);
+        float outlineY = float((selectedTileIndex / tilesetWidth) * tileSize);
+
         RectangleShape outline(Vector2f(tileSize, tileSize));
-        outline.setPosition(viewPos.x + (selectedTileIndex % tilesetWidth) * tileSize,
-            viewPos.y + (selectedTileIndex / tilesetWidth) * tileSize);
+        outline.setPosition(outlineX, outlineY);
         outline.setFillColor(Color::Transparent);
         outline.setOutlineColor(hasCollision ? Color::Red : Color::Green);
         outline.setOutlineThickness(2);
         window.draw(outline);
     }
+    window.setView(oldView);
 }
-
 
 int TileSelector::getSelectedTile() const {
     return selectedTileIndex;
 }
 
-
-const std::unordered_set<int>& TileSelector::getCollisionTiles() const {
+const unordered_set<int>& TileSelector::getCollisionTiles() const {
     return collisionTiles;
+}
+
+void TileSelector::setTileset(const std::string& newTilesetPath) {
+    if (!tilesetTexture.loadFromFile(newTilesetPath)) {
+        std::cerr << "Erreur lors du chargement du tileset du TileSelector: " << newTilesetPath << std::endl;
+        return;
+    }
+    // Rechargez ou mettez à jour vos sprites/rectangles pour le TileSelector ici
 }

@@ -2,21 +2,32 @@
 #define BACKGROUND_HPP
 
 #include <SFML/Graphics.hpp>
+#include <array>
+#include <string>
 
 class Background {
 private:
-    sf::Texture textures[4];   // Textures pour chaque couche
-    sf::Sprite sprites[4];     // Un seul sprite par couche
-    float speeds[4] = { 0.01f, 0.03f, 0.06f, 0.10f }; // Vitesse du défilement
-    float spriteWidth = 1920.0f;  // Largeur de l'écran
-    float spriteHeight = 1080.0f; // Hauteur de l'écran
-    float offsetX[4] = { 0, 0, 0, 0 }; // Défilement horizontal de chaque couche
+    sf::Texture textures[6];
+    sf::Sprite sprites[6];
+    float speeds[6] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+    float spriteWidth = 32715.0f;
+    float spriteHeight = 2160.0f;
 
 public:
     Background();
-    bool loadTextures(const std::string& layer1, const std::string& layer2,
-        const std::string& layer3, const std::string& layer4);
-    void update(float playerX);
+    bool loadTextures(const std::string& layer1,
+        const std::string& layer2,
+        const std::string& layer3,
+        const std::string& layer4,
+        const std::string& layer5,
+        const std::string& layer6);
+
+    // Nouvelle méthode pour changer les vitesses des couches
+    void setSpeeds(const std::array<float, 6>& newSpeeds);
+
+    // On peut ajouter un bool "followCamera" si tu veux activer/désactiver le suivi
+    void update(float cameraX , bool followCamera = true);
+
     void draw(sf::RenderWindow& window);
 };
 

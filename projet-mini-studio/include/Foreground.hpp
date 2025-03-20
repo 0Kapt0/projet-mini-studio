@@ -5,12 +5,12 @@
 
 class Foreground {
 private:
-    sf::Texture textures[2];   // Textures pour chaque couche du foreground
-    sf::Sprite sprites[2];     // Un seul sprite par couche
-    float speeds[2] = { 0.15f, 0.20f}; // Vitesse du défilement (foreground plus rapide)
-    float spriteWidth = 1920.0f;  // Largeur de l'écran
-    float spriteHeight = 1080.0f; // Hauteur de l'écran
-    float offsetX[2] = { 0, 0}; // Défilement horizontal de chaque couche
+    sf::Texture textures[2];
+    sf::Sprite sprites[2];
+    float speeds[2] = { 0.f};
+    float spriteWidth = 32715.0f;
+    float spriteHeight = 4320.0f;
+    float offsetX[2] = { 0};
 
 public:
     Foreground();

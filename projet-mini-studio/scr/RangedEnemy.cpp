@@ -41,6 +41,7 @@ bool RangedEnemy::isPlayerInRadius(const Vector2f& playerPosition, float radius)
 //}
 
 void RangedEnemy::update(/*float dt, const Player& player*/float dt, Player& player, RenderWindow& window) {
+    applySmoothPushback(dt, player);
     invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
 
