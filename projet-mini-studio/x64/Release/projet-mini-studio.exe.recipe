@@ -2,11 +2,22 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
+<<<<<<< Updated upstream
 <<<<<<< HEAD
       <FullPath>C:\Users\elovisa\source\repos\0Kapt0\projet-mini-studio\x64\Release\projet-mini-studio.exe</FullPath>
 =======
       <FullPath>C:\Users\lmakarof\source\repos\0Kapt0\projet-mini-studio\x64\Release\projet-mini-studio.exe</FullPath>
 >>>>>>> lorenzo-sans-rb2D
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> master
+=======
+=======
+      <FullPath>C:\Users\moi\source\repos\0Kapt0\projet-mini-studio\x64\Release\projet-mini-studio.exe</FullPath>
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
