@@ -43,7 +43,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		heartItem->getSprite().setPosition(position);
 		itemVector.push_back(heartItem);
 	}
-}
+
 	if (type == "FlyingBoss") {
 		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
 		flyingBoss->getSprite().setPosition(position);
