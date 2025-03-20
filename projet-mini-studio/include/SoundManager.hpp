@@ -18,7 +18,6 @@ public:
     void stopSound(const string& name);
     void setVolume(const string& name, float volume);
     void setLoop(const string& name, bool loop);
-    bool addSoundEffect(const string& name, const string& filename);
 
 private:
     map<string, SoundBuffer> soundBuffers;
