@@ -188,7 +188,8 @@ void Player::handleNormalMovement(float dt)
         velocity.y = 0.f;
     }
 
-    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D) || axisX > -50 && axisX < 50) {
+    if (!Keyboard::isKeyPressed(Keyboard::Q) && !Keyboard::isKeyPressed(Keyboard::D) || axisX > -50 && axisX < 50) 
+    {
         if (dashMomentum) 
         {
             if (lastInputDirection == 'L') 
