@@ -311,6 +311,7 @@ void Game::run() {
             map.draw(window);;
             entityManager.drawEntities(window);
             foreground.draw(window);
+            entityManager.player->drawHearts(window);
             break;
         case GameState::Settings:
             settings.draw(window);

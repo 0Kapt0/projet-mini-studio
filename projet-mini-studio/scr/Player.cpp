@@ -112,7 +112,7 @@ void Player::updateCamera()
 
     cameraPosition.x = playerPosition.x;
 
-    cameraPosition.y = 540;
+    cameraPosition.y = 1620;
 
     playerView.setCenter(cameraPosition);
 }
@@ -167,7 +167,7 @@ void Player::handleNormalMovement(float dt)
 
     velocity.y += 14.8f;
 
-    if (getSprite().getPosition().y > 1100.f)
+    if (getSprite().getPosition().y > 2200.f)
     {
         canJump = true;
         onGround = true;
@@ -389,7 +389,7 @@ void Player::isColliding(int x, int y, float dt)
 
 void Player::handleBoundingBoxCollision(float dt)
 {
-    if (velocity == sf::Vector2f(0, 0)) 
+    if (velocity == sf::Vector2f(0, 0))
     {
         return;
     }
@@ -626,17 +626,17 @@ void Player::isSwingColliding(Vector2f& newPos, float dt)
 void Player::draw(RenderWindow& window)
 {
     window.setView(playerView);
-    //heart1
-    for (int i = 1; i < maxHp + 1; i++) {
-        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
-        heartempty.setScale(0.1, 0.1f);
-        window.draw(heartempty);
-        if (hp >= i) {
-            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
-            heart1.setScale(0.1, 0.1f);
-            window.draw(heart1);
-        }
-    }
+    ////heart1
+    //for (int i = 1; i < maxHp + 1; i++) {
+    //    heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+    //    heartempty.setScale(0.1, 0.1f);
+    //    window.draw(heartempty);
+    //    if (hp >= i) {
+    //        heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+    //        heart1.setScale(0.1, 0.1f);
+    //        window.draw(heart1);
+    //    }
+    //}
 
     /*RectangleShape HB(Vector2f(getSprite().getGlobalBounds().width, getSprite().getGlobalBounds().height));
     HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
@@ -647,6 +647,19 @@ void Player::draw(RenderWindow& window)
     if (attackHitboxActive)
         window.draw(attackSprite);
     grapple.draw(window);
+}
+void Player::drawHearts(RenderWindow& window)
+{
+    for (int i = 1; i < maxHp + 1; i++) {
+        heartempty.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+        heartempty.setScale(0.1, 0.1f);
+        window.draw(heartempty);
+        if (hp >= i) {
+            heart1.setPosition(-1050 + (i * 100) + window.getView().getCenter().x, -530 + window.getView().getCenter().y);
+            heart1.setScale(0.1, 0.1f);
+            window.draw(heart1);
+        }
+    }
 }
 
 void Player::handleAttack(float dt) {

@@ -71,6 +71,9 @@ void EntityManager::generateEnemies(Map& map) {
 		else if (spawn.type == "ChargingBoss") {
 			color = Color(239, 12, 197);
 		}
+		else if (spawn.type == "FlyingBoss") {
+			color = Color(239, 12, 197);
+		}
 		else {
 			color = Color::White;
 		}
@@ -89,7 +92,7 @@ void EntityManager::destroyEntity() {
 
 void EntityManager::collisions(float dt) {
 	for (auto& enemy : enemyVector) {
-		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) || 
+		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) ||
 			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
 			enemy->pushBack(*player);
 			//DEGATS
@@ -109,7 +112,7 @@ void EntityManager::collisions(float dt) {
 	}
 	for (auto& checkpoint : checkpointVector) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
-			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() / 2 + checkpoint->getHeight() / 2);
+			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
 			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
 				if (obj->activated) {

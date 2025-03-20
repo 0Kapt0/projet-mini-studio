@@ -20,7 +20,11 @@ EnemySelector::EnemySelector(const string& texturePath, int iconSize)
         EnemyType::Flying,
         EnemyType::Ranged,
         EnemyType::Basic,
-        EnemyType::ChargingBoss
+        EnemyType::ChargingBoss,
+        EnemyType::FlyingBoss,
+        EnemyType::Checkpoint,
+        EnemyType::HeartItem
+
     };
 
     int offsetX = 900;
