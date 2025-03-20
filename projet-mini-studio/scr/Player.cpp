@@ -112,7 +112,7 @@ void Player::updateCamera()
 
     cameraPosition.x = playerPosition.x;
 
-    cameraPosition.y = 540;
+	cameraPosition.y = 1620;
 
     playerView.setCenter(cameraPosition);
 }
@@ -167,7 +167,7 @@ void Player::handleNormalMovement(float dt)
 
     velocity.y += 14.8f;
 
-    if (getSprite().getPosition().y > 1100.f)
+    if (getSprite().getPosition().y > 2200.f)
     {
         canJump = true;
         onGround = true;

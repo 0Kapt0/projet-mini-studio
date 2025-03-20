@@ -46,6 +46,7 @@ public:
     void drawEnemySpawns(RenderWindow& window);
     void drawCam(RenderWindow& window);
     void generateTiles();
+    void setTileset(const std::string& newTilesetPath);
 
     void undo();
 	void redo();

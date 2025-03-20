@@ -9,7 +9,7 @@ private:
     sf::Sprite sprites[2];
     float speeds[2] = { 0.f};
     float spriteWidth = 31470.0f;
-    float spriteHeight = 2160.0f;
+    float spriteHeight = 4320.0f;
     float offsetX[2] = { 0};
 
 public:
