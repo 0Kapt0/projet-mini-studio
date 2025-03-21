@@ -233,6 +233,7 @@ void Game::run() {
             case GameState::Playing:
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
+                    entityManager.createEntity("FinalBoss", Vector2f(1200, 1700), Vector2f(150, 150), Color::Green, map);
                     enemiesGenerated = true;
                 }
 
@@ -416,7 +417,6 @@ void Game::run() {
         case GameState::Menu:
             menu.draw(window);
             break;
-
         case GameState::Playing:
             background.draw(window);
             map.draw(window);;
@@ -455,7 +455,7 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            cutscene.draw(window);
+            cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;
