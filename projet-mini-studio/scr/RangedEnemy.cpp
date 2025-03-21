@@ -11,6 +11,7 @@ RangedEnemy::RangedEnemy(Map& map, Texture& texture)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    setTexture(texture, 98, 147, 3, 0.1f);
     type = "RangedEnemy";
 }
 
@@ -35,6 +36,18 @@ bool RangedEnemy::isPlayerInRadius(const Vector2f& playerPosition, float radius)
     return distance <= radius;
 }
 
+void RangedEnemy::animate(float deltaTime) 
+{
+    elapsedTime += deltaTime;
+    if (elapsedTime >= frameTime && !frames.empty()) {
+        elapsedTime = 0.0f;
+
+        currentFrame = (currentFrame + 1) % totalFrames;
+
+        getSprite().setTextureRect(frames[currentFrame]);
+    }
+}
+
 //void RangedEnemy::update(float dt) {
 //    // Call the base class update method to handle gravity
 //    Enemy::update(dt);
@@ -44,6 +57,7 @@ void RangedEnemy::update(/*float dt, const Player& player*/float dt, Player& pla
     applySmoothPushback(dt, player);
     invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
+    animate(dt);
 
     switch (state) {
     case PATROLLING:
@@ -141,4 +155,11 @@ void RangedEnemy::draw(RenderWindow& window) {
 void RangedEnemy::setWaypoints(const std::vector<Vector2f>& newWaypoints) {
     waypoints = newWaypoints;
     currentWaypointIndex = 0; // Reset to start from the first waypoint
+}
+
+void RangedEnemy::setPosition(const Vector2f& position) {
+	getSprite().setPosition(position);
+    waypoints.clear();
+	waypoints.push_back(Vector2f(position.x - 300.f, position.y));
+    waypoints.push_back(Vector2f(position.x + 300.f, position.y));
 }

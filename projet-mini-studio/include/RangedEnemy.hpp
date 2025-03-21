@@ -31,9 +31,11 @@ public:
     void shoot();
     //void drawProjectiles(sf::RenderWindow& window);
     void draw(RenderWindow& window) override;
+    void animate(float deltaTime) override;
 
     bool isPlayerInRadius(const Vector2f& playerPosition, float radius);
     void setWaypoints(const std::vector<Vector2f>& newWaypoints);
+    void setPosition(const Vector2f& position);
 
 private:
     void patrol(float dt);

@@ -25,9 +25,13 @@ void FinalBoss::update(float dt, Player& player, RenderWindow& window)
 			projectile->toBeDeleted = true;
 		}
 
-		if (projectile->getSprite().getGlobalBounds().intersects(player.attackSprite.getGlobalBounds()))
+		if (projectile->getSprite().getGlobalBounds().intersects(player.attackSprite.getGlobalBounds()) && player.isAttacking())
 		{
 			projectile->reverseDirection();
+		}
+		if (projectile->getSprite().getGlobalBounds().intersects(getSprite().getGlobalBounds()) && projectile->reversed)
+		{
+			hp--;
 		}
 	}
 

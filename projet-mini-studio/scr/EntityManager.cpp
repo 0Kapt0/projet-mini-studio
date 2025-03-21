@@ -13,18 +13,18 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
-		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
-		eFlying->getSprite().setPosition(position);
+		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(map, textureManager.eFlyingTexture);
+		eFlying->setPosition(position);
 		enemyVector.push_back(eFlying);
 	}
 	if (type == "RangedEnemy") {
-		std::shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(size, color, map);
-		eRanged->getSprite().setPosition(position);
+		std::shared_ptr<RangedEnemy> eRanged = make_shared<RangedEnemy>(map, textureManager.eRangedTexture);
+		eRanged->setPosition(position);
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
 		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(map, textureManager.eBasicTexture);
-		eBasic->getSprite().setPosition(position);
+		eBasic->setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
