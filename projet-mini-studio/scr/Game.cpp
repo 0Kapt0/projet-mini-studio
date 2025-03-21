@@ -397,7 +397,6 @@ void Game::run() {
         case GameState::Menu:
             menu.draw(window);
             break;
-
         case GameState::Playing:
             background.draw(window);
             map.draw(window);;

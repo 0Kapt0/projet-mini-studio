@@ -4,12 +4,12 @@
 
 Foreground::Foreground() {}
 
-bool Foreground::loadTextures(const std::string& layer1, const std::string& layer2) {
-    std::string layers[2] = { layer1, layer2};
+bool Foreground::loadTextures(const string& layer1, const string& layer2) {
+    string layers[2] = { layer1, layer2};
 
     for (int i = 0; i < 2; ++i) {
         if (!textures[i].loadFromFile(layers[i])) {
-            std::cerr << "Erreur de chargement de la texture : " << layers[i] << std::endl;
+            cerr << "Erreur de chargement de la texture : " << layers[i] << endl;
             return false;
         }
 
@@ -30,11 +30,11 @@ void Foreground::update(float cameraX) {
         float offset = fmod(cameraX * speeds[i] * 2.0f, 32715);
         if (offset > 0) offset -= 32715;
 
-        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 32715, 4320));
+        sprites[i].setTextureRect(IntRect(static_cast<int>(offset), 0, 32715, 4320));
     }
 }
 
-void Foreground::draw(sf::RenderWindow& window) {
+void Foreground::draw(RenderWindow& window) {
     for (int i = 0; i < 2; ++i) {
         window.draw(sprites[i]);
     }
