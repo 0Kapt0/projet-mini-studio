@@ -39,8 +39,8 @@ map<string, LevelAssets> levelAssetsMap = {
           "assets/background/Forest2.png",
           "assets/background/Forest3.png",
           "assets/background/Forest4.png",
-          "assets/background/Forest5.png",
-          "assets/background/Forest6.png" },
+          "assets/background/no_background.png",
+          "assets/background/no_background.png" },
         { "assets/foreground/foret_foreground.png",
           "assets/foreground/Forest-light.png" },
         "assets/tileset/tileset_green_vFinal.png",
@@ -55,7 +55,7 @@ map<string, LevelAssets> levelAssetsMap = {
           "assets/background/BG5.png",
           "assets/background/BG6.png" },
         { "assets/foreground/foreground_city.png",
-          "assets/foreground/level2_foreground2.png" },
+          "assets/foreground/no_foreground.png" },
         "assets/tileset/tilesetTownV1.png",
         "assets/tileset/tilesetTownV1.png",
         {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
@@ -68,8 +68,8 @@ map<string, LevelAssets> levelAssetsMap = {
         "assets/background/BG4.png",
         "assets/background/BG5.png",
         "assets/background/BG6.png" },
-      { "assets/foreground/foreground_city.png",
-        "assets/foreground/level2_foreground2.png" },
+      { "assets/foreground/no_foreground.png",
+        "assets/foreground/no_foreground.png" },
       "assets/tileset/tilesetTownV1.png",
       "assets/tileset/tilesetTownV1.png",
       {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
@@ -487,18 +487,30 @@ void Game::run() {
         if (currentState == GameState::Cutscene) {
             if (levelselected == 1) {
                 if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutsceneCooldownTime) {
+                    map.saveMap(currentLevelFile);
+                    currentLevelFile = "assets/map/Level1.txt";
+                    setLevel(currentLevelFile, background, foreground, map, tileSelector);
+                    enemiesGenerated = false;
                     currentState = GameState::Playing;
                     soundManager.playSound("Level1Music");
                 }
             }
             if (levelselected == 2) {
                 if (cutscene2Cooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                    map.saveMap(currentLevelFile);
+                    currentLevelFile = "assets/map/Level2.txt";
+                    setLevel(currentLevelFile, background, foreground, map, tileSelector);
+                    enemiesGenerated = false;
                     currentState = GameState::Playing;
                     soundManager.playSound("Level2Music");
                 }
             }
             if (levelselected == 3) {
                 if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                    map.saveMap(currentLevelFile);
+                    currentLevelFile = "assets/map/Level3.txt";
+                    setLevel(currentLevelFile, background, foreground, map, tileSelector);
+                    enemiesGenerated = false;
                     currentState = GameState::Playing;
                     soundManager.playSound("Level3Music");
                 }
