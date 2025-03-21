@@ -31,6 +31,7 @@ public:
     void drawDetectionRadius(sf::RenderWindow& window);
 
     void setWaypoints(const std::vector<Vector2f>& newWaypoints);
+    void setPosition(const Vector2f& position);
 
 private:
     void patrol(float dt);

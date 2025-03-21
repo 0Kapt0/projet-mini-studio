@@ -19,7 +19,7 @@ using namespace std;
 class EntityManager {
 public:
 	EntityManager();
-
+	bool gameOver = false;
 	TextureManager textureManager;
 	std::shared_ptr<Player> player;
 	std::vector<std::shared_ptr<Player>> playerVector;

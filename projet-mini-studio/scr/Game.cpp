@@ -16,6 +16,7 @@
 #include "../include/EntityManager.hpp"
 #include "../include/DropDown.hpp"
 #include "../include/EnemySelector.hpp"
+#include "../include/GameOver.hpp"
 #include "../include/SoundManager.hpp"
 
 #include <iostream>
@@ -160,7 +161,7 @@ void Game::run() {
     Map map("assets/tileset/tilesetTownV1.png", "assets/map/Lobby.txt");
     TileSelector tileSelector("assets/tileset/tilesetTownV1.png", 64);
     setLevel("assets/map/Level1.txt", background, foreground, map, tileSelector);
-
+    
     EntityManager entityManager;
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
     Cutscene cutscene;
@@ -170,7 +171,7 @@ void Game::run() {
     Settings settings;
     Pause pause;
 	SoundManager& soundManager = SoundManager::getInstance();
-
+    Gameover gameover;
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
     soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
@@ -279,6 +280,10 @@ void Game::run() {
                 if (Keyboard::isKeyPressed(Keyboard::Escape)) {
                     window.setView(window.getDefaultView());
                     currentState = GameState::Pause;
+                }
+
+                if (entityManager.gameOver == true) {
+                    currentState = GameState::GameOver;
                 }
 
                 break;
@@ -486,7 +491,6 @@ void Game::run() {
             background.update(cameraX, playerY, true);
             foreground.update(cameraX);
         }
-
         if (currentState == GameState::Cutscene) {
             if (levelselected == 1) {
                 if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutsceneCooldownTime) {
@@ -546,8 +550,6 @@ void Game::run() {
 			map.drawCam(window);
             tileSelector.draw(window);
             enemySelector.draw(window);
-            
-
             oldView = window.getView();
             window.setView(window.getDefaultView());
             mapDropdown.draw(window);
@@ -563,7 +565,7 @@ void Game::run() {
             break;
         case GameState::Cutscene:
             if (levelselected == 1) {
-                cutscene.draw1(window);
+                //cutscene.draw1(window);
             }
             if (levelselected == 2) {
                 cutscene.draw(window);
@@ -573,12 +575,11 @@ void Game::run() {
             }
             break;
         case GameState::GameOver:
+            gameover.draw(window);
             break;
         }
-
         window.display();
     }
-
     // Sauvegarde de la carte en quittant l'éditeur
     if (currentState == GameState::Editor || currentState == GameState::Menu || (currentState == GameState::Playing)) {
         map.saveMap(currentLevelFile);
