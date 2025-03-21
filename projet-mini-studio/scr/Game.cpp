@@ -59,7 +59,22 @@ map<string, LevelAssets> levelAssetsMap = {
         "assets/tileset/tilesetTownV1.png",
         "assets/tileset/tilesetTownV1.png",
         {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
-    }}
+    }},
+    {
+    "assets/map/Level3.txt", {
+      { "assets/background/BG1.png",
+        "assets/background/BG2.png",
+        "assets/background/BG3.png",
+        "assets/background/BG4.png",
+        "assets/background/BG5.png",
+        "assets/background/BG6.png" },
+      { "assets/foreground/foreground_city.png",
+        "assets/foreground/level2_foreground2.png" },
+      "assets/tileset/tilesetTownV1.png",
+      "assets/tileset/tilesetTownV1.png",
+      {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
+  }
+}
 };
 
 void setLevel(const string& levelFile,
@@ -398,7 +413,8 @@ void Game::run() {
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
             float cameraX = entityManager.player->getSprite().getPosition().x;
-            background.update(cameraX, true);
+            float playerY = entityManager.player->getSprite().getPosition().y;
+            background.update(cameraX, playerY, true);
             foreground.update(cameraX);
         }
 
