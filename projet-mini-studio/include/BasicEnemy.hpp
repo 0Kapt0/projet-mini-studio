@@ -20,7 +20,7 @@ protected:
     } state;
 
 public:
-    BasicEnemy(Map& map);
+    BasicEnemy(Map& map, Texture& texture);
     BasicEnemy(const Vector2f& size, const Color& color, Map& map);
     virtual ~BasicEnemy();
 

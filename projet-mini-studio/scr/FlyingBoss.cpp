@@ -1,6 +1,6 @@
 #include "../include/FlyingBoss.hpp"
 
-FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
+FlyingBoss::FlyingBoss(Map& map, Texture& texture) : Enemy(map, texture)
 {
 	this->attackCooldown = 0.3f;
 	this->attackTimer = 0.0f;

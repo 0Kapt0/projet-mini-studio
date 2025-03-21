@@ -22,7 +22,7 @@ private:
 	} state; 
 
 public:
-	FlyingBoss(Map& map);
+	FlyingBoss(Map& map, Texture& texture);
 	FlyingBoss(const Vector2f& size, const Color& color, Map& map);
 	~FlyingBoss();
 	void update(float dt, Player& player, RenderWindow& window) override;

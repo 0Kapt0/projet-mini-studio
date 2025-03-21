@@ -509,7 +509,7 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            cutscene.draw3(window);
+            //cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;

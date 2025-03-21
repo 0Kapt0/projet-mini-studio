@@ -22,7 +22,7 @@ protected:
     } state;
 
 public:
-    EnemyFlying(Map& map);
+    EnemyFlying(Map& map, Texture& texture);
     EnemyFlying(const Vector2f& size, const Color& color, Map& map);
     virtual ~EnemyFlying();
 

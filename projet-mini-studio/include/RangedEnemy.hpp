@@ -23,7 +23,7 @@ private:
     } state;
 
 public:
-    RangedEnemy(Map& map);
+    RangedEnemy(Map& map, Texture& texture);
     RangedEnemy(const Vector2f& size, const sf::Color& color, Map& map);
 
     void update(float dt, Player& player, RenderWindow& window) override;

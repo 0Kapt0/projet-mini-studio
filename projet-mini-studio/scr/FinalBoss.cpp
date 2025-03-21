@@ -1,6 +1,6 @@
 #include "../include/FinalBoss.hpp"
 
-FinalBoss::FinalBoss(Map& map) : Enemy(map) {}
+FinalBoss::FinalBoss(Map& map, Texture& texture) : Enemy(map, texture) {}
 
 FinalBoss::FinalBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {}
 

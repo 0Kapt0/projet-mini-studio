@@ -8,7 +8,7 @@ class FinalBoss :
     public Enemy
 {
 public:
-	FinalBoss(Map& map);
+	FinalBoss(Map& map, Texture& texture);
 	FinalBoss(const Vector2f& size, const Color& color, Map& map);
 	~FinalBoss();
 
