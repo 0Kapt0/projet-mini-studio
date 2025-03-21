@@ -15,7 +15,7 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,33,34,35 };
+    collisionTiles = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,33,34,35 };
 
     slopeInfo[25] = SlopeType::SlopeUp;
     slopeInfo[42] = SlopeType::SlopeUp;
