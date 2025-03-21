@@ -9,6 +9,7 @@ using namespace sf;
 using namespace std;
 
 Cutscene::Cutscene() {
+    
     for (int i = 4; i < 133; ++i) {
         // Utiliser std::ostringstream pour formater le numéro avec un nombre fixe de 5 chiffres
         ostringstream filename;
@@ -25,8 +26,7 @@ Cutscene::~Cutscene() {
 }
 
 void Cutscene::draw(RenderWindow& window) {
-    //SoundManager& soundManager = SoundManager::getInstance();
-    float cutscene2CooldownTime = 0.05f;
+    float cutscene2CooldownTime = 0.082f;
     if (cooldownframe.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
         currentFrame2++;
         cutscene2Sprite.setTexture(cutscene2Texture[currentFrame2]);

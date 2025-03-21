@@ -18,10 +18,14 @@ public:
     void stopSound(const string& name);
     void setVolume(const string& name, float volume);
     void setLoop(const string& name, bool loop);
-
+    static SoundManager& getInstance() {
+        static SoundManager instance;
+        return instance;
+    }
 private:
     map<string, SoundBuffer> soundBuffers;
     map<string, Sound> sounds;
+    
 };
 
 #endif // SOUNDMANAGER_HPP

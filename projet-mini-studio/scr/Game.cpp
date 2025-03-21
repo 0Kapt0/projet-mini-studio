@@ -159,6 +159,7 @@ void Game::run() {
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
     soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
@@ -192,7 +193,7 @@ void Game::run() {
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-        float cutscene2CooldownTime = 5.0f;
+        float cutscene2CooldownTime = 9.0f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -373,7 +374,7 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                         currentState = GameState::Cutscene;
-
+                        soundManager.playSound("cutscene2");
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
