@@ -6,7 +6,7 @@ using namespace sf;
 using namespace std;
 
 Selector::Selector() {
-    levelunlocked = 1;
+    levelunlocked = 3;
     if (!backgroundTexture.loadFromFile("assets/selector/background.png")) {
     }
     if (!level1Button.loadFromFile("assets/selector/level1.png")) {
