@@ -233,6 +233,7 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (menu.playSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Selector;
+                        entityManager.save.loadCheckpoint("assets/checkpoint/player.txt", entityManager.player);
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -413,7 +414,7 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                          levelselected = 1;
-                        currentState = GameState::Cutscene;
+                        currentState = GameState::Playing;
                         soundManager.stopSound("MenuMusic");
                         soundManager.playSound("cutscene1");
                     }

@@ -1,6 +1,8 @@
 #include "../include/FinalBoss.hpp"
 
-FinalBoss::FinalBoss(Map& map, Texture& texture) : Enemy(map, texture) {}
+FinalBoss::FinalBoss(Map& map) : Enemy(map) {
+	hp = 15;
+}
 
 FinalBoss::FinalBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {}
 
@@ -62,6 +64,17 @@ void FinalBoss::draw(RenderWindow& window) {
 void FinalBoss::drawProjectiles(RenderWindow& window) {
 	for (const auto& projectile : projectiles) {
 		projectile->draw(window);
+	}
+}
+
+void FinalBoss::animate(float deltaTime) {
+	elapsedTime += deltaTime;
+	if (elapsedTime >= frameTime && !frames.empty()) {
+		elapsedTime = 0.0f;
+
+		currentFrame = (currentFrame + 1) % totalFrames;
+
+		getSprite().setTextureRect(frames[currentFrame]);
 	}
 }
 

@@ -8,9 +8,9 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	if (type == "Player") {
 		std::shared_ptr<Player> _player = std::make_shared<Player>(textureManager.playerTexture, map);
 		//_player->getSprite().setPosition(position);
-		_player->setTexture(textureManager.playerTexture, 0, 0, 0, 0.1f);
+		_player->setTexture(textureManager.playerTexture, 158, 140, 4, 0.1f);
 		player = _player;
-		save.loadCheckpoint("assets/checkpoint/player.txt", player);
+		//save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
 		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(map, textureManager.eFlyingTexture);
@@ -58,7 +58,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	{
 		std::shared_ptr<FinalBoss> finalBoss = make_shared<FinalBoss>(size, color, map);
 		finalBoss->getSprite().setPosition(position);
-		//finalBoss->setTexture(textureManager.eBoss3Texture,);
+		finalBoss->setTexture(textureManager.eBoss3Texture, 300, 200, 4, 0.1f);
 		enemyVector.push_back(finalBoss);
 	}
 }
