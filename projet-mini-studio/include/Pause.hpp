@@ -17,7 +17,6 @@ public:
 	~Pause();
 	void draw(RenderWindow& window);
 private:
-
 };
 
 #endif

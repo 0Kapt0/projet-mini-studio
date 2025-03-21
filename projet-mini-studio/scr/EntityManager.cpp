@@ -161,6 +161,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 		player->setMaxHp(player->hpCeiling);
 	}
 	if (player->hp <= 0) {
+		gameOver = true;
 		player->hp = 0;
 	}
 	collisions(dt);
