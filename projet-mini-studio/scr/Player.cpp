@@ -144,9 +144,9 @@ void Player::updateCamera()
     if (cameraPos.x < leftLimit) {
         cameraPos.x = leftLimit;
     }
-    if (cameraPos.x > rightLimit) {
+    /*if (cameraPos.x > rightLimit) {
         cameraPos.x = rightLimit;
-    }
+    }*/
 
     playerView.setCenter(cameraPos);
 }
