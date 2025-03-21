@@ -15,7 +15,7 @@ Map::Map(const string& tilesetPath, const string& mapPath)
     cameraView.setSize(1920, 1080);
     cameraView.setCenter(cameraPos);
 
-    collisionTiles = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,33,34,35 };
+    collisionTiles = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,33,34,35 };
 
     slopeInfo[25] = SlopeType::SlopeUp;
     slopeInfo[42] = SlopeType::SlopeUp;
@@ -63,6 +63,14 @@ int enemyTypeToInt(const string& type) {
         return 3;
     else if (type == "ChargingBoss")
         return 4;
+    else if (type == "FlyingBoss")
+        return 5;
+    else if (type == "FinalBoss")
+        return 6;
+    else if (type == "Checkpoint")
+        return 7;
+    else if (type == "HeartItem")
+        return 8;
     return 0;
 }
 
@@ -72,8 +80,10 @@ string intToEnemyType(int value) {
     case 2: return "RangedEnemy";
     case 3: return "BasicEnemy";
     case 4: return "ChargingBoss";
-    case 5: return "Checkpoint";
-    case 6: return "HeartItem";
+    case 5: return "FlyingBoss";
+    case 6: return "FinalBoss";
+    case 7: return "Checkpoint";
+    case 8: return "HeartItem";
     default: return "";
     }
 }
@@ -228,6 +238,7 @@ void Map::handleEnemyPlacement(RenderWindow& window, int x, int y, EnemyType ene
         case EnemyType::Basic:        typeStr = "BasicEnemy";  break;
         case EnemyType::ChargingBoss: typeStr = "ChargingBoss"; break;
         case EnemyType::FlyingBoss:   typeStr = "FlyingBoss"; break;
+        case EnemyType::FinalBoss:    typeStr = "FinalBoss"; break;
         case EnemyType::Checkpoint:   typeStr = "Checkpoint"; break;
         case EnemyType::HeartItem:    typeStr = "HeartItem"; break;
         default:                      typeStr = "EnemyFlying"; break;
@@ -399,8 +410,8 @@ void Map::drawEnemySpawns(RenderWindow& window) {
             sprite.setTextureRect(IntRect(iconSize, 0, iconSize, iconSize));
         else if (spawn.type == "BasicEnemy")
             sprite.setTextureRect(IntRect(2 * iconSize, 0, iconSize, iconSize));
-        else if (spawn.type == "ChargingBoss")
-            sprite.setTextureRect(IntRect(3 * iconSize, 0, iconSize, iconSize));
+        else if (spawn.type == "ChargingBoss") {}
+            //sprite.setTextureRect(IntRect(3 * iconSize, 0, iconSize, iconSize));
         else
             sprite.setTextureRect(IntRect(0, 0, iconSize, iconSize));
 

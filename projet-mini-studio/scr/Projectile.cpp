@@ -31,3 +31,13 @@ void Projectile::draw(RenderWindow& window)
     shape.setPosition(getSprite().getPosition());
     window.draw(getSprite());
 }
+
+void Projectile::reverseDirection() 
+{
+    if (!reversed)
+    {
+        direction.x *= -1;
+        direction.y *= -1;
+        reversed = true;
+    }
+}

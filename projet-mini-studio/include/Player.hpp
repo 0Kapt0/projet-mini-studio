@@ -7,6 +7,7 @@
 #include "Grapple.hpp"
 #include "Entity.hpp"
 #include "../include/SoundManager.hpp"
+#include <iostream>
 
 using namespace sf;
 
@@ -53,6 +54,8 @@ public:
     IntRect formerFrame0;
 
     CircleShape hurtbox;
+
+    Sprite attackSprite;
 
 private:
     //fonction du update
@@ -114,7 +117,6 @@ private:
     bool canAttack = true;
     bool attacking = false;
     bool attackHitboxActive = false;
-    Sprite attackSprite;
     string attackDirection = "right";
     float attackDuration = 0;
     float attackCooldown = 0;

@@ -16,6 +16,10 @@ public:
 	float dashTimer = 0;
 	float stunTimer = 0;
 
+	void isColliding(int x, int y, float dt) override;
+	Sprite wallCollideSprite;
+	const Sprite& getWallCollideSpriteConst() const;
+
 	std::vector<float> dashTimingVector = { 0.5, 0.75, 1, 1.25, 1.5, 1.25, 1.5 };
 	float dashTiming = 0;
 

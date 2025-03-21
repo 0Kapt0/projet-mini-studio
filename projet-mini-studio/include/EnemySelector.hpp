@@ -15,6 +15,7 @@ enum class EnemyType {
     Basic,
     ChargingBoss,
     FlyingBoss,
+    FinalBoss,
     Checkpoint,
     HeartItem,
 };

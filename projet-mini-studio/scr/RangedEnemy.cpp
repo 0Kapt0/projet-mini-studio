@@ -1,8 +1,8 @@
 #include "../include/RangedEnemy.hpp"
 #include <cmath>
 
-RangedEnemy::RangedEnemy(Map& map)
-    : Enemy(map), state(PATROLLING), currentWaypointIndex(0)
+RangedEnemy::RangedEnemy(Map& map, Texture& texture)
+    : Enemy(map, texture), state(PATROLLING), currentWaypointIndex(0)
 {
     attackCooldown = 2.0f;
     attackTimer = 0;

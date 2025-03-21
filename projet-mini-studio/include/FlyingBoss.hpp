@@ -11,7 +11,6 @@ private:
 	float attackCooldown;
 	float attackTimer;
 	vector<unique_ptr<Projectile>> projectiles;
-	int hp;
 	bool goingRight = true;
 
 	enum State 
@@ -27,6 +26,7 @@ public:
 	FlyingBoss(const Vector2f& size, const Color& color, Map& map);
 	~FlyingBoss();
 	void update(float dt, Player& player, RenderWindow& window) override;
+	void animate(float deltaTime) override;
 
 
 private:

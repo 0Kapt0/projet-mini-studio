@@ -121,15 +121,39 @@ void Player::update(float dt)
 
 void Player::updateCamera()
 {
-    Vector2f playerPosition = getSprite().getPosition();
-    Vector2f cameraPosition = playerView.getCenter();
+    Vector2f playerPos = getSprite().getPosition();
 
-    cameraPosition.x = playerPosition.x;
+    Vector2f cameraPos = playerView.getCenter();
+    cameraPos.x = playerPos.x;
 
-	cameraPosition.y = 1620;
+    float cameraPosBas = 1620.f;
+    float cameraPosHaut = 1620.f - 1080.f;
 
-    playerView.setCenter(cameraPosition);
+    float switchThreshold = 1080.f;
+    if (playerPos.y < switchThreshold) {
+        cameraPos.y = cameraPosHaut;
+    }
+    else {
+        cameraPos.y = cameraPosBas;
+    }
+
+    float halfViewWidth = playerView.getSize().x * 0.5f;
+    float leftLimit = 70.f + halfViewWidth;
+    float rightLimit = 15389.f;
+
+    if (cameraPos.x < leftLimit) {
+        cameraPos.x = leftLimit;
+    }
+    /*if (cameraPos.x > rightLimit) {
+        cameraPos.x = rightLimit;
+    }*/
+
+    playerView.setCenter(cameraPos);
 }
+
+
+
+
 
 void Player::handleGrapplePull(float dt)
 {

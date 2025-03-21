@@ -8,7 +8,7 @@ FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
 	this->groundCooldown = 10.0f;
 	this->onGroundCooldown = 3.0f;
 	this->groundTimer = 0.0f;
-	hp = 100;
+	hp = 15;
 }
 
 FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map)
@@ -19,7 +19,7 @@ FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Ene
 	this->groundCooldown = 5.0f;
 	this->onGroundCooldown = 3.0f;
 	this->groundTimer = 0.0f;
-	hp = 100;
+	hp = 15;
 }
 
 FlyingBoss::~FlyingBoss()
@@ -28,7 +28,7 @@ FlyingBoss::~FlyingBoss()
 
 void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 {
-	
+	invincibilityAfterHit(dt);
 	if (this->state == IN_AIR)
 	{
 		this->groundTimer += dt;
@@ -93,6 +93,7 @@ void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 		if (projectile->getSprite().getGlobalBounds().intersects(player.getSprite().getGlobalBounds()))
 		{
 			player.hp--;
+			projectile->toBeDeleted = true;
 		}
 	}
 
@@ -172,5 +173,16 @@ void FlyingBoss::drawProjectiles(RenderWindow& window)
 	for (const auto& projectile : projectiles) 
 	{
 		projectile->draw(window);
+	}
+}
+
+void FlyingBoss::animate(float deltaTime) {
+	elapsedTime += deltaTime;
+	if (elapsedTime >= frameTime && !frames.empty()) {
+		elapsedTime = 0.0f;
+
+		currentFrame = (currentFrame + 1) % totalFrames;
+
+		getSprite().setTextureRect(frames[currentFrame]);
 	}
 }

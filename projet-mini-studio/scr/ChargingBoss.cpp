@@ -2,7 +2,15 @@
 
 ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 
+	hp = 15;
 	type = "ChargingBoss";
+	Texture wallCollideTexture;
+	wallCollideTexture.create(100, 195);
+	Image image;
+	image.create(100, 195, Color::Red);
+	wallCollideTexture.update(image);
+	wallCollideSprite.setTexture(wallCollideTexture);
+	wallCollideSprite.setOrigin(wallCollideTexture.getSize().x / 2, wallCollideTexture.getSize().y / 2);
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
@@ -12,39 +20,50 @@ ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) :
 
 
 void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
-	//applySmoothPushback(dt, player);
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));
-	switch (currentState) {
-	case CHASING :
-		//std::cout << "chasing\n";
-		chase(player, dt);
-		if (distancePlayer < window.getSize().x * 0.3f && player.getSprite().getPosition().y + player.getHeight() > getSprite().getPosition().y) {
-			currentState = CHARGING;
-			dashTiming = dashTimingVector[rand() % dashTimingVector.size()];
+	if (target.x > getPosX()) {
+		wallCollideSprite.setPosition(getPosX() + wallCollideSprite.getGlobalBounds().width / 2, getPosY());
+		if (currentState != DASHING && currentState != STUNNED) {
+			getSprite().setScale(-1.f, 1.f);
 		}
-		break;
-	case CHARGING :
-		//std::cout << "CHARGING\n";
-		charge(dt);
-		break;
+	}
+	if (target.x < getPosX()) {
+		wallCollideSprite.setPosition(getPosX() - wallCollideSprite.getGlobalBounds().width / 2, getPosY());
+		if (currentState != DASHING && currentState != STUNNED) {
+			getSprite().setScale(1.f, 1.f);
+		}
+	}
+	getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+	switch (currentState) {
+		case CHASING:
+			//std::cout << "chasing\n";
+			chase(player, dt);
+			if (distancePlayer < window.getSize().x * 0.3f && player.getSprite().getPosition().y + player.getHeight() > getSprite().getPosition().y) {
+				currentState = CHARGING;
+				dashTiming = dashTimingVector[rand() % dashTimingVector.size()];
+			}
+			break;
+		case CHARGING:
+			//std::cout << "CHARGING\n";
+			charge(dt);
+			break;
 
-	case DASHING :
-		//std::cout << "DAAAASHING\n";
-		dash(dt);
-		break;
+		case DASHING:
+			//std::cout << "DAAAASHING\n";
+			dash(dt);
+			break;
 
-	case STUNNED :
-		//std::cout << "stunned\n";
-		stunned(dt);
-		break;
-		
+		case STUNNED:
+			//std::cout << "stunned\n";
+			stunned(dt);
+			break;
+
 	}
 }
 
 void ChargingBoss::chase(Player& player, float dt) {
-	getSprite().setColor(Color(239, 12, 197));
 	if (target.x < getSprite().getPosition().x) {
 		velocity.x = -speed;
 	}
@@ -52,57 +71,50 @@ void ChargingBoss::chase(Player& player, float dt) {
 		velocity.x = speed;
 	}
 	getSprite().move(velocity * dt);
+	getSprite().setTextureRect(frames[0]);
 }
 
 void ChargingBoss::charge(float dt) {
 	//animation de chargement de l'attaque
+	if (target.x < getPosX()) dashDirection = "left";
+	if (target.x > getPosX()) dashDirection = "right";
 	chargingTimer += dt;
-	if (chargingTimer < dashTiming) {
-		velocity.x = -velocity.x;
+	if (chargingTimer < dashTiming - 0.25f) {
+		getSprite().setTextureRect(frames[1]);
 	}
 	else {
-		velocity.x = 0;
-		getSprite().setColor(Color::Red);
+		getSprite().setTextureRect(frames[2]);
 	}
-	getSprite().move(velocity * dt);
 	if (chargingTimer > dashTiming + 0.25f) {
-		getSprite().setColor(Color(239, 12, 197));
 		chargingTimer = 0;
 		currentState = DASHING;
 	}
+	
 }
 
 void ChargingBoss::dash(float dt) {
 	if (dashDirection == "left") {
-		velocity.x = -speed * 5.f;
+		velocity.x = -speed * 3.f;
+		wallCollideSprite.setPosition(getPosX() - wallCollideSprite.getGlobalBounds().width /2, getPosY());
 	}
 	if (dashDirection == "right") {
-		velocity.x = speed * 5.f;
+		velocity.x = speed * 3.f;
+		wallCollideSprite.setPosition(getPosX() + wallCollideSprite.getGlobalBounds().width / 2, getPosY());
 	}
-	//getSprite().move(velocity * dt);
+	getSprite().move(velocity * dt);
 	dashTimer += dt;
-	if (dashTimer > 0.5f) {
-		velocity.x = 0;
-		getSprite().setColor(Color::Blue);
-	}
 	if (dashTimer > 1.f) {
 		dashTimer = 0;
 		currentState = CHASING;
 	}
-	isColliding(getSpriteConst().getPosition().x, getSpriteConst().getPosition().y, dt);
+	isColliding(getWallCollideSpriteConst().getPosition().x, getWallCollideSpriteConst().getPosition().y, dt);
 	if (collided) {
 		currentState = STUNNED;
 		dashTimer = 0;
-
-		if (dashDirection == "left") {
-			velocity.x = speed;
-		}
-		if (dashDirection == "right") {
-			velocity.x = -speed;
-		}
-		velocity.y = speed;
 	}
 	getSprite().move(velocity* dt);
+
+	getSprite().setTextureRect(frames[3]);
 }
 
 void ChargingBoss::stunned(float dt) {
@@ -121,8 +133,61 @@ void ChargingBoss::stunned(float dt) {
 		currentState = CHASING;
 	}
 	getSprite().move(velocity* dt);
+
+	getSprite().setTextureRect(frames[4]);
 }
 
 //void ChargingBoss::draw(RenderWindow& window) {
 //
 //}
+
+const Sprite& ChargingBoss::getWallCollideSpriteConst() const {
+	return wallCollideSprite;
+}
+
+void ChargingBoss::isColliding(int x, int y, float dt) {
+	int newX = getWallCollideSpriteConst().getPosition().x + velocity.x * dt;
+	int newY = getWallCollideSpriteConst().getPosition().y + velocity.y * dt;
+
+	collided = false;
+
+	// Vérifie la collision avant d'appliquer le mouvement
+	if (map.isColliding(newX + getWallCollideSpriteConst().getGlobalBounds().width, getWallCollideSpriteConst().getGlobalBounds().top) || map.isColliding(newX + getWallCollideSpriteConst().getGlobalBounds().width, getWallCollideSpriteConst().getGlobalBounds().top + getWallCollideSpriteConst().getGlobalBounds().height) || map.isColliding(newX + getWallCollideSpriteConst().getGlobalBounds().width, getWallCollideSpriteConst().getGlobalBounds().top + getWallCollideSpriteConst().getGlobalBounds().height / 2))
+	{
+		newX = (static_cast<int>((getSprite().getGlobalBounds().left + getWallCollideSpriteConst().getGlobalBounds().width) / 64)) * 64 + 64 - getTexture().getSize().x / 2;
+		//getSprite().setPosition(newX - 0.1, getWallCollideSpriteConst().getPosition().y);
+		velocity.x = 0;
+		collided = true;
+	}
+
+	else if (velocity.x < 0)
+	{
+		if (map.isColliding(newX, getWallCollideSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getWallCollideSpriteConst().getGlobalBounds().top + getWallCollideSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getWallCollideSpriteConst().getGlobalBounds().top + getWallCollideSpriteConst().getGlobalBounds().height / 2))
+		{
+			newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getTexture().getSize().x / 2;
+			//getSprite().setPosition(newX + 0.1, getWallCollideSpriteConst().getPosition().y);
+			velocity.x = 0;
+			collided = true;
+		}
+	}
+	if (velocity.y > 0)
+	{
+		if (map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left, newY + getWallCollideSpriteConst().getGlobalBounds().height) || map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left + getWallCollideSpriteConst().getGlobalBounds().width, newY + getWallCollideSpriteConst().getGlobalBounds().height) || map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left + getWallCollideSpriteConst().getGlobalBounds().width / 2, newY + getWallCollideSpriteConst().getGlobalBounds().height))
+		{
+			newY = (static_cast<int>((getSprite().getGlobalBounds().top + getWallCollideSpriteConst().getGlobalBounds().height) / 64)) * 64 + 64 - getTexture().getSize().y / 2;
+			//getSprite().setPosition(getWallCollideSpriteConst().getPosition().x, newY - 0.1);
+			velocity.y = 0;
+			collided = true;
+		}
+	}
+	else if (velocity.y < 0)
+	{
+		if (map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left, newY) || map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left + getWallCollideSpriteConst().getGlobalBounds().width, newY) || map.isColliding(getWallCollideSpriteConst().getGlobalBounds().left + getWallCollideSpriteConst().getGlobalBounds().width / 2, newY))
+		{
+			newY = (static_cast<int>(getSprite().getGlobalBounds().top / 64)) * 64 + getTexture().getSize().y / 2;
+			//getSprite().setPosition(getWallCollideSpriteConst().getPosition().x, newY + 0.1);
+			velocity.y = 0;
+			collided = true;
+		}
+	}
+}

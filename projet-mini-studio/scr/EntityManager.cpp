@@ -23,17 +23,20 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
+		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(map, textureManager.eBasicTexture);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}
 	if (type == "ChargingBoss") {
-		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(size, color, map);
+		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(map);
 		chargingBoss->getSprite().setPosition(position);
+		chargingBoss->setTexture(textureManager.chargingBossTexture, 342, 195, 5, 0.1f);
+		chargingBoss->getSprite().setPosition(chargingBoss->getSprite().getPosition().x/* - chargingBoss->getSprite().getTextureRect().getSize().x*/,
+			chargingBoss->getSprite().getPosition().y - chargingBoss->getSprite().getTextureRect().getSize().y);
 		enemyVector.push_back(chargingBoss);
 	}
 	if (type == "Checkpoint") {
-		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
+		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(textureManager.checkpointTexture);
 		testCheckpoint->getSprite().setPosition(position);
 		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
@@ -45,14 +48,24 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	}
 
 	if (type == "FlyingBoss") {
-		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
+		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(map);
 		flyingBoss->getSprite().setPosition(position);
+		flyingBoss->setTexture(textureManager.eBoss2Texture, 240, 299, 2, 0.1f);
 		enemyVector.push_back(flyingBoss);
+	}
+
+	if (type == "FinalBoss")
+	{
+		std::shared_ptr<FinalBoss> finalBoss = make_shared<FinalBoss>(size, color, map);
+		finalBoss->getSprite().setPosition(position);
+		finalBoss->setTexture(textureManager.eBoss3Texture, 300, 200, 4, 0.1f);
+		enemyVector.push_back(finalBoss);
 	}
 }
 
 void EntityManager::generateEnemies(Map& map) {
 	enemyVector.clear();
+	itemVector.clear();
 
 	for (const auto& spawn : map.enemySpawns) {
 		Vector2f position(spawn.x, spawn.y);
@@ -69,7 +82,7 @@ void EntityManager::generateEnemies(Map& map) {
 			color = Color::Blue;
 		}
 		else if (spawn.type == "ChargingBoss") {
-			color = Color(239, 12, 197);
+			//color = Color(239, 12, 197);
 		}
 		else if (spawn.type == "FlyingBoss") {
 			color = Color(239, 12, 197);
@@ -114,11 +127,6 @@ void EntityManager::collisions(float dt) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
 			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
-			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
-				if (obj->activated) {
-					obj->activated = false;
-				}
-			});*/
 			for (auto& other : checkpointVector) {
 				if (other->activated) {
 					other->activated = false;
@@ -161,6 +169,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	player->animate(dt);
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
+		enemy->animate(dt);
 		/*if (enemy->hp <= 0) {
 			enemy->toBeDeleted;
 			player->killCount++;
