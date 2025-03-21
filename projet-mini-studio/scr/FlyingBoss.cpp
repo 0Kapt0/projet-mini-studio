@@ -93,6 +93,7 @@ void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 		if (projectile->getSprite().getGlobalBounds().intersects(player.getSprite().getGlobalBounds()))
 		{
 			player.hp--;
+			projectile->toBeDeleted = true;
 		}
 	}
 

@@ -173,6 +173,8 @@ void Game::run() {
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
+    soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
     soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
@@ -200,14 +202,15 @@ void Game::run() {
 
     bool collisionMode = false;
     Clock clock;
-
+    soundManager.playSound("MenuMusic");
+    soundManager.setLoop("MenuMusic",true);
     while (window.isOpen()) {
         window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-        float cutscene2CooldownTime = 5.0f;
+        float cutscene2CooldownTime = 10.75f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -217,6 +220,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
+               
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
                 {
                     if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
@@ -244,6 +248,7 @@ void Game::run() {
             case GameState::Playing:
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
+                    entityManager.createEntity("FinalBoss", Vector2f(1200, 1700), Vector2f(150, 150), Color::Green, map);
                     enemiesGenerated = true;
                 }
 
@@ -388,7 +393,8 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                         currentState = GameState::Cutscene;
-
+                        soundManager.stopSound("MenuMusic");
+                        soundManager.playSound("cutscene2");
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -398,10 +404,7 @@ void Game::run() {
                 }
                 break;
             case GameState::Cutscene:
-              
-                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
-                    currentState = GameState::Playing;
-                }
+               
                 break;
 
             case GameState::GameOver:
@@ -416,6 +419,14 @@ void Game::run() {
             float playerY = entityManager.player->getSprite().getPosition().y;
             background.update(cameraX, playerY, true);
             foreground.update(cameraX);
+        }
+
+        if (currentState == GameState::Cutscene) {
+            cerr << cutsceneCooldown.getElapsedTime().asSeconds() << endl;
+            if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                currentState = GameState::Playing;
+                soundManager.playSound("Level1Music");
+            }
         }
 
         switch (currentState) {
@@ -460,7 +471,7 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            cutscene.draw(window);
+            cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;

@@ -55,6 +55,8 @@ public:
 
     CircleShape hurtbox;
 
+    Sprite attackSprite;
+
 private:
     //fonction du update
     void handleGrapplePull(float dt);
@@ -115,7 +117,6 @@ private:
     bool canAttack = true;
     bool attacking = false;
     bool attackHitboxActive = false;
-    Sprite attackSprite;
     string attackDirection = "right";
     float attackDuration = 0;
     float attackCooldown = 0;

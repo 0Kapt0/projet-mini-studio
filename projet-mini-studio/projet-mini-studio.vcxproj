@@ -30,6 +30,7 @@
     <ClInclude Include="include\EnemySelector.hpp" />
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\EntityManager.hpp" />
+    <ClInclude Include="include\FinalBoss.hpp" />
     <ClInclude Include="include\FlyingBoss.hpp" />
     <ClInclude Include="include\Foreground.hpp" />
     <ClInclude Include="include\Game.hpp" />
@@ -61,6 +62,7 @@
     <ClCompile Include="scr\EnemySelector.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
     <ClCompile Include="scr\EntityManager.cpp" />
+    <ClCompile Include="scr\FinalBoss.cpp" />
     <ClCompile Include="scr\FlyingBoss.cpp" />
     <ClCompile Include="scr\Foreground.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
@@ -134,8 +136,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+<<<<<<< HEAD
     <IncludePath>C:\SFML-2.6.2\include;C:\SFML-2.6.2-windows-vc17-64-bit\SFML-2.6.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\SFML-2.6.2\lib;C:\SFML-2.6.2-windows-vc17-64-bit\SFML-2.6.2\bin;$(LibraryPath)</LibraryPath>
+=======
+    <IncludePath>C:\SFML-2.6.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SFML-2.6.2\lib;$(LibraryPath)</LibraryPath>
+>>>>>>> master
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
