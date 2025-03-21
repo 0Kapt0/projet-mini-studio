@@ -10,10 +10,6 @@ using namespace sf;
 
 class SoundManager {
 public:
-    static SoundManager& getInstance() {
-        static SoundManager instance;
-        return instance;
-    }
 
     bool loadSound(const string& name, const string& filename);
     void playSound(const string& name);
