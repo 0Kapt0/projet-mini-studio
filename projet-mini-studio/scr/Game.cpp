@@ -223,7 +223,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
-                if (Keyboard::isKeyPressed(Keyboard::R) || Joystick::isButtonPressed(0, 7)) {
+                if (Keyboard::isKeyPressed(Keyboard::R) || Joystick::isButtonPressed(0, 0)) {
                     entityManager.save.reset("assets/checkpoint/player.txt", entityManager.checkpointVector);
                 }
                 enemiesGenerated = false;
@@ -407,7 +407,7 @@ void Game::run() {
             }
 
             case GameState::Pause:
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 1)) {
                     if (pause.playSpritePause.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Playing;
                     }
@@ -418,7 +418,7 @@ void Game::run() {
                 }
                 break;
             case GameState::Selector:
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 1)) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                          levelselected = 1;
@@ -427,7 +427,7 @@ void Game::run() {
                         soundManager.playSound("cutscene1");
                     }
                 }
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 2)) {
                     if (selector.level2Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         if (selector.levelunlocked >= 2) {
                             cutscene2Cooldown.restart();
@@ -438,7 +438,7 @@ void Game::run() {
                         }
                     }
                 }
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 3)) {
                     if (selector.level3Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         if (selector.levelunlocked >= 3) {
                             cutsceneCooldown.restart();
@@ -449,7 +449,7 @@ void Game::run() {
                         }
                     }
                 }
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 0)) {
                     if (selector.returnSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Menu;
                     }
