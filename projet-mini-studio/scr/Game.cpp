@@ -229,6 +229,7 @@ void Game::run() {
             case GameState::Playing:
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
+                    entityManager.createEntity("FinalBoss", Vector2f(1200, 1700), Vector2f(150, 150), Color::Green, map);
                     enemiesGenerated = true;
                 }
 

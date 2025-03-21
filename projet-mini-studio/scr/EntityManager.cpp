@@ -49,6 +49,13 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		flyingBoss->getSprite().setPosition(position);
 		enemyVector.push_back(flyingBoss);
 	}
+
+	if (type == "FinalBoss")
+	{
+		std::shared_ptr<FinalBoss> finalBoss = make_shared<FinalBoss>(size, color, map);
+		finalBoss->getSprite().setPosition(position);
+		enemyVector.push_back(finalBoss);
+	}
 }
 
 void EntityManager::generateEnemies(Map& map) {
@@ -96,6 +103,7 @@ void EntityManager::collisions(float dt) {
 			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
 			enemy->pushBack(*player);
 			//DEGATS
+			cout << "enemy hp - 1\n";
 			enemy->hp--;
 			if (enemy->hp <= 0) {
 				enemy->toBeDeleted = true;
@@ -114,11 +122,6 @@ void EntityManager::collisions(float dt) {
 		if (player->getSprite().getGlobalBounds().intersects(checkpoint->getSprite().getGlobalBounds())) {
 			checkpoint->respawnPoint = Vector2f(checkpoint->getPosX(), checkpoint->getPosY() - player->getHeight() + checkpoint->getHeight() / 2);
 			save.saveCheckpoint("assets/checkpoint/player.txt", player, checkpoint);
-			/*std::for_each(checkpointVector.begin(), checkpointVector.end(), [](std::shared_ptr<Checkpoint>& obj) {
-				if (obj->activated) {
-					obj->activated = false;
-				}
-			});*/
 			for (auto& other : checkpointVector) {
 				if (other->activated) {
 					other->activated = false;
@@ -160,6 +163,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	player->handleInput(event, window, dt);
 	player->animate(dt);
 	for (auto& enemy : enemyVector) {
+		cout << "update\n";
 		enemy->update(dt, *player, window);
 		/*if (enemy->hp <= 0) {
 			enemy->toBeDeleted;
