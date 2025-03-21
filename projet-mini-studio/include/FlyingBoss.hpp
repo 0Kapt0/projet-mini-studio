@@ -11,7 +11,6 @@ private:
 	float attackCooldown;
 	float attackTimer;
 	vector<unique_ptr<Projectile>> projectiles;
-	int hp;
 	bool goingRight = true;
 
 	enum State 
