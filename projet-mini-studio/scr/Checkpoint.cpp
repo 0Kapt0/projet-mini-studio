@@ -66,6 +66,10 @@ void Save::saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 	getLine.push_back(std::to_string(player->doubleJumpUnlocked));
 	getLine.push_back(std::to_string(player->dashUnlocked));
 	getLine.push_back(std::to_string(player->grappleUnlocked));
+	getLine.push_back(std::to_string(cinematic1Played));
+	getLine.push_back(std::to_string(cinematic2Played));
+	getLine.push_back(std::to_string(cinematic3Played));
+	getLine.push_back(std::to_string(cinematic4Played));
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		for (auto& newLine : getLine) {
@@ -91,16 +95,24 @@ void Save::loadCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 	player->doubleJumpUnlocked = (std::stoi(getLine[3]));
 	player->dashUnlocked = (std::stoi(getLine[4]));
 	player->grappleUnlocked = (std::stoi(getLine[5]));
+	cinematic1Played = (std::stoi(getLine[6]));
+	cinematic2Played = (std::stoi(getLine[7]));
+	cinematic3Played = (std::stoi(getLine[8]));
+	cinematic4Played = (std::stoi(getLine[9]));
 }
 
 void Save::reset(const std::string& filename, std::vector<std::shared_ptr<Checkpoint>> checkpointVector) {
 	getLine.clear();
-	getLine.push_back(std::to_string(0));
-	getLine.push_back(std::to_string(0));
-	getLine.push_back(std::to_string(3));
-	getLine.push_back(std::to_string(0));
-	getLine.push_back(std::to_string(0));
-	getLine.push_back(std::to_string(0));
+	getLine.push_back(std::to_string(128)); //pos x
+	getLine.push_back(std::to_string(1800)); // pos  y
+	getLine.push_back(std::to_string(3)); // max hp
+	getLine.push_back(std::to_string(0)); // doublejump unlocked
+	getLine.push_back(std::to_string(0)); // dash unlocked
+	getLine.push_back(std::to_string(0)); // grapple unlocked
+	getLine.push_back(std::to_string(0)); // cinematic1 played unlocked
+	getLine.push_back(std::to_string(0)); // cinematic2 played unlocked
+	getLine.push_back(std::to_string(0)); // cinematic3 played unlocked
+	getLine.push_back(std::to_string(0)); // cinematic4 played unlocked
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		for (auto& newLine : getLine) {

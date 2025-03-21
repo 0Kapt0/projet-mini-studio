@@ -31,6 +31,8 @@ public:
 
 	Save save;
 
+	bool win = false;
+
 	void createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
 	void destroyEntity();
 	void collisions(float dt);

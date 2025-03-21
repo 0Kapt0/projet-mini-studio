@@ -32,7 +32,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		chargingBoss->getSprite().setPosition(position);
 		chargingBoss->setTexture(textureManager.chargingBossTexture, 342, 195, 5, 0.1f);
 		chargingBoss->getSprite().setPosition(chargingBoss->getSprite().getPosition().x/* - chargingBoss->getSprite().getTextureRect().getSize().x*/,
-			chargingBoss->getSprite().getPosition().y - chargingBoss->getSprite().getTextureRect().getSize().y);
+			chargingBoss->getSprite().getPosition().y - chargingBoss->getSprite().getTextureRect().getSize().y / 4);
 		enemyVector.push_back(chargingBoss);
 	}
 	if (type == "Checkpoint") {
@@ -113,14 +113,26 @@ void EntityManager::collisions(float dt) {
 			if (enemy->hp <= 0) {
 				enemy->toBeDeleted = true;
 				player->killCount++;
+				if (enemy->type == "ChargingBoss" || enemy->type == "FlyingBoss" || enemy->type == "FinalBoss") {
+					player->dashUnlocked = true;
+					win = true;
+				}
 			}
 			else {
 				enemy->invincible = true;
 			}
 		}
-		if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
-			player->invincible = true;
-			player->hp--;
+		if (enemy->type != "ChargingBoss") { // pas eu le temps de faire des hitbox pour tous les ennemis, chargingboss est une urgence de dernière minute
+			if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) && !player->invincible) {
+				player->invincible = true;
+				player->hp--;
+			}
+		}
+		else {
+			if (player->/*getSprite()*/hurtbox.getGlobalBounds().intersects(enemy->hitbox.getGlobalBounds()) && !player->invincible) {
+				player->invincible = true;
+				player->hp--;
+			}
 		}
 	}
 	for (auto& checkpoint : checkpointVector) {

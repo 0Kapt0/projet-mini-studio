@@ -222,6 +222,9 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
+                if (Keyboard::isKeyPressed(Keyboard::R) || Joystick::isButtonPressed(0, 7)) {
+                    entityManager.save.reset("assets/checkpoint/player.txt", entityManager.checkpointVector);
+                }
                 enemiesGenerated = false;
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
                 {

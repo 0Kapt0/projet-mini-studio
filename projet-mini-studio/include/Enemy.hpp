@@ -25,6 +25,7 @@ public:
     Clock pushbackClock;
     Vector2f pushbackDirection;
     float pushbackStrength;
+    CircleShape hitbox;
 
 
     void setTexture(Texture& tex, int frameWidth, int frameHeight, int totalFrames, float frameDuration) override;
