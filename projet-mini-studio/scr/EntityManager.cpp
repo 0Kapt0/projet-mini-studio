@@ -30,7 +30,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	if (type == "ChargingBoss") {
 		shared_ptr<ChargingBoss> chargingBoss = make_shared<ChargingBoss>(map);
 		chargingBoss->getSprite().setPosition(position);
-		chargingBoss->setTexture(textureManager.chargingBossTexture, 342, 195, 4, 0.1f);
+		chargingBoss->setTexture(textureManager.chargingBossTexture, 342, 195, 5, 0.1f);
 		chargingBoss->getSprite().setPosition(chargingBoss->getSprite().getPosition().x/* - chargingBoss->getSprite().getTextureRect().getSize().x*/,
 			chargingBoss->getSprite().getPosition().y - chargingBoss->getSprite().getTextureRect().getSize().y);
 		enemyVector.push_back(chargingBoss);
