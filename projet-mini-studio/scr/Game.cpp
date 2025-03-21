@@ -158,6 +158,7 @@ void Game::run() {
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
     soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
@@ -186,14 +187,15 @@ void Game::run() {
 
     bool collisionMode = false;
     Clock clock;
-
+    soundManager.playSound("MenuMusic");
+    soundManager.setLoop("MenuMusic",true);
     while (window.isOpen()) {
         window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-        float cutscene2CooldownTime = 9.0f;
+        float cutscene2CooldownTime = 10.75f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -203,6 +205,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
+               
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
                 {
                     if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
@@ -374,6 +377,7 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                         currentState = GameState::Cutscene;
+                        soundManager.stopSound("MenuMusic");
                         soundManager.playSound("cutscene2");
                     }
                 }
@@ -384,10 +388,7 @@ void Game::run() {
                 }
                 break;
             case GameState::Cutscene:
-              
-                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
-                    currentState = GameState::Playing;
-                }
+               
                 break;
 
             case GameState::GameOver:
@@ -401,6 +402,14 @@ void Game::run() {
             float cameraX = entityManager.player->getSprite().getPosition().x;
             background.update(cameraX, true);
             foreground.update(cameraX);
+        }
+
+        if (currentState == GameState::Cutscene) {
+            cerr << cutsceneCooldown.getElapsedTime().asSeconds() << endl;
+            if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                currentState = GameState::Playing;
+                soundManager.playSound("Level1Music");
+            }
         }
 
         switch (currentState) {
