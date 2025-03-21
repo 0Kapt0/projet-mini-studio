@@ -104,6 +104,7 @@ void EntityManager::destroyEntity() {
 }
 
 void EntityManager::collisions(float dt) {
+	
 	for (auto& enemy : enemyVector) {
 		if ((player->getAttackHitBox().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) ||
 			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
@@ -116,6 +117,7 @@ void EntityManager::collisions(float dt) {
 				if (enemy->type == "ChargingBoss" || enemy->type == "FlyingBoss" || enemy->type == "FinalBoss") {
 					player->dashUnlocked = true;
 					win = true;
+					save.reset("assets/checkpoint/player.txt", checkpointVector);
 				}
 			}
 			else {
