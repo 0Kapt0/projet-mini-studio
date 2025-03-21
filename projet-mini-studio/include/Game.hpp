@@ -17,6 +17,7 @@ enum class PlacementMode {
 
 class Game {
 private:
+    Clock cutsceneCooldown;
     Background background;
     Foreground foreground;
 	bool showGrid = true;
