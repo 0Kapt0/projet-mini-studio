@@ -565,7 +565,7 @@ void Game::run() {
             break;
         case GameState::Cutscene:
             if (levelselected == 1) {
-                //cutscene.draw1(window);
+                cutscene.draw1(window);
             }
             if (levelselected == 2) {
                 cutscene.draw(window);
