@@ -22,11 +22,18 @@ public:
 	Texture returnTexture;
 	Sprite returnSprite;
 	Texture backgroundTexture;
+	Texture ATexture;
+	Texture BTexture;
+	Texture YTexture;
+	Texture XTexture;
+	Sprite ASprite;
+	Sprite BSprite;
+	Sprite YSprite;
+	Sprite XSprite;
 	Selector();
 	~Selector();
 	void draw(RenderWindow& window);
 private:
-
 };
 
 #endif
