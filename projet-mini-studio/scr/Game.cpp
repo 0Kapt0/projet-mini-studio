@@ -160,6 +160,7 @@ void Game::run() {
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
     soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
     soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
+    soundManager.loadSound("cutscene1", "assets/sfx/cutscene1.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
     soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
@@ -196,6 +197,7 @@ void Game::run() {
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
         float cutscene2CooldownTime = 10.75f;
+        float cutsceneCooldownTime = 7.0f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -377,9 +379,32 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
+                         levelselected = 1;
                         currentState = GameState::Cutscene;
                         soundManager.stopSound("MenuMusic");
-                        soundManager.playSound("cutscene2");
+                        soundManager.playSound("cutscene1");
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.level2Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        if (selector.levelunlocked >= 2) {
+                            cutscene2Cooldown.restart();
+                            levelselected = 2;
+                            currentState = GameState::Cutscene;
+                            soundManager.stopSound("MenuMusic");
+                            soundManager.playSound("cutscene2");
+                        }
+                    }
+                }
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
+                    if (selector.level3Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
+                        if (selector.levelunlocked >= 3) {
+                            cutsceneCooldown.restart();
+                            levelselected = 3;
+                            currentState = GameState::Cutscene;
+                            soundManager.stopSound("MenuMusic");
+                            soundManager.playSound("cutscene1");
+                        }
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -406,10 +431,23 @@ void Game::run() {
         }
 
         if (currentState == GameState::Cutscene) {
-            cerr << cutsceneCooldown.getElapsedTime().asSeconds() << endl;
-            if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
-                currentState = GameState::Playing;
-                soundManager.playSound("Level1Music");
+            if (levelselected == 1) {
+                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutsceneCooldownTime) {
+                    currentState = GameState::Playing;
+                    soundManager.playSound("Level1Music");
+                }
+            }
+            if (levelselected == 2) {
+                if (cutscene2Cooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                    currentState = GameState::Playing;
+                    soundManager.playSound("Level2Music");
+                }
+            }
+            if (levelselected == 3) {
+                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                    currentState = GameState::Playing;
+                    soundManager.playSound("Level3Music");
+                }
             }
         }
 
@@ -455,7 +493,15 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            cutscene.draw3(window);
+            if (levelselected == 1) {
+                cutscene.draw1(window);
+            }
+            if (levelselected == 2) {
+                cutscene.draw(window);
+            }
+            if (levelselected == 3) {
+                cutscene.draw3(window);
+            }
             break;
         case GameState::GameOver:
             break;

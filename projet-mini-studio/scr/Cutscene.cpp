@@ -63,7 +63,7 @@ void Cutscene::draw(RenderWindow& window) {
 }
 void Cutscene::draw1(RenderWindow& window) {
     //SoundManager& soundManager = SoundManager::getInstance();
-    float cutscene1CooldownTime = 0.05f;
+    float cutscene1CooldownTime = 0.082f;
     if (cooldownframe.getElapsedTime().asSeconds() >= cutscene1CooldownTime) {
         currentFrame1++;
         cutscene1Sprite.setTexture(cutscene1Texture[currentFrame1]);
@@ -73,7 +73,7 @@ void Cutscene::draw1(RenderWindow& window) {
 }
 void Cutscene::draw2(RenderWindow& window) {
     //SoundManager& soundManager = SoundManager::getInstance();
-    float cutscene3CooldownTime = 0.05f;
+    float cutscene3CooldownTime = 0.082f;
     if (cooldownframe.getElapsedTime().asSeconds() >= cutscene3CooldownTime) {
         currentFrame3++;
         cutscene3Sprite.setTexture(cutscene3Texture[currentFrame3]);
@@ -83,7 +83,7 @@ void Cutscene::draw2(RenderWindow& window) {
 }
 void Cutscene::draw3(RenderWindow& window) {
     //SoundManager& soundManager = SoundManager::getInstance();
-    float cutscene4CooldownTime = 0.05f;
+    float cutscene4CooldownTime = 0.082f;
     if (cooldownframe.getElapsedTime().asSeconds() >= cutscene4CooldownTime) {
         currentFrame4++;
         cutscene4Sprite.setTexture(cutscene4Texture[currentFrame4]);
