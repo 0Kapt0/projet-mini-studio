@@ -13,6 +13,8 @@ float getRightJoystickAngle(unsigned int joystickId) {
     return angleDegrees;
 }
 
+SoundManager& soundManager = SoundManager::getInstance();
+
 Player::Player(Texture& tex, Map& map)
     : Entity(tex), grapple(500.0f, map), map(map), speed(450), velocity(Vector2f(0, 0)), canJump(true), jumpNum(0), canDash(true), dashing(false), dashDirection(Vector2f(0, 0)), lastInputDirection('N'), dashDuration(0), dashCooldown(0.8), dashTimer(0), grapplingTouched(false), leftButtonHold(false), grappleLength(0.0f)
 {
@@ -63,7 +65,6 @@ Player::Player(const Vector2f& size, const Color& color, Map& map)
 Player::~Player()
 {
 }
-
 
 Vector2f findTangentPoint(const Vector2f& center, float radius, const Vector2f& point) {
     float dx = point.x - center.x;
@@ -120,15 +121,39 @@ void Player::update(float dt)
 
 void Player::updateCamera()
 {
-    Vector2f playerPosition = getSprite().getPosition();
-    Vector2f cameraPosition = playerView.getCenter();
+    Vector2f playerPos = getSprite().getPosition();
 
-    cameraPosition.x = playerPosition.x;
+    Vector2f cameraPos = playerView.getCenter();
+    cameraPos.x = playerPos.x;
 
-	cameraPosition.y = 1620;
+    float cameraPosBas = 1620.f;
+    float cameraPosHaut = 1620.f - 1080.f;
 
-    playerView.setCenter(cameraPosition);
+    float switchThreshold = 1080.f;
+    if (playerPos.y < switchThreshold) {
+        cameraPos.y = cameraPosHaut;
+    }
+    else {
+        cameraPos.y = cameraPosBas;
+    }
+
+    float halfViewWidth = playerView.getSize().x * 0.5f;
+    float leftLimit = 70.f + halfViewWidth;
+    float rightLimit = 15389.f;
+
+    if (cameraPos.x < leftLimit) {
+        cameraPos.x = leftLimit;
+    }
+    if (cameraPos.x > rightLimit) {
+        cameraPos.x = rightLimit;
+    }
+
+    playerView.setCenter(cameraPos);
 }
+
+
+
+
 
 void Player::handleGrapplePull(float dt)
 {
@@ -148,7 +173,6 @@ void Player::handleGrapplePull(float dt)
     }
 }
 
-
 void Player::handleMovement(float dt)
 {
     if (grappleMove) return;
@@ -163,11 +187,9 @@ void Player::handleMovement(float dt)
     }
 }
 
-
 void Player::handleNormalMovement(float dt)
 {
     float axisX = Joystick::getAxisPosition(0, Joystick::X);
-    //cout << axisX << endl;
 
     dashTimer += dt;
     if (dashTimer >= dashCooldown && onGround)
@@ -227,7 +249,7 @@ void Player::handleNormalMovement(float dt)
     float jumpCooldownTime = 0.4f;
     if ((Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && canJump && jumpCooldownClock.getElapsedTime().asSeconds() >= jumpCooldownTime)
     {
-        jumped = true;
+		soundManager.playSound("JumpingSound");
         onGround = false;
         velocity.y = -speed;
         jumpNum++;
@@ -288,6 +310,7 @@ void Player::handleNormalMovement(float dt)
     if ((Keyboard::isKeyPressed(Keyboard::LShift) || axisZ > 50) && canDash)
 
     {
+		soundManager.playSound("Dash");
         dashing = true;
         canDash = false;
         dashTimer = 0.f;
@@ -307,6 +330,7 @@ void Player::handleNormalMovement(float dt)
 
 void Player::handleDashingMovement(float dt)
 {
+
     dashDuration += dt;
     if (dashDuration >= 0.1f)
     {
@@ -321,9 +345,6 @@ void Player::handleDashingMovement(float dt)
         dt * 3.f);
 
     getSprite().move(dashDirection.x * dt, 0.f);
-
-    /*velocity.x = 0.f;
-    velocity.y = 0.f;*/
 }
 
 void Player::handleCollisions(float dt)
@@ -345,7 +366,6 @@ void Player::updateGrapplePosition()
         grapple.updateStartPosition(getSprite().getPosition());
     }
 }
-
 
 void Player::handleInput(const Event& event, RenderWindow& window, float dt)
 {
@@ -394,6 +414,7 @@ void Player::handleInput(const Event& event, RenderWindow& window, float dt)
     {
         if (grapple.isActive())
         {
+			soundManager.playSound("GrapleShootSound");
             grapple.setActive(false);
             grapple.setStuck(false);
         }
@@ -418,7 +439,6 @@ void Player::isColliding(int x, int y, float dt)
         iterations++;
     }
 }
-
 
 void Player::handleBoundingBoxCollision(float dt)
 {
@@ -450,12 +470,9 @@ void Player::handleBoundingBoxCollision(float dt)
     }
     else if (velocity.x < 0)
     {
-        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) ||
-            map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
+        if (map.isColliding(newX, getSpriteConst().getGlobalBounds().top) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height) || map.isColliding(newX, getSpriteConst().getGlobalBounds().top + getSpriteConst().getGlobalBounds().height / 2))
         {
-            newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64
-                + getSprite().getTextureRect().getSize().x / 2;
+            newX = (static_cast<int>(getSprite().getGlobalBounds().left / 64)) * 64 + getSprite().getTextureRect().getSize().x / 2;
 
             velocity.x = 0.f;
             jumpNum = 1;
@@ -596,10 +613,6 @@ bool Player::handleSlopeCollisionOnce()
     return false;
 }
 
-
-
-
-
 void Player::isSwingColliding(Vector2f& newPos, float dt)
 {
     Vector2f swingVelocity = newPos - getSprite().getPosition();
@@ -696,7 +709,8 @@ void Player::drawHearts(RenderWindow& window)
 }
 
 void Player::handleAttack(float dt) {
-    if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/ || Joystick::isButtonPressed(0, 2)) && canAttack) {
+    if ((Mouse::isButtonPressed(Mouse::Left) /*Keyboard::isKeyPressed(Keyboard::F)*/|| Joystick::isButtonPressed(0, 2)) && canAttack) {
+		soundManager.playSound("MeleeAttackSound");
         attacking = true;
         canAttack = false;
         attackTimer = 0;
@@ -704,7 +718,6 @@ void Player::handleAttack(float dt) {
     attackTimer += dt;
     if (attackTimer >= attackCooldown) canAttack = true;
 
-    //attackSprite.setPosition(getSprite().getPosition());
     if (attacking) {
         attackDuration += dt;
         if (attackDuration < 0.3) {

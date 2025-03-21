@@ -25,6 +25,26 @@ Menu::Menu() {
         cerr << "Erreur lors du chargement de editmodetexture." << endl;
     }
     menuSprite.setTexture(menuButton);
+    if (!ATexture.loadFromFile("assets/icones/A.png")) {
+        cerr << "Erreur lors du chargement de la texture de fond." << endl;
+    }
+    if (!BTexture.loadFromFile("assets/icones/B.png")) {
+        cerr << "Erreur lors du chargement de la texture de fond." << endl;
+    }
+    if (!YTexture.loadFromFile("assets/icones/Y.png")) {
+        cerr << "Erreur lors du chargement de la texture de fond." << endl;
+    }
+    if (!XTexture.loadFromFile("assets/icones/X.png")) {
+        cerr << "Erreur lors du chargement de la texture de fond." << endl;
+    }
+    ASprite.setTexture(ATexture);
+    BSprite.setTexture(BTexture);
+    YSprite.setTexture(YTexture);
+    XSprite.setTexture(XTexture);
+    ASprite.setScale(0.35, 0.35);
+    BSprite.setScale(0.35, 0.35);
+    YSprite.setScale(0.35, 0.35);
+    XSprite.setScale(0.35, 0.35);
 }
 
 Menu::~Menu() {
@@ -48,4 +68,15 @@ void Menu::draw(RenderWindow& window) {
     //menu
     menuSprite.setPosition(850.0f, 1000.0f);
     window.draw(menuSprite);
+    ASprite.setPosition(490.0f, 755.0f);
+    window.draw(ASprite);
+    XSprite.setPosition(783.0f, 832.0f);
+    window.draw(XSprite);
+    YSprite.setPosition(795.0f, 910.0f);
+    window.draw(YSprite);
+    BSprite.setPosition(795.0f, 990.0f);
+    window.draw(BSprite);
+    
+
+    
 }

@@ -17,6 +17,7 @@ enum class PlacementMode {
 
 class Game {
 private:
+    Clock cutsceneCooldown;
     Background background;
     Foreground foreground;
 	bool showGrid = true;
@@ -24,6 +25,7 @@ private:
     Font font;
 	View oldView;
     EnemySpawn spawn;
+
 
     PlacementMode currentPlacementMode = PlacementMode::Tiles;
 public:

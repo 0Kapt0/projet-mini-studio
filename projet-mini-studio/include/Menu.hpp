@@ -17,6 +17,14 @@ public :
 	Texture menuButton;
 	Sprite menuSprite;
 	Texture backgroundTexture;
+	Texture ATexture;
+	Texture BTexture;
+	Texture YTexture;
+	Texture XTexture;
+	Sprite ASprite;
+	Sprite BSprite;
+	Sprite YSprite;
+	Sprite XSprite;
 	Menu();
 	~Menu();
 	void draw(RenderWindow& window);

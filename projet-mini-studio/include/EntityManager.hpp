@@ -11,6 +11,7 @@
 #include "Checkpoint.hpp"
 #include "HeartItem.hpp"
 #include "../include/FlyingBoss.hpp"
+#include "FinalBoss.hpp"
 
 using namespace sf;
 using namespace std;

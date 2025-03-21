@@ -19,7 +19,9 @@ public:
     void collision();
     void move(float dt);
     void draw(RenderWindow& window) override;
+    void reverseDirection();
     bool toBeDeleted;
+    bool reversed = false;
 };
 
 #endif // PROJECTILE_HPP

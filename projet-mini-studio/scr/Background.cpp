@@ -4,13 +4,18 @@
 
 Background::Background() {}
 
-bool Background::loadTextures(const std::string& layer1, const std::string& layer2,
-    const std::string& layer3, const std::string& layer4, const std::string& layer5, const std::string& layer6) {
-    std::string layers[6] = { layer1, layer2, layer3, layer4, layer5 };
+bool Background::loadTextures(const string& layer1,
+    const string& layer2,
+    const string& layer3,
+    const string& layer4,
+    const string& layer5,
+    const string& layer6)
+{
+    string layers[6] = { layer1, layer2, layer3, layer4, layer5, layer6 };
 
     for (int i = 0; i < 6; ++i) {
         if (!textures[i].loadFromFile(layers[i])) {
-            std::cerr << "Erreur de chargement de la texture : " << layers[i] << std::endl;
+            cerr << "Erreur de chargement de la texture : " << layers[i] << endl;
             return false;
         }
 
@@ -24,18 +29,44 @@ bool Background::loadTextures(const std::string& layer1, const std::string& laye
     return true;
 }
 
-void Background::update(float cameraX) {
+// Dans Background.cpp
+
+void Background::update(float cameraX, float playerY, bool followCamera) {
+    bool isUpperPlane = (playerY < 1080.f);
+
+    float yBas = 1080.f;
+    float yHaut = 0.f;
+    float baseY = (isUpperPlane ? yHaut : yBas);
+
     for (int i = 0; i < 6; ++i) {
-        sprites[i].setPosition(cameraX - 960,1080);
+        float rawPosX = (followCamera ? (cameraX - 960.f) : 0.f);
+        int posX = static_cast<int>(std::floor(rawPosX));
 
-        float offset = fmod(cameraX * speeds[i], 31470);
-        if (offset > 0) offset -= 31470;
+        sprites[i].setPosition(static_cast<float>(posX), baseY);
 
-        sprites[i].setTextureRect(sf::IntRect(static_cast<int>(offset), 0, 31470, 2160));
+        float rawOffset = (followCamera ? cameraX * speeds[i] : 0.f);
+        int offsetInt = static_cast<int>(std::floor(rawOffset)) % static_cast<int>(spriteWidth);
+        if (offsetInt > 0) {
+            offsetInt -= static_cast<int>(spriteWidth);
+        }
+
+        sprites[i].setTextureRect(
+            IntRect(offsetInt,
+                0,
+                static_cast<int>(spriteWidth),
+                static_cast<int>(spriteHeight))
+        );
     }
 }
 
-void Background::draw(sf::RenderWindow& window) {
+
+void Background::setSpeeds(const array<float, 6>& newSpeeds) {
+    for (int i = 0; i < 6; ++i) {
+        speeds[i] = newSpeeds[i];
+    }
+}
+
+void Background::draw(RenderWindow& window) {
     for (int i = 0; i < 6; ++i) {
         window.draw(sprites[i]);
     }

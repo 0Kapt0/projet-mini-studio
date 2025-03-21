@@ -6,12 +6,15 @@
 #include "Rigidbody2D.hpp"
 #include "Grapple.hpp"
 #include "Entity.hpp"
+#include "../include/SoundManager.hpp"
+#include <iostream>
 
 using namespace sf;
 
 class Player : public Entity {
 public:
     Clock jumpCooldownClock;
+	//SoundManager soundManager;
     //Player(Map& map);
     Player(Texture& tex, Map& map);
     Player(const Vector2f& size, const Color& color, Map& map);
@@ -51,6 +54,8 @@ public:
     IntRect formerFrame0;
 
     CircleShape hurtbox;
+
+    Sprite attackSprite;
 
 private:
     //fonction du update
@@ -112,7 +117,6 @@ private:
     bool canAttack = true;
     bool attacking = false;
     bool attackHitboxActive = false;
-    Sprite attackSprite;
     string attackDirection = "right";
     float attackDuration = 0;
     float attackCooldown = 0;

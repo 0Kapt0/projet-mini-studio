@@ -1,6 +1,7 @@
 #include "../include/Game.hpp"
 #include "../include/Settings.hpp"
 #include "../include/Map.hpp"
+#include "../include/Cutscene.hpp"
 #include "../include/Menu.hpp"
 #include "../include/Pause.hpp"
 #include "../include/Selector.hpp"
@@ -29,9 +30,9 @@ struct LevelAssets {
     array<string, 2> foregroundTextures;
     string mapTileset;
     string tileSelectorTileset;
+    array<float, 6> backgroundSpeeds;
 };
 
-// Exemple d'association entre le fichier de niveau et les assets correspondants
 map<string, LevelAssets> levelAssetsMap = {
     {"assets/map/Level1.txt", {
         { "assets/background/Forest1.png",
@@ -43,7 +44,8 @@ map<string, LevelAssets> levelAssetsMap = {
         { "assets/foreground/foret_foreground.png",
           "assets/foreground/Forest-light.png" },
         "assets/tileset/tileset_green_vFinal.png",
-        "assets/tileset/tileset_green_vFinal.png"
+        "assets/tileset/tileset_green_vFinal.png",
+        {1.89f, 1.89f, 1.89f, 1.89f, 1.89f, 1.89f}
     }},
     {"assets/map/Level2.txt", {
         { "assets/background/BG1.png",
@@ -55,15 +57,32 @@ map<string, LevelAssets> levelAssetsMap = {
         { "assets/foreground/foreground_city.png",
           "assets/foreground/level2_foreground2.png" },
         "assets/tileset/tilesetTownV1.png",
-        "assets/tileset/tilesetTownV1.png"
-    }}
+        "assets/tileset/tilesetTownV1.png",
+        {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
+    }},
+    {
+    "assets/map/Level3.txt", {
+      { "assets/background/BG1.png",
+        "assets/background/BG2.png",
+        "assets/background/BG3.png",
+        "assets/background/BG4.png",
+        "assets/background/BG5.png",
+        "assets/background/BG6.png" },
+      { "assets/foreground/foreground_city.png",
+        "assets/foreground/level2_foreground2.png" },
+      "assets/tileset/tilesetTownV1.png",
+      "assets/tileset/tilesetTownV1.png",
+      {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
+  }
+}
 };
 
 void setLevel(const string& levelFile,
     Background& background,
     Foreground& foreground,
     Map& map,
-    TileSelector& tileSelector) {
+    TileSelector& tileSelector)
+{
     if (levelAssetsMap.find(levelFile) != levelAssetsMap.end()) {
         LevelAssets assets = levelAssetsMap[levelFile];
 
@@ -72,9 +91,12 @@ void setLevel(const string& levelFile,
             assets.backgroundTextures[2],
             assets.backgroundTextures[3],
             assets.backgroundTextures[4],
-            assets.backgroundTextures[5])) {
+            assets.backgroundTextures[5]))
+        {
             std::cerr << "Erreur de chargement du background pour " << levelFile << endl;
         }
+
+        background.setSpeeds(assets.backgroundSpeeds);
 
         if (!foreground.loadTextures(assets.foregroundTextures[0],
             assets.foregroundTextures[1])) {
@@ -83,7 +105,6 @@ void setLevel(const string& levelFile,
 
         map.setTileset(assets.mapTileset);
         map.generateTiles();
-
         tileSelector.setTileset(assets.tileSelectorTileset);
 
         map.loadMap(levelFile);
@@ -142,16 +163,18 @@ void Game::run() {
 
     EntityManager entityManager;
     entityManager.createEntity("Player", Vector2f(200, 200), Vector2f(50, 50), Color::Red, map);
-
+    Cutscene cutscene;
     GameState currentState = GameState::Menu;
     Menu menu;
     Selector selector;
     Settings settings;
     Pause pause;
-	SoundManager soundManager;
+	SoundManager& soundManager = SoundManager::getInstance();
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
+    soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
     soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
@@ -174,18 +197,20 @@ void Game::run() {
     soundManager.loadSound("RobotDeathSound", "assets/sfx/RobotDeathSound.mp3");
     soundManager.loadSound("RunningSound", "assets/sfx/RunningSound.mp3");
     soundManager.loadSound("TakingHitSound", "assets/sfx/TakingHitSound.mp3");
-    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");  
+    soundManager.loadSound("WindSound", "assets/sfx/WindSound.mp3");
+    soundManager.loadSound("MainTitle", "assets/sfx/MainTitle.mp3");
 
     bool collisionMode = false;
     Clock clock;
-
+    soundManager.playSound("MenuMusic");
+    soundManager.setLoop("MenuMusic",true);
     while (window.isOpen()) {
         window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-
+        float cutscene2CooldownTime = 10.75f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -218,11 +243,31 @@ void Game::run() {
                         window.close();
                     }
                 }
+                if (Joystick::isConnected(0))
+                {
+                    if (Joystick::isButtonPressed(0, 0))
+                    {
+                        currentState = GameState::Selector;
+                    }
+                    if (Joystick::isButtonPressed(0, 1))
+                    {
+                        window.close();
+                    }
+                    if (Joystick::isButtonPressed(0, 2))
+                    {
+                        currentState = GameState::Editor;
+                    }
+                    if (Joystick::isButtonPressed(0, 3))
+                    {
+                        currentState = GameState::Settings;
+                    }
+                }
                 break;
 
             case GameState::Playing:
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
+                    entityManager.createEntity("FinalBoss", Vector2f(1200, 1700), Vector2f(150, 150), Color::Green, map);
                     enemiesGenerated = true;
                 }
 
@@ -365,7 +410,10 @@ void Game::run() {
             case GameState::Selector:
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
-                        currentState = GameState::Playing;
+                         cutsceneCooldown.restart();
+                        currentState = GameState::Cutscene;
+                        soundManager.stopSound("MenuMusic");
+                        soundManager.playSound("cutscene2");
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -373,8 +421,30 @@ void Game::run() {
                         currentState = GameState::Menu;
                     }
                 }
+                if (Joystick::isConnected(0))
+                {
+                    if (Joystick::isButtonPressed(0, 0))
+                    {
+                        currentState = GameState::Cutscene;
+                    }
+                    if (Joystick::isButtonPressed(0, 1))
+                    {
+                        currentState = GameState::Menu;
+                    }
+                    //if (Joystick::isButtonPressed(0, 2))
+                    //{
+                    //    currentState = GameState::Editor;
+                    //}
+                    //if (Joystick::isButtonPressed(0, 3))
+                    //{
+                    //    currentState = GameState::Settings;
+                    //}
+                }
                 break;
-            
+            case GameState::Cutscene:
+               
+                break;
+
             case GameState::GameOver:
                 break;
             }
@@ -384,15 +454,23 @@ void Game::run() {
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
             float cameraX = entityManager.player->getSprite().getPosition().x;
-            background.update(cameraX);
+            float playerY = entityManager.player->getSprite().getPosition().y;
+            background.update(cameraX, playerY, true);
             foreground.update(cameraX);
+        }
+
+        if (currentState == GameState::Cutscene) {
+            cerr << cutsceneCooldown.getElapsedTime().asSeconds() << endl;
+            if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                currentState = GameState::Playing;
+                soundManager.playSound("Level1Music");
+            }
         }
 
         switch (currentState) {
         case GameState::Menu:
             menu.draw(window);
             break;
-
         case GameState::Playing:
             background.draw(window);
             map.draw(window);;
@@ -429,6 +507,9 @@ void Game::run() {
 
         case GameState::Selector:
             selector.draw(window);
+            break;
+        case GameState::Cutscene:
+            cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;
