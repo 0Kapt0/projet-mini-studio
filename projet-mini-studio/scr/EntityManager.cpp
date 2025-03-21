@@ -58,7 +58,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	{
 		std::shared_ptr<FinalBoss> finalBoss = make_shared<FinalBoss>(size, color, map);
 		finalBoss->getSprite().setPosition(position);
-		//finalBoss->setTexture(textureManager.eBoss3Texture,);
+		finalBoss->setTexture(textureManager.eBoss3Texture, 300, 200, 4, 0.1f);
 		enemyVector.push_back(finalBoss);
 	}
 }

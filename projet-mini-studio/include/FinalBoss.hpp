@@ -8,7 +8,7 @@ class FinalBoss :
     public Enemy
 {
 public:
-	FinalBoss(Map& map, Texture& texture);
+	FinalBoss(Map& map);
 	FinalBoss(const Vector2f& size, const Color& color, Map& map);
 	~FinalBoss();
 
@@ -22,6 +22,7 @@ private:
 	void attack(float dt, Player& player);
 	void draw(RenderWindow& window) override;
 	void drawProjectiles(RenderWindow& window);
+	void animate(float deltaTime) override;
 };
 
 
