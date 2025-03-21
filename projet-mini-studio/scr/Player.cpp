@@ -138,7 +138,7 @@ void Player::updateCamera()
     }
 
     float halfViewWidth = playerView.getSize().x * 0.5f;
-    float leftLimit = 300.f + halfViewWidth;
+    float leftLimit = 70.f + halfViewWidth;
     float rightLimit = 15389.f;
 
     if (cameraPos.x < leftLimit) {
