@@ -422,7 +422,7 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                          levelselected = 1;
-                        currentState = GameState::Playing;
+                        currentState = GameState::Cutscene;
                         soundManager.stopSound("MenuMusic");
                         soundManager.playSound("cutscene1");
                     }
