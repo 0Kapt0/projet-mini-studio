@@ -394,6 +394,10 @@ void Game::run() {
                          cutsceneCooldown.restart();
                         currentState = GameState::Cutscene;
                         soundManager.stopSound("MenuMusic");
+                        map.saveMap(currentLevelFile);
+                        currentLevelFile = "assets/map/Level1.txt";
+                        setLevel(currentLevelFile, background, foreground, map, tileSelector);
+                        enemiesGenerated = false;
                         soundManager.playSound("cutscene2");
                     }
                 }
