@@ -1,8 +1,8 @@
 #include "../include/EnemyFlying.hpp"
 #include <cmath>
 
-EnemyFlying::EnemyFlying(Map& map)
-    : Enemy(map), currentWaypointIndex(0), state(PATROLLING)
+EnemyFlying::EnemyFlying(Map& map, Texture& texture)
+    : Enemy(map, texture), currentWaypointIndex(0), state(PATROLLING)
 {
     speed = 300;
     velocity = Vector2f(0, 0);

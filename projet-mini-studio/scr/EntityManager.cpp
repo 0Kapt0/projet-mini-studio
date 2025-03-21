@@ -23,7 +23,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		enemyVector.push_back(eRanged);
 	}
 	if (type == "BasicEnemy") {
-		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(size, color, map);
+		shared_ptr<BasicEnemy> eBasic = make_shared<BasicEnemy>(map, textureManager.eBasicTexture);
 		eBasic->getSprite().setPosition(position);
 		enemyVector.push_back(eBasic);
 	}

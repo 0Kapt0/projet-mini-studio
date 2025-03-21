@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-BasicEnemy::BasicEnemy(Map& map)
-    : Enemy(map), currentWaypointIndex(0), state(PATROLLING)
+BasicEnemy::BasicEnemy(Map& map, Texture& texture)
+    : Enemy(map, texture), currentWaypointIndex(0), state(PATROLLING)
 {
     speed = 200;
     velocity = Vector2f(0, 0);

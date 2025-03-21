@@ -3,8 +3,8 @@
 using namespace std;
 using namespace sf;
 
-Enemy::Enemy(Map& map) 
-   : Entity(), map(map)
+Enemy::Enemy(Map& map, Texture& texture)
+   : Entity(texture), map(map)
 {
     this->map = map;
 	speed = 200;
