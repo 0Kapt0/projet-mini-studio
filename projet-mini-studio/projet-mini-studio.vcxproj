@@ -34,6 +34,7 @@
     <ClInclude Include="include\FlyingBoss.hpp" />
     <ClInclude Include="include\Foreground.hpp" />
     <ClInclude Include="include\Game.hpp" />
+    <ClInclude Include="include\GameOver.hpp" />
     <ClInclude Include="include\Grapple.hpp" />
     <ClInclude Include="include\HeartItem.hpp" />
     <ClInclude Include="include\Map.hpp" />
@@ -65,6 +66,7 @@
     <ClCompile Include="scr\FinalBoss.cpp" />
     <ClCompile Include="scr\FlyingBoss.cpp" />
     <ClCompile Include="scr\Foreground.cpp" />
+    <ClCompile Include="scr\GameOver.cpp" />
     <ClCompile Include="scr\Grapple.cpp" />
     <ClCompile Include="scr\Game.cpp" />
     <ClCompile Include="scr\HeartItem.cpp" />
@@ -136,13 +138,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-<<<<<<< HEAD
     <IncludePath>C:\SFML-2.6.2\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\SFML-2.6.2\lib;$(LibraryPath)</LibraryPath>
-=======
-    <IncludePath>C:\SFML-2.6.2\include;C:\SFML-2.6.2-windows-vc17-64-bit\SFML-2.6.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SFML-2.6.2\lib;C:\SFML-2.6.2-windows-vc17-64-bit\SFML-2.6.2\bin;$(LibraryPath)</LibraryPath>
->>>>>>> 5f359b65c58a849733e192a8ae7e3dfa5fdc3bad
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
