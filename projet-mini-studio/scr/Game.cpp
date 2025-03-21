@@ -223,7 +223,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
-                if (Keyboard::isKeyPressed(Keyboard::R) || Joystick::isButtonPressed(0, 7)) {
+                if (Keyboard::isKeyPressed(Keyboard::R) || Joystick::isButtonPressed(0, 0)) {
                     entityManager.save.reset("assets/checkpoint/player.txt", entityManager.checkpointVector);
                 }
                 enemiesGenerated = false;
@@ -449,7 +449,7 @@ void Game::run() {
                         }
                     }
                 }
-                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 4)) {
+                if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 0)) {
                     if (selector.returnSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Menu;
                     }
