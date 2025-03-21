@@ -114,10 +114,21 @@ void EntityManager::collisions(float dt) {
 			if (enemy->hp <= 0) {
 				enemy->toBeDeleted = true;
 				player->killCount++;
-				if (enemy->type == "ChargingBoss" || enemy->type == "FlyingBoss" || enemy->type == "FinalBoss") {
+				if (enemy->type == "ChargingBoss") {
 					player->dashUnlocked = true;
 					win = true;
-					save.reset("assets/checkpoint/player.txt", checkpointVector);
+					save.win("assets/checkpoint/player.txt", player, 2);
+					//UNLOCK LEVEL 2
+				}
+				if (enemy->type == "FlyingBoss") {
+					win = true;
+					save.win("assets/checkpoint/player.txt", player, 3);
+					//UNLOCK LEVEL 3
+				}
+				if (enemy->type == "FinalBoss") {
+					win = true;
+					save.win("assets/checkpoint/player.txt", player, 0);
+					//GG
 				}
 			}
 			else {
@@ -166,7 +177,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 		player->hp = player->getMaxHp();
 	}
 	if (player->getMaxHp() < player->hpCeiling) {
-		if (player->killCount == 3) {
+		if (player->killCount == 2) {
 			player->oneUp(1);
 			player->killCount = 0;
 		}

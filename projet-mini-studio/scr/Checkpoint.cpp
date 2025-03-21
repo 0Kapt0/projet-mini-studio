@@ -70,6 +70,8 @@ void Save::saveCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 	getLine.push_back(std::to_string(cinematic2Played));
 	getLine.push_back(std::to_string(cinematic3Played));
 	getLine.push_back(std::to_string(cinematic4Played));
+	getLine.push_back(std::to_string(level2Unlocked));
+	getLine.push_back(std::to_string(level3Unlocked));
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		for (auto& newLine : getLine) {
@@ -99,6 +101,8 @@ void Save::loadCheckpoint(const std::string& filename, std::shared_ptr<Player>& 
 	cinematic2Played = (std::stoi(getLine[7]));
 	cinematic3Played = (std::stoi(getLine[8]));
 	cinematic4Played = (std::stoi(getLine[9]));
+	level2Unlocked = (std::stoi(getLine[10]));
+	level3Unlocked = (std::stoi(getLine[11]));
 }
 
 void Save::reset(const std::string& filename, std::vector<std::shared_ptr<Checkpoint>> checkpointVector) {
@@ -113,6 +117,8 @@ void Save::reset(const std::string& filename, std::vector<std::shared_ptr<Checkp
 	getLine.push_back(std::to_string(0)); // cinematic2 played unlocked
 	getLine.push_back(std::to_string(0)); // cinematic3 played unlocked
 	getLine.push_back(std::to_string(0)); // cinematic4 played unlocked
+	getLine.push_back(std::to_string(0)); // level2Unlocked
+	getLine.push_back(std::to_string(0)); // level3Unlocked
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		for (auto& newLine : getLine) {
@@ -128,7 +134,7 @@ void Save::reset(const std::string& filename, std::vector<std::shared_ptr<Checkp
 }
 
 void Save::playerDied(const std::string& filename, std::shared_ptr<Player>& player) {
-	player->setMaxHp(player->getMaxHp() - 1);
+	if (player->getMaxHp() > 1) player->setMaxHp(player->getMaxHp() - 1);
 	player->hp = player->getMaxHp();
 	player->killCount = 0;
 
@@ -141,6 +147,46 @@ void Save::playerDied(const std::string& filename, std::shared_ptr<Player>& play
 
 	getLine[2] = std::to_string(player->getMaxHp());
 
+	std::ofstream file(filename);
+	if (file.is_open()) {
+		for (auto& newLine : getLine) {
+			file << newLine << std::endl;
+		}
+	}
+	else {
+		std::cerr << "Impossible de sauvegarder le checkpoint." << std::endl;
+	}
+}
+
+std::vector<std::string> Save::getSaveLines(const std::string& filename) {
+	getLine.clear();
+	ifFile.open(filename);
+	while (getline(ifFile, line)) {
+		getLine.push_back(line);
+	}
+	ifFile.close();
+	return getLine;
+}
+
+void Save::resetPlayerPos(const std::string& filename) {
+	getSaveLines(filename);
+	getLine[0] = std::to_string(128);
+	getLine[1] = std::to_string(1800);
+}
+
+void Save::win(const std::string& filename, std::shared_ptr<Player>& player, int levelUnlocked) {
+	resetPlayerPos(filename);
+	switch (levelUnlocked) {
+	case 2:
+		getLine[4] = "1"; //unlock le dash
+		getLine[10] = "1"; // unlock level 2
+		break;
+	case 3:
+		getLine[11] = "1"; // unlock level 3
+		break;
+	default:
+		break;
+	}
 	std::ofstream file(filename);
 	if (file.is_open()) {
 		for (auto& newLine : getLine) {

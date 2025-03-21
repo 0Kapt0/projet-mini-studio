@@ -126,7 +126,8 @@ enum class GameState {
     Settings,
     Selector,
     Cutscene,
-    GameOver
+    GameOver,
+    Win
 };
 
 Game::Game() : deltaTime(0.0f) {}
@@ -284,6 +285,9 @@ void Game::run() {
 
                 if (entityManager.gameOver == true) {
                     currentState = GameState::GameOver;
+                }
+                if (entityManager.win == true) {
+                    currentState = GameState::Win;
                 }
 
                 break;
@@ -479,7 +483,19 @@ void Game::run() {
                 break;
 
             case GameState::GameOver:
+                if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+                    entityManager.save.playerDied("assets/checkpoint/player.txt", entityManager.player);
+                    currentState = GameState::Menu;
+                    entityManager.gameOver = false;
+                }
+                window.setView(window.getDefaultView());
                 break;
+            case GameState::Win:
+                if (Keyboard::isKeyPressed(Keyboard::Enter)) {
+                    currentState = GameState::Menu;
+                    entityManager.win = false;
+                }
+                window.setView(window.getDefaultView());
             }
         }
 
@@ -576,6 +592,9 @@ void Game::run() {
             break;
         case GameState::GameOver:
             gameover.draw(window);
+            break;
+        case GameState::Win:
+            window.clear(Color::Black);
             break;
         }
         window.display();

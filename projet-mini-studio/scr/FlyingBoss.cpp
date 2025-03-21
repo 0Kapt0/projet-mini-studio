@@ -8,7 +8,7 @@ FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
 	this->groundCooldown = 10.0f;
 	this->onGroundCooldown = 3.0f;
 	this->groundTimer = 0.0f;
-	hp = 15;
+	hp = 9;
 }
 
 FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map)
@@ -19,7 +19,7 @@ FlyingBoss::FlyingBoss(const Vector2f& size, const Color& color, Map& map) : Ene
 	this->groundCooldown = 5.0f;
 	this->onGroundCooldown = 3.0f;
 	this->groundTimer = 0.0f;
-	hp = 15;
+	hp = 9;
 }
 
 FlyingBoss::~FlyingBoss()

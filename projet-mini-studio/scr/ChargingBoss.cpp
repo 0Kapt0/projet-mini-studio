@@ -2,7 +2,7 @@
 
 ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 
-	hp = 15;
+	hp = 10;
 	type = "ChargingBoss";
 	Texture wallCollideTexture;
 	wallCollideTexture.create(100, 195);
@@ -29,20 +29,21 @@ void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));
-	if (target.x > getPosX()) {
-		wallCollideSprite.setPosition(getPosX() + wallCollideSprite.getGlobalBounds().width / 2, getPosY());
-		if (currentState != DASHING && currentState != STUNNED) {
-			getSprite().setScale(-1.f, 1.f);
+	if (distancePlayer < window.getSize().x / 1.5) {
+		if (target.x > getPosX()) {
+			wallCollideSprite.setPosition(getPosX() + wallCollideSprite.getGlobalBounds().width / 2, getPosY());
+			if (currentState != DASHING && currentState != STUNNED) {
+				getSprite().setScale(-1.f, 1.f);
+			}
 		}
-	}
-	if (target.x < getPosX()) {
-		wallCollideSprite.setPosition(getPosX() - wallCollideSprite.getGlobalBounds().width / 2, getPosY());
-		if (currentState != DASHING && currentState != STUNNED) {
-			getSprite().setScale(1.f, 1.f);
+		if (target.x < getPosX()) {
+			wallCollideSprite.setPosition(getPosX() - wallCollideSprite.getGlobalBounds().width / 2, getPosY());
+			if (currentState != DASHING && currentState != STUNNED) {
+				getSprite().setScale(1.f, 1.f);
+			}
 		}
-	}
-	getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
-	switch (currentState) {
+		getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+		switch (currentState) {
 		case CHASING:
 			//std::cout << "chasing\n";
 			chase(player, dt);
@@ -66,6 +67,7 @@ void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
 			stunned(dt);
 			break;
 
+		}
 	}
 }
 
@@ -196,4 +198,8 @@ void ChargingBoss::isColliding(int x, int y, float dt) {
 			collided = true;
 		}
 	}
+}
+
+void ChargingBoss::animate(float deltaTime) {
+
 }

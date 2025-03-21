@@ -33,6 +33,8 @@ public:
 	void charge(float dt);
 	void dash(float dt);
 	void stunned(float dt);
+
+	void animate(float deltaTime) override;
 };
 
 #endif

@@ -107,6 +107,10 @@ float calculateAngle(const Vector2f& point1, const Vector2f& point2) {
 
 void Player::update(float dt)
 {
+    if (grapple.isStuck()) {
+        jumpNum = 1;
+        canDash = true;
+    }
     grappleMove = false;
     hurtbox.setPosition(getSprite().getPosition().x - hurtbox.getRadius(), getSprite().getPosition().y - hurtbox.getRadius());
     invincibilityAfterHit(dt);
@@ -850,7 +854,6 @@ void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _tota
     frames = standingFrames;
     getSprite().setTextureRect(frames[currentFrame]);
     getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
-    std::cout << jumpingFrames.size() << std::endl;
 }
 
 void Player::animate(float deltaTime) {

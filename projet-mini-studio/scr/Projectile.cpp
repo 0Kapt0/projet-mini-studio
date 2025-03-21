@@ -27,7 +27,7 @@ void Projectile::collision()
 
 void Projectile::draw(RenderWindow& window)
 {
-    cout << "drawing proj at : " << getSprite().getPosition().x << "     " << getSprite().getPosition().y << endl;
+    //cout << "drawing proj at : " << getSprite().getPosition().x << "     " << getSprite().getPosition().y << endl;
     shape.setPosition(getSprite().getPosition());
     window.draw(getSprite());
 }
