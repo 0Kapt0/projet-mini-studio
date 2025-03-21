@@ -10,7 +10,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		//_player->getSprite().setPosition(position);
 		_player->setTexture(textureManager.playerTexture, 158, 140, 4, 0.1f);
 		player = _player;
-		save.loadCheckpoint("assets/checkpoint/player.txt", player);
+		//save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
 	if (type == "EnemyFlying") {
 		shared_ptr<EnemyFlying> eFlying = make_shared<EnemyFlying>(size, color, map);
