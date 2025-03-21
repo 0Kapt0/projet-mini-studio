@@ -3,7 +3,7 @@
 TextureManager::TextureManager() 
 {
 	checkpointTexture.loadFromFile("assets/animation/checkpoint/tv animation.png");
-	playerTexture.loadFromFile("assets/animation/player/base animations.png");
+	playerTexture.loadFromFile("assets/animation/player/animation.png");
 	heartTexture.loadFromFile("assets/ui/heart.png");
 	eBasicTexture.loadFromFile("assets/enemy/basic_enemy.png");
 	eFlyingTexture.loadFromFile("assets/enemy/flying_enemy.png");

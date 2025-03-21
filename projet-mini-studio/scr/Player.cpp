@@ -249,6 +249,7 @@ void Player::handleNormalMovement(float dt)
     float jumpCooldownTime = 0.4f;
     if ((Keyboard::isKeyPressed(Keyboard::Space) || Joystick::isButtonPressed(0, 0)) && canJump && jumpCooldownClock.getElapsedTime().asSeconds() >= jumpCooldownTime)
     {
+        jumped = true;
 		soundManager.playSound("JumpingSound");
         onGround = false;
         velocity.y = -speed;
@@ -783,8 +784,8 @@ void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _tota
     jumpingFrames.clear();
     attackingFrames.clear();
     //RUNNING
-    frameWidthResize = 157; // -1 par rapport aux values de base pck décalage
-    frameHeightResize = 119;
+    frameWidthResize = frameWidth; // -1 par rapport aux values de base pck décalage
+    frameHeightResize = frameHeight;
     frameStartingX = 0;
     frameStartingY = 0;
     totalFrames = 4;
@@ -792,46 +793,63 @@ void Player::setTexture(Texture& tex, int frameWidth, int frameHeight, int _tota
         runningFrames.emplace_back(i * frameWidthResize, 0, frameWidthResize, frameHeightResize);
     }
     //STANDING
-    frameWidthResize = 49;
-    frameHeightResize = 119;
+    /*frameWidthResize = 49;
+    frameHeightResize = 119;*/
     totalFrames = 3;
     for (int i = 0; i < totalFrames; i++) {
-        standingFrames.emplace_back(i * frameWidthResize, 119, frameWidthResize, frameHeightResize);
+        standingFrames.emplace_back(i * frameWidthResize, /*119*/ frameHeight * 1, frameWidthResize, frameHeightResize);
     }
     //JUMPING
-    frameWidthResize = 46;
-    frameHeightResize = 139;
+    /*frameWidthResize = 46;
+    frameHeightResize = 139;*/
     totalFrames = 2;
     for (int i = 0; i < totalFrames; i++) {
-        jumpingFrames.emplace_back(i * frameWidthResize, 238, frameWidthResize, frameHeightResize);  // METTRE i POUR FULL ANIMATION
+        jumpingFrames.emplace_back(i * frameWidthResize, /*238*/frameHeight * 2, frameWidthResize, frameHeightResize);  // METTRE i POUR FULL ANIMATION
     }
     //ATTACKING
-    frameWidthResize = 157;
-    frameHeightResize = 119;
+    /*frameWidthResize = 157;
+    frameHeightResize = 119;*/
     totalFrames = 3;
     for (int i = 0; i < totalFrames; i++) {
-        attackingFrames.emplace_back(i * frameWidthResize, 377, frameWidthResize, frameHeightResize);
+        attackingFrames.emplace_back(i * frameWidthResize, /*377*/frameHeight * 3, frameWidthResize, frameHeightResize);
     }
     //ATTACK HITBOX
     totalFrames = 2;
     for (int i = 0; i < totalFrames; i++) {
-        attackHitboxFrames.emplace_back(i * frameWidthResize, 496, frameWidthResize, frameHeightResize);
+        attackHitboxFrames.emplace_back(i * frameWidthResize, /*496*/frameHeight * 4, frameWidthResize, frameHeightResize);
     }
     attackSprite.setTextureRect(attackHitboxFrames[0]);
     attackSprite.setOrigin(attackSprite.getTextureRect().getSize().x / 2, attackSprite.getTextureRect().getSize().y / 2);
     //FALLING
-    frameWidthResize = 97;
-    frameHeightResize = 119;
+    /*frameWidthResize = 97;
+    frameHeightResize = 119;*/
     totalFrames = 2;
     for (int i = 0; i < totalFrames; i++) {
-        fallingFrames.emplace_back(i * frameWidthResize, 615, frameWidthResize, frameHeightResize);
+        fallingFrames.emplace_back(i * frameWidthResize, /*615*/frameHeight * 5, frameWidthResize, frameHeightResize);
     }
     fallingFrames.emplace_back(fallingFrames[0]);
     fallingFrames.emplace_back(fallingFrames[1]);
+    /*for (int y = 0; y < 5; y++) {
+        if (y == 0) totalFrames = 4;
+        if (y == 1) totalFrames = 3;
+        if (y == 2) totalFrames = 2;
+        if (y == 3) totalFrames = 3;
+        if (y == 4) totalFrames = 2;
+        if (y == 5) totalFrames = 2;
 
+        for (int i = 0; i < totalFrames; i++) {
+            if (y == 0) runningFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            if (y == 1) standingFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            if (y == 2) jumpingFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            if (y == 3) attackingFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            if (y == 4) attackHitboxFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+            if (y == 5) fallingFrames.emplace_back(i * frameWidth, y * frameHeight, frameWidth, frameHeight);
+        }
+    }*/
     frames = standingFrames;
     getSprite().setTextureRect(frames[currentFrame]);
     getSprite().setOrigin(getSprite().getTextureRect().getSize().x / 2, getSprite().getTextureRect().getSize().y / 2);
+    std::cout << jumpingFrames.size() << std::endl;
 }
 
 void Player::animate(float deltaTime) {
