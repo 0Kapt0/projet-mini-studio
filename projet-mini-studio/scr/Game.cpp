@@ -428,7 +428,7 @@ void Game::run() {
                          levelselected = 1;
                         currentState = GameState::Cutscene;
                         soundManager.stopSound("MenuMusic");
-                        soundManager.playSound("cutscene1");
+                        soundManager.playSound("cutscene2");
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left || Joystick::isButtonPressed(0, 2)) {
@@ -438,7 +438,7 @@ void Game::run() {
                             levelselected = 2;
                             currentState = GameState::Cutscene;
                             soundManager.stopSound("MenuMusic");
-                            soundManager.playSound("cutscene2");
+                            soundManager.playSound("cutscene1");
                         }
                     }
                 }
@@ -580,10 +580,10 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            if (levelselected == 1) {
+            if (levelselected == 2) {
                 cutscene.draw1(window);
             }
-            if (levelselected == 2) {
+            if (levelselected == 1) {
                 cutscene.draw(window);
             }
             if (levelselected == 3) {

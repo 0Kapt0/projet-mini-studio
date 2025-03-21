@@ -773,7 +773,7 @@ int Player::getMaxHp() {
     return maxHp;
 }
 void Player::setMaxHp(int newMaxHp) {
-    maxHp = newMaxHp;
+    maxHp = newMaxHp + 20;
 }
 
 void Player::oneUp(int value) {

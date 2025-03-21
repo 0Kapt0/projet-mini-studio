@@ -30,7 +30,7 @@ public:
     void setMaxHp(int newMaxHp);
     void oneUp(int value);
 
-    int hpCeiling = 3;
+    int hpCeiling = 50;
     int killCount = 0;
     bool doubleJumpUnlocked = true;
     bool dashUnlocked = true;
@@ -85,7 +85,7 @@ private:
     Texture heartemptyTexure;
     Sprite heart1;
     Sprite heartempty;
-    int maxHp = 3;
+    int maxHp = 50;
 
     //Mouvement
     bool canJump = true;
