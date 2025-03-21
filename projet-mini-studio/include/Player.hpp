@@ -7,6 +7,7 @@
 #include "Grapple.hpp"
 #include "Entity.hpp"
 #include "../include/SoundManager.hpp"
+#include <iostream>
 
 using namespace sf;
 

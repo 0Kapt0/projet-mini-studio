@@ -27,7 +27,7 @@ public:
 
     void setSpeeds(const array<float, 6>& newSpeeds);
 
-    void update(float cameraX , bool followCamera = true);
+    void update(float cameraX, float playerY, bool followCamera = true);
 
     void draw(RenderWindow& window);
 };

@@ -59,7 +59,22 @@ map<string, LevelAssets> levelAssetsMap = {
         "assets/tileset/tilesetTownV1.png",
         "assets/tileset/tilesetTownV1.png",
         {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
-    }}
+    }},
+    {
+    "assets/map/Level3.txt", {
+      { "assets/background/BG1.png",
+        "assets/background/BG2.png",
+        "assets/background/BG3.png",
+        "assets/background/BG4.png",
+        "assets/background/BG5.png",
+        "assets/background/BG6.png" },
+      { "assets/foreground/foreground_city.png",
+        "assets/foreground/level2_foreground2.png" },
+      "assets/tileset/tilesetTownV1.png",
+      "assets/tileset/tilesetTownV1.png",
+      {0.02f, 0.04f, 0.08f, 0.15f, 0.25f, 0.35f}
+  }
+}
 };
 
 void setLevel(const string& levelFile,
@@ -158,6 +173,8 @@ void Game::run() {
 
     // Instanciation des sons
 	soundManager.loadSound("Level1Music", "assets/sfx/Level1Music.mp3");
+    soundManager.loadSound("MenuMusic", "assets/sfx/menumusic.mp3");
+    soundManager.loadSound("cutscene2", "assets/sfx/cutscene2.mp3");
     soundManager.loadSound("Level2Music", "assets/sfx/Level2Music.mp3");
     soundManager.loadSound("Level3Music", "assets/sfx/Level3Music.mp3");
     soundManager.loadSound("BonusColectedSound", "assets/sfx/BonusColectedSound.mp3");
@@ -185,14 +202,15 @@ void Game::run() {
 
     bool collisionMode = false;
     Clock clock;
-
+    soundManager.playSound("MenuMusic");
+    soundManager.setLoop("MenuMusic",true);
     while (window.isOpen()) {
         window.clear();
         Event event;
 		deltaTime = clock.restart().asSeconds();
         bool isLeftMousePressed = false;
         bool isRightMousePressed = false;
-        float cutscene2CooldownTime = 5.0f;
+        float cutscene2CooldownTime = 10.75f;
         while (window.pollEvent(event)) 
         {
             if (event.type == Event::Closed)
@@ -202,6 +220,7 @@ void Game::run() {
             switch (currentState)
             {
             case GameState::Menu:
+               
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) 
                 {
                     if (menu.editSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) 
@@ -393,7 +412,8 @@ void Game::run() {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
                         currentState = GameState::Cutscene;
-
+                        soundManager.stopSound("MenuMusic");
+                        soundManager.playSound("cutscene2");
                     }
                 }
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
@@ -422,10 +442,7 @@ void Game::run() {
                 }
                 break;
             case GameState::Cutscene:
-              
-                if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
-                    currentState = GameState::Playing;
-                }
+               
                 break;
 
             case GameState::GameOver:
@@ -437,8 +454,17 @@ void Game::run() {
             entityManager.updateEntities(event, deltaTime, window);
             entityManager.destroyEntity();
             float cameraX = entityManager.player->getSprite().getPosition().x;
-            background.update(cameraX, true);
+            float playerY = entityManager.player->getSprite().getPosition().y;
+            background.update(cameraX, playerY, true);
             foreground.update(cameraX);
+        }
+
+        if (currentState == GameState::Cutscene) {
+            cerr << cutsceneCooldown.getElapsedTime().asSeconds() << endl;
+            if (cutsceneCooldown.getElapsedTime().asSeconds() >= cutscene2CooldownTime) {
+                currentState = GameState::Playing;
+                soundManager.playSound("Level1Music");
+            }
         }
 
         switch (currentState) {
@@ -483,7 +509,7 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            cutscene.draw(window);
+            cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;
