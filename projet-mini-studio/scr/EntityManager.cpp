@@ -8,7 +8,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	if (type == "Player") {
 		std::shared_ptr<Player> _player = std::make_shared<Player>(textureManager.playerTexture, map);
 		//_player->getSprite().setPosition(position);
-		_player->setTexture(textureManager.playerTexture, 0, 0, 0, 0.1f);
+		_player->setTexture(textureManager.playerTexture, 158, 140, 4, 0.1f);
 		player = _player;
 		save.loadCheckpoint("assets/checkpoint/player.txt", player);
 	}
