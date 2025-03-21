@@ -13,14 +13,13 @@ public:
 	Texture eBasicTexture;
 	Texture eFlyingTexture;
 	Texture eRangedTexture;
-	Texture eBoss1Texture;
+	Texture chargingBossTexture;
 	Texture eBoss2Texture;
 	Texture eBoss3Texture;
 	Texture rangedProjectileTexture;
 	Texture boss2ProjectileTexture;
 	Texture boss3ProjectileTexture;
 
-	Texture chargingBossTexture;
 
 	TextureManager();
 };

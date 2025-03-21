@@ -267,7 +267,6 @@ void Game::run() {
             case GameState::Playing:
                 if (!enemiesGenerated) {
                     entityManager.generateEnemies(map);
-                    entityManager.createEntity("FinalBoss", Vector2f(1200, 1700), Vector2f(150, 150), Color::Green, map);
                     enemiesGenerated = true;
                 }
 
@@ -411,7 +410,7 @@ void Game::run() {
                 if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                     if (selector.level1Sprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                          cutsceneCooldown.restart();
-                        currentState = GameState::Cutscene;
+                        currentState = GameState::Playing;
                         soundManager.stopSound("MenuMusic");
                         soundManager.playSound("cutscene2");
                     }
@@ -509,7 +508,7 @@ void Game::run() {
             selector.draw(window);
             break;
         case GameState::Cutscene:
-            //cutscene.draw3(window);
+            cutscene.draw3(window);
             break;
         case GameState::GameOver:
             break;

@@ -18,8 +18,8 @@ Enemy::Enemy(const Vector2f& size, const Color& color, Map& map) : Entity(size, 
 	velocity = Vector2f(0, 0);
 }
 
-Enemy::Enemy(Texture& texture, Map& map)
-    : Entity(texture), map(map)
+Enemy::Enemy(Map& map)
+    :  map(map)
 {
     this->map = map;
     speed = 200;

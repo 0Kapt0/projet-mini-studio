@@ -15,7 +15,7 @@ protected:
 public:
     Enemy(Map& map, Texture& texture);
     Enemy(const Vector2f& size, const Color& color, Map& map);
-    Enemy(Texture& texture, Map& map);
+    Enemy(Map& map);
     virtual ~Enemy();
     virtual void update(float dt, Player& player, RenderWindow& window);
     virtual void isColliding(int x, int y, float dt);

@@ -8,6 +8,7 @@ FinalBoss::~FinalBoss() {}
 
 void FinalBoss::update(float dt, Player& player, RenderWindow& window)
 {
+	invincibilityAfterHit(dt);
 	attackTimer += dt;
 	if (attackTimer >= attackCooldown)
 	{

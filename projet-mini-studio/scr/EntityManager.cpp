@@ -36,8 +36,8 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 		enemyVector.push_back(chargingBoss);
 	}
 	if (type == "Checkpoint") {
-		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(size, color, map);
-		//testCheckpoint->getSprite().setPosition(position);
+		std::shared_ptr<Checkpoint> testCheckpoint = std::make_shared<Checkpoint>(textureManager.checkpointTexture);
+		testCheckpoint->getSprite().setPosition(position);
 		testCheckpoint->setTexture(textureManager.checkpointTexture, 134, 136, 4, 0.1f);
 		checkpointVector.push_back(testCheckpoint);
 	}
@@ -48,8 +48,9 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	}
 
 	if (type == "FlyingBoss") {
-		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(size, color, map);
+		std::shared_ptr<FlyingBoss> flyingBoss = make_shared<FlyingBoss>(map);
 		flyingBoss->getSprite().setPosition(position);
+		flyingBoss->setTexture(textureManager.eBoss2Texture, 240, 299, 2, 0.1f);
 		enemyVector.push_back(flyingBoss);
 	}
 
@@ -57,6 +58,7 @@ void EntityManager::createEntity(string type, Vector2f position, const Vector2f&
 	{
 		std::shared_ptr<FinalBoss> finalBoss = make_shared<FinalBoss>(size, color, map);
 		finalBoss->getSprite().setPosition(position);
+		//finalBoss->setTexture(textureManager.eBoss3Texture,);
 		enemyVector.push_back(finalBoss);
 	}
 }
@@ -167,6 +169,7 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	player->animate(dt);
 	for (auto& enemy : enemyVector) {
 		enemy->update(dt, *player, window);
+		enemy->animate(dt);
 		/*if (enemy->hp <= 0) {
 			enemy->toBeDeleted;
 			player->killCount++;

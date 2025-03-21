@@ -22,6 +22,7 @@ EnemySelector::EnemySelector(const string& texturePath, int iconSize)
         EnemyType::Basic,
         EnemyType::ChargingBoss,
         EnemyType::FlyingBoss,
+        EnemyType::FinalBoss,
         EnemyType::Checkpoint,
         EnemyType::HeartItem
 

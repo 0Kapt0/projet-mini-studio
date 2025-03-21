@@ -1,16 +1,16 @@
 #include "../include/ChargingBoss.hpp"
 
-ChargingBoss::ChargingBoss(Map& map, Texture& texture) : Enemy(map, texture) {
+ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 
 	hp = 15;
 	type = "ChargingBoss";
-	Texture texture;
-	texture.create(100, 195);
+	Texture wallCollideTexture;
+	wallCollideTexture.create(100, 195);
 	Image image;
 	image.create(100, 195, Color::Red);
-	texture.update(image);
-	wallCollideSprite.setTexture(texture);
-	wallCollideSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+	wallCollideTexture.update(image);
+	wallCollideSprite.setTexture(wallCollideTexture);
+	wallCollideSprite.setOrigin(wallCollideTexture.getSize().x / 2, wallCollideTexture.getSize().y / 2);
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
@@ -20,7 +20,6 @@ ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) :
 
 
 void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
-	window.draw(wallCollideSprite);
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));

@@ -1,6 +1,6 @@
 #include "../include/FlyingBoss.hpp"
 
-FlyingBoss::FlyingBoss(Map& map, Texture& texture) : Enemy(map, texture)
+FlyingBoss::FlyingBoss(Map& map) : Enemy(map)
 {
 	this->attackCooldown = 0.3f;
 	this->attackTimer = 0.0f;
@@ -28,7 +28,7 @@ FlyingBoss::~FlyingBoss()
 
 void FlyingBoss::update(float dt, Player& player, RenderWindow& window)
 {
-	
+	invincibilityAfterHit(dt);
 	if (this->state == IN_AIR)
 	{
 		this->groundTimer += dt;
@@ -173,5 +173,16 @@ void FlyingBoss::drawProjectiles(RenderWindow& window)
 	for (const auto& projectile : projectiles) 
 	{
 		projectile->draw(window);
+	}
+}
+
+void FlyingBoss::animate(float deltaTime) {
+	elapsedTime += deltaTime;
+	if (elapsedTime >= frameTime && !frames.empty()) {
+		elapsedTime = 0.0f;
+
+		currentFrame = (currentFrame + 1) % totalFrames;
+
+		getSprite().setTextureRect(frames[currentFrame]);
 	}
 }
