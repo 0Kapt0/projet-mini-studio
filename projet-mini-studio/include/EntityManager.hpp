@@ -19,7 +19,7 @@ using namespace std;
 class EntityManager {
 public:
 	EntityManager();
-
+	bool gameOver = false;
 	TextureManager textureManager;
 	std::shared_ptr<Player> player;
 	std::vector<std::shared_ptr<Player>> playerVector;
@@ -30,6 +30,8 @@ public:
 	float timer = 0;
 
 	Save save;
+
+	bool win = false;
 
 	void createEntity(string type, Vector2f position, const Vector2f& size, const Color& color, Map& map);
 	void destroyEntity();

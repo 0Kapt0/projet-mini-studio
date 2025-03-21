@@ -153,5 +153,12 @@ void Enemy::setTexture(Texture& tex, int frameWidth, int frameHeight, int _total
     getSprite().setOrigin(frameWidth / 2, frameHeight / 2);
 }
 void Enemy::animate(float deltaTime) {
+    elapsedTime += deltaTime;
+    if (elapsedTime >= frameTime && !frames.empty()) {
+        elapsedTime = 0.0f;
 
+        currentFrame = (currentFrame + 1) % totalFrames;
+
+        getSprite().setTextureRect(frames[currentFrame]);
+    }
 }

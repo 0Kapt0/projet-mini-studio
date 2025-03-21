@@ -11,6 +11,7 @@ BasicEnemy::BasicEnemy(Map& map, Texture& texture)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 100));
     waypoints.push_back(Vector2f(700, 100));
+    setTexture(texture, 77, 129, 4, 0.1f);
     type = "BasicEnemy";
 }
 
@@ -46,6 +47,7 @@ void BasicEnemy::update(/*float dt, const Player& player*/float dt, Player& play
     applySmoothPushback(dt, player);
     invincibilityAfterHit(dt);
     Vector2f playerPosition = player.getSpriteConst().getPosition(); // Get the player's position
+    animate(dt);
 
     // Call the base class update method to handle gravity
     Enemy::update(dt, player, window);
@@ -132,4 +134,11 @@ void BasicEnemy::drawDetectionRadius(RenderWindow& window) {
 void BasicEnemy::setWaypoints(const vector<Vector2f>& newWaypoints) {
     waypoints = newWaypoints;
     currentWaypointIndex = 0; // Reset to start from the first waypoint
+}
+
+void BasicEnemy::setPosition(const Vector2f& position) {
+	getSprite().setPosition(position);
+	waypoints.clear();
+	waypoints.push_back(Vector2f(position.x - 300.f, position.y));
+	waypoints.push_back(Vector2f(position.x + 300.f, position.y));
 }

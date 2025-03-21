@@ -33,7 +33,7 @@ Player::Player(Texture& tex, Map& map)
     }
     heartempty.setTexture(heartemptyTexure);
 
-    hurtbox.setRadius(50);
+    hurtbox.setRadius(40);
     hurtbox.setFillColor(Color::Transparent);
     hurtbox.setOutlineColor(Color::Red);
     hurtbox.setOutlineThickness(1.f);
@@ -308,7 +308,7 @@ void Player::handleNormalMovement(float dt)
     }
     float axisZ = Joystick::getAxisPosition(0, Joystick::Z);
 
-    if ((Keyboard::isKeyPressed(Keyboard::LShift) || axisZ > 50) && canDash)
+    if ((Keyboard::isKeyPressed(Keyboard::LShift) || axisZ > 50) && canDash && dashUnlocked)
 
     {
 		soundManager.playSound("Dash");
@@ -689,11 +689,12 @@ void Player::draw(RenderWindow& window)
     HB.setPosition(getSprite().getGlobalBounds().left, getSprite().getGlobalBounds().top);
     HB.setFillColor(Color::Magenta);
     window.draw(HB);*/
-
+    
     window.draw(getSprite());
     if (attackHitboxActive)
         window.draw(attackSprite);
     grapple.draw(window);
+    //window.draw(hurtbox);
 }
 void Player::drawHearts(RenderWindow& window)
 {

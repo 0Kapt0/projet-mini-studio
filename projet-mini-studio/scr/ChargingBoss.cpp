@@ -10,7 +10,11 @@ ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
 	image.create(100, 195, Color::Red);
 	wallCollideTexture.update(image);
 	wallCollideSprite.setTexture(wallCollideTexture);
-	wallCollideSprite.setOrigin(wallCollideTexture.getSize().x / 2, wallCollideTexture.getSize().y / 2);
+	wallCollideSprite.setOrigin(wallCollideTexture.getSize().x / 2, wallCollideTexture.getSize().y / 2); 
+	hitbox.setRadius(70);
+	hitbox.setFillColor(Color::Transparent);
+	hitbox.setOutlineColor(Color::Red);
+	hitbox.setOutlineThickness(1.f);
 }
 
 ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) : Enemy(size, color, map) {
@@ -20,6 +24,8 @@ ChargingBoss::ChargingBoss(const Vector2f& size, const Color& color, Map& map) :
 
 
 void ChargingBoss::update(float dt, Player& player, RenderWindow& window) {
+	hitbox.setPosition(getSprite().getPosition().x - hitbox.getRadius(), getSprite().getPosition().y - hitbox.getRadius());
+	//window.draw(hitbox);
 	invincibilityAfterHit(dt);
 	target = player.getSprite().getPosition();
 	distancePlayer = std::sqrt(pow(target.x - getSprite().getPosition().x, 2) + pow(target.y - getSprite().getPosition().y, 2));

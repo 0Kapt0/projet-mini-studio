@@ -10,6 +10,7 @@ EnemyFlying::EnemyFlying(Map& map, Texture& texture)
     // Example waypoints
     waypoints.push_back(Vector2f(100, 600));
     waypoints.push_back(Vector2f(700, 600));
+    setTexture(texture, 130, 152, 2, 0.1f);
 }
 
 EnemyFlying::EnemyFlying(const Vector2f& size, const Color& color, Map& map)
@@ -128,4 +129,11 @@ void EnemyFlying::drawDetectionRadius(sf::RenderWindow& window) {
 void EnemyFlying::setWaypoints(const std::vector<Vector2f>& newWaypoints) {
     waypoints = newWaypoints;
     currentWaypointIndex = 0;
+}
+
+void EnemyFlying::setPosition(const Vector2f& position) {
+	getSprite().setPosition(position);
+	waypoints.clear();
+	waypoints.push_back(Vector2f(position.x - 300.f, position.y));
+	waypoints.push_back(Vector2f(position.x + 300.f, position.y));
 }
