@@ -1,6 +1,6 @@
 #include "../include/ChargingBoss.hpp"
 
-ChargingBoss::ChargingBoss(Map& map) : Enemy(map) {
+ChargingBoss::ChargingBoss(Map& map, Texture& texture) : Enemy(map, texture) {
 
 	type = "ChargingBoss";
 }

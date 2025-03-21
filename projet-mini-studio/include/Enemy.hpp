@@ -13,7 +13,7 @@ protected:
     Map map;
 
 public:
-    Enemy(Map& map);
+    Enemy(Map& map, Texture& texture);
     Enemy(const Vector2f& size, const Color& color, Map& map);
     virtual ~Enemy();
     virtual void update(float dt, Player& player, RenderWindow& window);

@@ -29,28 +29,36 @@ bool Background::loadTextures(const string& layer1,
     return true;
 }
 
-void Background::update(float cameraX, bool followCamera) {
+// Dans Background.cpp
+
+void Background::update(float cameraX, float playerY, bool followCamera) {
+    bool isUpperPlane = (playerY < 1080.f);
+
+    float yBas = 1080.f;
+    float yHaut = 0.f;
+    float baseY = (isUpperPlane ? yHaut : yBas);
+
     for (int i = 0; i < 6; ++i) {
-
         float rawPosX = (followCamera ? (cameraX - 960.f) : 0.f);
-        int posX = static_cast<int>(floor(rawPosX));
+        int posX = static_cast<int>(std::floor(rawPosX));
 
-        sprites[i].setPosition(static_cast<float>(posX), 1080.f);
+        sprites[i].setPosition(static_cast<float>(posX), baseY);
 
         float rawOffset = (followCamera ? cameraX * speeds[i] : 0.f);
-
-        int offsetInt = static_cast<int>(floor(rawOffset)) % static_cast<int>(spriteWidth);
-
-        if (offsetInt > 0) offsetInt -= static_cast<int>(spriteWidth);
+        int offsetInt = static_cast<int>(std::floor(rawOffset)) % static_cast<int>(spriteWidth);
+        if (offsetInt > 0) {
+            offsetInt -= static_cast<int>(spriteWidth);
+        }
 
         sprites[i].setTextureRect(
             IntRect(offsetInt,
-                0, 
+                0,
                 static_cast<int>(spriteWidth),
                 static_cast<int>(spriteHeight))
         );
     }
 }
+
 
 void Background::setSpeeds(const array<float, 6>& newSpeeds) {
     for (int i = 0; i < 6; ++i) {
