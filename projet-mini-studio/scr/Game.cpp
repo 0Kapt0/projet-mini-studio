@@ -224,6 +224,25 @@ void Game::run() {
                         window.close();
                     }
                 }
+                if (Joystick::isConnected(0))
+                {
+                    if (Joystick::isButtonPressed(0, 0))
+                    {
+                        currentState = GameState::Selector;
+                    }
+                    if (Joystick::isButtonPressed(0, 1))
+                    {
+                        window.close();
+                    }
+                    if (Joystick::isButtonPressed(0, 2))
+                    {
+                        currentState = GameState::Editor;
+                    }
+                    if (Joystick::isButtonPressed(0, 3))
+                    {
+                        currentState = GameState::Settings;
+                    }
+                }
                 break;
 
             case GameState::Playing:
@@ -381,6 +400,25 @@ void Game::run() {
                     if (selector.returnSprite.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                         currentState = GameState::Menu;
                     }
+                }
+                if (Joystick::isConnected(0))
+                {
+                    if (Joystick::isButtonPressed(0, 0))
+                    {
+                        currentState = GameState::Cutscene;
+                    }
+                    if (Joystick::isButtonPressed(0, 1))
+                    {
+                        currentState = GameState::Menu;
+                    }
+                    //if (Joystick::isButtonPressed(0, 2))
+                    //{
+                    //    currentState = GameState::Editor;
+                    //}
+                    //if (Joystick::isButtonPressed(0, 3))
+                    //{
+                    //    currentState = GameState::Settings;
+                    //}
                 }
                 break;
             case GameState::Cutscene:

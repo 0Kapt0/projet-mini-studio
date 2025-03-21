@@ -103,7 +103,6 @@ void EntityManager::collisions(float dt) {
 			player->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) && player->isAttacking() && !enemy->invincible) {
 			enemy->pushBack(*player);
 			//DEGATS
-			cout << "enemy hp - 1\n";
 			enemy->hp--;
 			if (enemy->hp <= 0) {
 				enemy->toBeDeleted = true;
@@ -163,7 +162,6 @@ void EntityManager::updateEntities(Event& event, float dt, /* Player& player1,*/
 	player->handleInput(event, window, dt);
 	player->animate(dt);
 	for (auto& enemy : enemyVector) {
-		cout << "update\n";
 		enemy->update(dt, *player, window);
 		/*if (enemy->hp <= 0) {
 			enemy->toBeDeleted;

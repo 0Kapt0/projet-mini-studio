@@ -24,8 +24,10 @@ TileSelector::TileSelector(const std::string& tilesetPath, int tileSize)
 
 void TileSelector::handleEvent(Event event, RenderWindow& window)
 {
-    if (event.type == Event::MouseButtonPressed) {
-        if (event.mouseButton.button == Mouse::Left) {
+    if (event.type == Event::MouseButtonPressed)
+    {
+        if (event.mouseButton.button == Mouse::Left)
+        {
             Vector2i mousePos = Mouse::getPosition(window);
 
             int tilesetWidth = tilesetTexture.getSize().x / tileSize;
@@ -41,7 +43,8 @@ void TileSelector::handleEvent(Event event, RenderWindow& window)
                 int tileY = mousePos.y / tileSize;
                 int index = tileY * tilesetWidth + tileX;
 
-                if (index >= 0 && index < static_cast<int>(tiles.size())) {
+                if (index >= 0 && index < static_cast<int>(tiles.size())) 
+                {
                     selectedTileIndex = index;
                     std::cout << "Tuile choisie : " << selectedTileIndex << std::endl;
                 }
